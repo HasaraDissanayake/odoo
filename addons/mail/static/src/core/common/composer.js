@@ -7,6 +7,7 @@ import { NavigableList } from "@mail/core/common/navigable_list";
 import { MAIL_PLUGINS, MAIL_SMALL_UI_PLUGINS } from "@mail/core/common/plugin/plugin_sets";
 import { useSuggestion } from "@mail/core/common/suggestion_hook";
 import { useSelection } from "@mail/utils/common/hooks";
+import { trimEmptyBlocksAround } from "@mail/utils/common/format";
 import { isDragSourceExternalFile } from "@mail/utils/common/misc";
 
 import { Wysiwyg } from "@html_editor/wysiwyg";
@@ -43,11 +44,27 @@ import { useComposerActions } from "@mail/core/common/composer_actions";
 import { ActionList } from "@mail/core/common/action_list";
 import { closestElement, lastLeaf } from "@html_editor/utils/dom_traversal";
 import { rightPos } from "@html_editor/utils/position";
+import { usePopover } from "@web/core/popover/popover_hook";
 
 const EDIT_CLICK_TYPE = {
     CANCEL: "cancel",
     SAVE: "save",
 };
+
+class FullComposerRecoveryPopover extends Component {
+    static props = ["composer", "onClickFullRecover", "onClickTextRecover", "close?"];
+    static template = "mail.FullComposerRecoveryPopover";
+
+    onClickFullRecover() {
+        this.props.onClickFullRecover();
+        this.props.close();
+    }
+
+    onClickTextRecover() {
+        this.props.onClickTextRecover();
+        this.props.close();
+    }
+}
 
 /**
  * @typedef {Object} Props
@@ -98,6 +115,7 @@ export class Composer extends Component {
 
     setup() {
         super.setup();
+        this.dialogService = useService("dialog");
         /** @type {import("@html_editor/editor").Editor} */
         this.editor = undefined;
         this.isMobileOS = isMobileOS();
@@ -126,6 +144,12 @@ export class Composer extends Component {
             isFullComposerOpen: false,
         });
         this.root = useRef("root");
+        this.fullComposerRecoveryPopover = usePopover(FullComposerRecoveryPopover, {
+            closeOnClickAway: false,
+            closeOnEscape: false,
+            position: "top-end",
+            popoverClass: "dropdown-menu bg-view overflow-visible o-rounded-bubble mx-1",
+        });
         this.fullComposerBus = new EventBus();
         this.selection = useSelection({
             refName: "textarea",
@@ -229,6 +253,32 @@ export class Composer extends Component {
                 this.props.composer.forceCursorMove = false;
             },
             () => [this.props.composer.forceCursorMove]
+        );
+        useEffect(
+            (isFullComposerOpen, restoredFromFullComposer, fullComposerButtonEl) => {
+                if (isFullComposerOpen || !restoredFromFullComposer || !fullComposerButtonEl) {
+                    this.fullComposerRecoveryPopover.close();
+                    return;
+                }
+                if (this.fullComposerRecoveryPopover.isOpen) {
+                    return;
+                }
+                this.fullComposerRecoveryPopover.open(fullComposerButtonEl, {
+                    composer: this.props.composer,
+                    onClickFullRecover: () => {
+                        this.onClickFullComposer();
+                        this.props.composer.restoredFromFullComposer = false;
+                    },
+                    onClickTextRecover: () => {
+                        this.props.composer.restoredFromFullComposer = false;
+                    },
+                });
+            },
+            () => [
+                this.state.isFullComposerOpen,
+                this.props.composer.restoredFromFullComposer,
+                this.root.el?.querySelector("button[name='open-full-composer']"),
+            ]
         );
         onMounted(() => {
             this.ref.el?.scrollTo({ top: 0, behavior: "instant" });
@@ -578,6 +628,7 @@ export class Composer extends Component {
     }
 
     async onClickFullComposer(ev) {
+        this.props.composer.restoredFromFullComposer = false;
         const allRecipients = [...this.thread.suggestedRecipients];
         if (this.props.type !== "note") {
             allRecipients.push(...this.thread.additionalRecipients);
@@ -652,8 +703,10 @@ export class Composer extends Component {
                     this.fullComposerBus.trigger("ACCIDENTAL_DISCARD", {
                         onAccidentalDiscard: (isEmpty) => {
                             if (!isEmpty) {
+                                this.state.isFullComposerOpen = true;
                                 this.saveContent();
                                 this.restoreContent();
+                                this.state.isFullComposerOpen = false;
                             }
                         },
                     });
@@ -713,7 +766,7 @@ export class Composer extends Component {
                 return;
             }
             this.state.active = false;
-            await cb(this.props.composer.composerHtml);
+            await cb(trimEmptyBlocksAround(this.props.composer.composerHtml));
             if (this.props.onPostCallback) {
                 this.props.onPostCallback();
             }
@@ -889,7 +942,8 @@ export class Composer extends Component {
         }
     }
 
-    onFocusin() {
+    onFocusin(ev) {
+        ev.stopPropagation();
         const composer = toRaw(this.props.composer);
         composer.isFocused = true;
         if (
@@ -913,10 +967,14 @@ export class Composer extends Component {
 
     saveContent() {
         const composer = toRaw(this.props.composer);
+        if (composer.restoredFromFullComposer && !this.state.isFullComposerOpen) {
+            return;
+        }
         const saveContentToLocalStorage = ({
             composerHtml,
             emailAddSignature,
             replyToMessageId,
+            fromFullComposer = composer.restoredFromFullComposer,
         }) => {
             if (isHtmlEmpty(composerHtml)) {
                 browser.localStorage.removeItem(composer.localId);
@@ -929,19 +987,22 @@ export class Composer extends Component {
                         composerHtml: isMarkup(composerHtml)
                             ? ["markup", composerHtml]
                             : composerHtml,
+                        fromFullComposer,
                     })
                 );
             }
         };
         if (this.state.isFullComposerOpen) {
             this.fullComposerBus.trigger("SAVE_CONTENT", {
-                onSaveContent: saveContentToLocalStorage,
+                onSaveContent: (...args) =>
+                    saveContentToLocalStorage({ ...args[0], fromFullComposer: true }),
             });
         } else {
             saveContentToLocalStorage({
                 composerHtml: composer.composerHtml,
                 emailAddSignature: true,
                 replyToMessageId: composer.replyToMessage?.id,
+                fromFullComposer: false,
             });
         }
     }
@@ -958,6 +1019,9 @@ export class Composer extends Component {
             return;
         }
         if (!isHtmlEmpty(config.composerHtml)) {
+            if (composer.thread && composer.thread?.model !== "discuss.channel") {
+                composer.restoredFromFullComposer = config.fromFullComposer;
+            }
             composer.emailAddSignature = config.emailAddSignature;
             composer.composerHtml = config.composerHtml;
         }

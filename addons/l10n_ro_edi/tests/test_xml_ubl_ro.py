@@ -141,8 +141,7 @@ def _patch_request_ciusro_xml_to_pdf(company, xml_data):
     return {'content': 'JVBERi0xLjEKMSAwIG9iaiA8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFI+PiBlbmRvYmogMiAwIG9iaiA8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PiBlbmRvYmogMyAwIG9iaiA8PC9UeXBlL1BhZ2UvUGFyZW50IDIgMCBSL01lZGlhQm94WzAgMCAxIDEgXT4+IGVuZG9iaiB0cmFpbGVyIDw8L1Jvb3QgMSAwIFI+PiAlJUVPRg=='}
 
 
-@tagged('post_install_l10n', 'post_install', '-at_install')
-class TestUBLRO(TestUBLCommon):
+class TestUBLROCommon(TestUBLCommon):
 
     @classmethod
     @TestUBLCommon.setup_country('ro')
@@ -231,6 +230,10 @@ class TestUBLRO(TestUBLCommon):
         self.assertEqual(move.ubl_cii_xml_id.name[-11:], "cius_ro.xml")
         return move.ubl_cii_xml_id
 
+
+@tagged('post_install_l10n', 'post_install', '-at_install')
+class TestUBLRO(TestUBLROCommon):
+
     ####################################################
     # Testing of the XML generation
     ####################################################
@@ -269,6 +272,17 @@ class TestUBLRO(TestUBLCommon):
         invoice = self.create_move("out_invoice", currency_id=self.company.currency_id.id)
         attachment = self.get_attachment(invoice)
         self._assert_invoice_attachment(attachment, xpaths=None, expected_file_path='from_odoo/ciusro_out_invoice_no_prefix_company_registry.xml')
+
+    def test_export_invoice_no_vat_prefix(self):
+        self.company_data['company'].vat = self.company_data['company'].vat[2:]
+        no_vat_partner = self.partner_a.copy({'name': 'Roasted Romanian Roller', 'vat': False, 'invoice_edi_format': 'ciusro'})
+        invoice = self.create_move("out_invoice", partner_id=no_vat_partner.id, currency_id=self.company.currency_id.id)
+        attachment = self.get_attachment(invoice)
+        self._assert_invoice_attachment(attachment, xpaths=None, expected_file_path='from_odoo/ciusro_out_invoice_defaults.xml')
+
+    def test_export_invoice_defaults_new(self):
+        self.env['ir.config_parameter'].set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', 'True')
+        self.test_export_invoice_no_vat_prefix()
 
     def test_export_no_vat_and_no_company_registry_raises_error(self):
         self.company_data['company'].write({'vat': False, 'company_registry': False})
@@ -344,7 +358,7 @@ class TestUBLRO(TestUBLCommon):
         ])
         self.assertEqual(len(bills), 1)
         self.assertEqual(bills.state, 'draft')
-        self.assertEqual(bills.amount_total, 1785.0)
+        self.assertEqual(bills.amount_total, 1815.0)
         self.assertEqual(bills.commercial_partner_id.vat, '8001011234567')
         self.assertEqual(bills.l10n_ro_edi_index, '5020704741')
         self.assertEqual(bills.l10n_ro_edi_state, 'invoice_validated')

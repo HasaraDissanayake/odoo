@@ -49,6 +49,7 @@ import { EpsonPrinter } from "@point_of_sale/app/utils/printer/epson_printer";
 import OrderPaymentValidation from "../utils/order_payment_validation";
 import { logPosMessage } from "../utils/pretty_console_log";
 import { initLNA } from "../utils/init_lna";
+import { Domain } from "@web/core/domain";
 
 const { DateTime } = luxon;
 export const CONSOLE_COLOR = "#F5B427";
@@ -199,6 +200,10 @@ export class PosStore extends WithLazyGetterTrap {
     navigate(routeName, routeParams = {}) {
         const pageParams = registry.category("pos_pages").get(routeName);
         const component = pageParams.component;
+
+        if (routeParams.orderUuid) {
+            this.selectedOrderUuid = routeParams.orderUuid;
+        }
 
         if (component.storeOnOrder ?? true) {
             this.getOrder()?.setScreenData({ name: routeName, props: routeParams });
@@ -544,19 +549,25 @@ export class PosStore extends WithLazyGetterTrap {
         return false;
     }
 
-    async onDeleteOrder(order) {
+    async beforeDeleteOrder(order, { title, body } = {}) {
         if (order.getOrderlines().length > 0) {
-            const confirmed = await ask(this.dialog, {
-                title: _t("Existing orderlines"),
-                body: _t(
-                    "%s has a total amount of %s, are you sure you want to delete this order?",
-                    order.pos_reference,
-                    this.env.utils.formatCurrency(order.priceIncl)
-                ),
+            return await ask(this.dialog, {
+                title: title || _t("Existing orderlines"),
+                body:
+                    body ||
+                    _t(
+                        "%s has a total amount of %s, are you sure you want to delete this order?",
+                        order.pos_reference,
+                        this.env.utils.formatCurrency(order.priceIncl)
+                    ),
             });
-            if (!confirmed) {
-                return false;
-            }
+        }
+        return true;
+    }
+    async onDeleteOrder(order) {
+        const canDelete = await this.beforeDeleteOrder(order);
+        if (!canDelete) {
+            return false;
         }
         const refundedOrderLines = order.lines
             .filter((line) => line.refunded_orderline_id?.order_id)
@@ -736,6 +747,16 @@ export class PosStore extends WithLazyGetterTrap {
             let product;
             if (opts.code) {
                 product = this.models["product.product"].getBy("barcode", opts.code.base_code);
+                if (!product) {
+                    const productPackaging = this.models["product.uom"].getBy(
+                        "barcode",
+                        opts.code.base_code
+                    );
+                    product = productPackaging && productPackaging.product_id;
+                }
+                if (!product && opts.product) {
+                    product = opts.product;
+                }
             } else {
                 product = opts.presetVariant;
             }
@@ -981,7 +1002,9 @@ export class PosStore extends WithLazyGetterTrap {
                 selectedOrderline,
                 related_lines
             );
-            related_lines.forEach((line) => line.setUnitPrice(price));
+            related_lines
+                .filter((line) => line.price_type !== "manual")
+                .forEach((line) => line.setUnitPrice(price));
         }
 
         if (configure) {
@@ -1116,8 +1139,10 @@ export class PosStore extends WithLazyGetterTrap {
             const payload =
                 values?.payload && Object.keys(values?.payload).length
                     ? values.payload
-                    : await this.openConfigurator(productTemplate, opts);
-
+                    : await this.openConfigurator(productTemplate, {
+                          ...opts,
+                          product: values?.product_id,
+                      });
             if (payload) {
                 // Find candidate based on instantly created variants.
                 const attributeValues = this.models["product.template.attribute.value"]
@@ -1182,7 +1207,7 @@ export class PosStore extends WithLazyGetterTrap {
                 values.attribute_value_ids = [];
             }
             values.attribute_value_ids = values.attribute_value_ids.concat(
-                values.product_id.product_template_variant_value_ids.map((attr) => ["link", attr])
+                values.product_id.product_template_attribute_value_ids.map((attr) => ["link", attr])
             );
         }
     };
@@ -1280,6 +1305,10 @@ export class PosStore extends WithLazyGetterTrap {
         this.setNextOrderRefs(order);
         order.setPricelist(this.config.pricelist_id);
 
+        if (!order.partner_id) {
+            order.partner_id = this.getDefaultPartnerId();
+        }
+
         if (this.config.use_presets && !data["preset_id"]) {
             this.selectPreset(this.config.default_preset_id, order);
         }
@@ -1321,13 +1350,17 @@ export class PosStore extends WithLazyGetterTrap {
     get openOrder() {
         return this.models["pos.order"].find((o) => o.state === "draft") || this.addNewOrder();
     }
+    getDefaultPartnerId() {
+        return null;
+    }
     getEmptyOrder() {
+        const defaultPartnerId = this.getDefaultPartnerId();
         const emptyOrders = this.models["pos.order"].filter(
             (order) =>
                 order.isEmpty() &&
                 !order.finalized &&
                 order.payment_ids.length === 0 &&
-                !order.partner_id &&
+                (!order.partner_id || order.partner_id.id === defaultPartnerId) &&
                 order.pricelist_id?.id === this.config.pricelist_id?.id &&
                 order.fiscal_position_id?.id === this.config.default_fiscal_position_id?.id
         );
@@ -1577,10 +1610,15 @@ export class PosStore extends WithLazyGetterTrap {
     }
     async getServerOrders() {
         await this.syncAllOrders();
-        return await this.data.loadServerOrders([
+        const config_domain = new Domain([
             ["config_id", "in", [...this.config.raw.trusted_config_ids, this.config.id]],
-            ["state", "=", "draft"],
         ]);
+        return await this.data.loadServerOrders(
+            Domain.and([config_domain, this.getServerOrdersDomain()]).toList()
+        );
+    }
+    getServerOrdersDomain() {
+        return new Domain([["state", "=", "draft"]]);
     }
     async getProductInfo(productTemplate, quantity, priceExtra = 0, productProduct = false) {
         const order = this.getOrder();
@@ -2865,12 +2903,12 @@ export class PosStore extends WithLazyGetterTrap {
 
     orderDone(order) {
         order.setScreenData({ name: "" });
-        if (!this.config.module_pos_restaurant) {
-            this.selectedOrderUuid = this.getEmptyOrder().uuid;
-        }
         this.searchProductWord = "";
-        const nextPage = this.defaultPage;
-        this.navigate(nextPage.page, nextPage.params);
+        const { page, params } = this.defaultPage;
+        this.navigate(
+            page,
+            page === "ProductScreen" ? { orderUuid: this.getEmptyOrder().uuid } : params
+        );
     }
 
     displayPrinterWarning(printResult, printerName) {

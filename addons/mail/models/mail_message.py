@@ -1106,7 +1106,7 @@ class MailMessage(models.Model):
             # sudo: mail.message: access to author_id is allowed
             Store.One(
                 "author_id",
-                ["avatar_128", "is_company", Store.One("main_user_id", "share")],
+                ["avatar_128", "is_company", Store.One("main_user_id", ["partner_id", "share"])],
                 dynamic_fields=lambda m: m._get_store_partner_name_fields(),
                 sudo=True,
             ),
@@ -1208,6 +1208,7 @@ class MailMessage(models.Model):
         record_fields = [
             # sudo: mail.thread - if mentionned in a non accessible thread, name is allowed
             Store.Attr("display_name", sudo=True),
+            Store.Attr("has_mail_thread", lambda record: isinstance(record, self.env.registry["mail.thread"])),
             Store.Attr(
                 "module_icon",
                 lambda record: modules.module.get_module_icon(self.env[record._name]._original_module),

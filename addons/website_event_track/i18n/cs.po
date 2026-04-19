@@ -19,8 +19,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-20 18:37+0000\n"
-"PO-Revision-Date: 2026-01-09 15:57+0000\n"
+"POT-Creation-Date: 2026-04-10 18:40+0000\n"
+"PO-Revision-Date: 2026-02-25 14:50+0000\n"
 "Last-Translator: \"Marta (wacm)\" <wacm@odoo.com>\n"
 "Language-Team: Czech <https://translate.odoo.com/projects/odoo-19/"
 "website_event_track/cs/>\n"
@@ -1168,7 +1168,7 @@ msgstr "Objevte náš nový návrhářský tým"
 #: model:ir.model.fields,field_description:website_event_track.field_website_menu__display_name
 #: model:ir.model.fields,field_description:website_event_track.field_website_visitor__display_name
 msgid "Display Name"
-msgstr "Zobrazovací název"
+msgstr "Zobrazovaný název"
 
 #. module: website_event_track
 #: model:ir.model.fields,help:website_event_track.field_event_track__website_cta
@@ -3156,6 +3156,12 @@ msgstr "začíná v"
 #: model_terms:ir.ui.view,arch_db:website_event_track.event_track_content
 msgid "starts on"
 msgstr "začíná v"
+
+#. module: website_event_track
+#. odoo-javascript
+#: code:addons/website_event_track/static/src/xml/website_event_pwa.xml:0
+msgid "x"
+msgstr ""
 
 #~ msgid ""
 #~ "<a t-att-href=\"url_for('/event')\" class=\"btn btn-primary btn-block "

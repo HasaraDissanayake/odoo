@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-06 18:36+0000\n"
-"PO-Revision-Date: 2026-02-18 09:01+0000\n"
+"POT-Creation-Date: 2026-04-10 18:39+0000\n"
+"PO-Revision-Date: 2026-04-13 20:51+0000\n"
 "Last-Translator: Saara Hakanen <sahak@odoo.com>\n"
 "Language-Team: Finnish <https://translate.odoo.com/projects/odoo-19/"
 "spreadsheet/fi/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.14.3\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -354,6 +354,12 @@ msgstr "=PIVOT(${"
 
 #. module: spreadsheet
 #. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.xml:0
+msgid "A"
+msgstr ""
+
+#. module: spreadsheet
+#. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 msgid ""
 "A boolean indicating whether to use A1 style notation (TRUE) or R1C1 style "
@@ -530,6 +536,12 @@ msgstr ""
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+msgid "A reference to a cell."
+msgstr "Viittaus soluun."
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 msgid "A segment of a string."
 msgstr "Merkkijonon segmentti."
 
@@ -617,6 +629,12 @@ msgstr "Absoluuttinen arvo"
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 msgid "Absolute value of a number."
 msgstr "Luvun absoluuttinen arvo."
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/actions/spreadsheet_download_action.js:0
+msgid "Access Error"
+msgstr "Käyttöoikeusvirhe"
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -1370,10 +1388,8 @@ msgstr ""
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
-msgid "Array result was not expanded because it would overwrite data in %s."
+msgid "Array result was not expanded because it would overwrite data."
 msgstr ""
-"Taulukon tulosta ei laajennettu, koska se olisi korvannut %s-osassa olevat "
-"tiedot."
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -2053,6 +2069,16 @@ msgstr "Kaavion tyyppi"
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 msgid "Checkbox"
 msgstr "Valintaruutu"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+msgid ""
+"Checks whether there is a reference to a cell that contains a formula, and "
+"returns TRUE or FALSE."
+msgstr ""
+"Tarkistaa, onko viittausta kaavan sisältävään soluun, ja palauttaa TRUE tai "
+"FALSE."
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -3825,7 +3851,8 @@ msgstr "Eksponentiaalinen"
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 msgid "Extract text from a string based on the supplied regular expression."
-msgstr "Poimi teksti merkkijonosta annetun säännöllisen lausekkeen perusteella."
+msgstr ""
+"Poimi teksti merkkijonosta annetun säännöllisen lausekkeen perusteella."
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -6440,6 +6467,12 @@ msgstr "OFFSET laskee rajojen ulkopuolisen alueen."
 
 #. module: spreadsheet
 #. odoo-javascript
+#: code:addons/spreadsheet/static/src/helpers/geo_json_service.js:0
+msgid "Oceania"
+msgstr ""
+
+#. module: spreadsheet
+#. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 msgid "October"
 msgstr "Lokakuu"
@@ -6449,6 +6482,24 @@ msgstr "Lokakuu"
 #: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
 msgid "Odoo Bar Chart"
 msgstr "Odoo palkkikaavio"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Combo Chart"
+msgstr "Odoo-yhdistelmäkaavio"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Funnel Chart"
+msgstr "Odoo-suppilokaavio"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Geo Chart"
+msgstr "Odoo-karttakaavio"
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -6465,14 +6516,44 @@ msgstr "Odoo piirakkakaavio"
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Pyramid Chart"
+msgstr "Odoo-pyramidikaavio"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
 msgid "Odoo Radar Chart"
 msgstr "Odoo-tutkakaavio"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Scatter Chart"
+msgstr "Odoo-hajontakaavio"
 
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/hooks.js:0
 msgid "Odoo Spreadsheet"
 msgstr "Odoo Datataulukot"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Sunburst Chart"
+msgstr "Odoo-aurinkokaavio"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Treemap Chart"
+msgstr "Odoo-puukaavio"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Waterfall Chart"
+msgstr "Odoo-vesiputouskaavio"
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -13541,6 +13622,14 @@ msgstr "Et voi luoda päällekkäisiä taulukoita."
 
 #. module: spreadsheet
 #. odoo-javascript
+#: code:addons/spreadsheet/static/src/actions/spreadsheet_download_action.js:0
+msgid ""
+"You don't have the rights to export data. Please contact an Administrator."
+msgstr ""
+"Sinulla ei ole käyttöoikeuksia datan viemiseksi. Ota yhteyttä ylläpitäjään."
+
+#. module: spreadsheet
+#. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.xml:0
 msgid "Zoom"
 msgstr "Suurennus"
@@ -13924,6 +14013,12 @@ msgstr "tänään"
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 msgid "tomorrow"
 msgstr "huomenna"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/public_readonly_app/public_readonly.xml:0
+msgid "x"
+msgstr ""
 
 #. module: spreadsheet
 #. odoo-javascript

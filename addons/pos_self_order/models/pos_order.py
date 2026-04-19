@@ -82,11 +82,17 @@ class PosOrder(models.Model):
             config._notify('ORDER_STATE_CHANGED', {})
 
     def _send_self_order_receipt(self):
-        if self.email:
-            try:
-                self.action_send_self_order_receipt(self.email, self.preset_id.mail_template_id.id, False, False)
-            except UserError as e:
-                _logger.warning("Error while sending email: %s", e.args[0])
+        self.ensure_one()
+        if (
+            self.state not in ('paid', 'done')
+            or not self.email
+            or not self.preset_id.mail_template_id
+        ):
+            return
+        try:
+            self.action_send_self_order_receipt(self.email, self.preset_id.mail_template_id.id, False, False)
+        except UserError as e:
+            _logger.warning("Error while sending email: %s", e.args[0])
 
     def action_send_self_order_receipt(self, email, mail_template_id, ticket_image, basic_image):
         self.ensure_one()
@@ -109,6 +115,7 @@ class PosOrder(models.Model):
             }
         })
         if payment_result == 'Success':
+            self._send_self_order_receipt()
             self._send_order()
 
     def _load_pos_self_data_fields(self, config):
@@ -173,11 +180,8 @@ class PosOrder(models.Model):
 
             if device_type == 'kiosk':
                 floating_order_name = f"Table tracker {order['table_stand_number']}" if order.get('table_stand_number') else tracking_number
-
-            if not order.get('floating_order_name') and table:
-                floating_order_name = f"Self-Order T {table.table_number}"
-            elif not order.get('floating_order_name'):
-                floating_order_name = f"Self-Order {tracking_number}"
+            elif not floating_order_name:
+                floating_order_name = f"Self-Order T {table.table_number}" if table else f"Self-Order {tracking_number}"
 
             tracking_number = f"{prefix}{tracking_number}"
         else:
@@ -257,24 +261,16 @@ class PosOrder(models.Model):
         self.amount_total = tax_totals['total_amount_currency']
 
     def _compute_line_price(self, line):
-        company = self.company_id
         pricelist = self.pricelist_id
         selected_attributes = line.attribute_value_ids
         product = line.product_id.with_context(line.product_id._get_product_price_context(selected_attributes))
-        tax_domain = self.env['account.tax']._check_company_domain(company)
-
-        price = pricelist._get_product_price(product, line.qty or 1.0, currency=self.currency_id)
-        line.tax_ids = product.taxes_id.filtered_domain(tax_domain)
+        price = pricelist._get_product_price(product, 1.0, currency=self.currency_id)
+        line.price_unit = price
+        line.tax_ids = line.product_id.taxes_id._filter_taxes_by_company(self.company_id)
         tax_ids_after_fiscal_position = self.fiscal_position_id.map_tax(line.tax_ids)
-        new_price = self.env['account.tax']._fix_tax_included_price_company(
-            price, line.tax_ids, tax_ids_after_fiscal_position, self.company_id)
-
-        line.price_unit = new_price
-        base_line = line._prepare_base_line_for_taxes_computation()
-        self.env['account.tax']._add_tax_details_in_base_line(base_line, company)
-        self.env['account.tax']._round_base_lines_tax_details([base_line], company)
-        line.price_subtotal = base_line['tax_details']['total_excluded_currency']
-        line.price_subtotal_incl = base_line['tax_details']['total_included_currency']
+        taxes = tax_ids_after_fiscal_position.compute_all(price, self.currency_id, line.qty, product=product, partner=self.partner_id)
+        line.price_subtotal = taxes['total_excluded']
+        line.price_subtotal_incl = taxes['total_included']
 
     def _compute_combo_price(self, parent_line):
         """
@@ -324,15 +320,34 @@ class PosOrder(models.Model):
 
             if index == len(child_line_free) - 1:
                 price_unit += remaining_total
+                remaining_total = 0
 
             selected_attributes = child.attribute_value_ids
             price_extra = sum(attr.price_extra for attr in selected_attributes)
             total_price = price_unit + price_extra + child.combo_item_id.extra_price
             child.price_unit = total_price
 
-        for child in child_line_extra:
+        extra_original_total = 0
+        if remaining_total and child_line_extra:
+            extra_original_total = sum(
+                line.combo_item_id.combo_id.base_price * line.qty
+                for line in child_line_extra
+            ) or 1
+
+        for index, child in enumerate(child_line_extra):
             combo_item = child.combo_item_id
             price_unit = currency.round(combo_item.combo_id.base_price)
+
+            if extra_original_total:
+                remaining_proportion = currency.round(
+                    combo_item.combo_id.base_price * parent_lst_price / extra_original_total
+                )
+                price_unit += remaining_proportion
+                remaining_total -= remaining_proportion * child.qty
+
+                if index == len(child_line_extra) - 1:
+                    price_unit += remaining_total / child.qty
+
             selected_attributes = child.attribute_value_ids
             price_extra = sum(attr.price_extra for attr in selected_attributes)
             total_price = price_unit + price_extra + child.combo_item_id.extra_price

@@ -4,13 +4,14 @@
 #
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Odoo Translation Bot <c3p@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-06 18:36+0000\n"
-"PO-Revision-Date: 2025-11-08 19:04+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-04-10 18:39+0000\n"
+"PO-Revision-Date: 2026-04-13 20:51+0000\n"
+"Last-Translator: Odoo Translation Bot <c3p@odoo.com>\n"
 "Language-Team: Thai <https://translate.odoo.com/projects/odoo-19/spreadsheet/"
 "th/>\n"
 "Language: th\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -346,6 +347,12 @@ msgstr ""
 
 #. module: spreadsheet
 #. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.xml:0
+msgid "A"
+msgstr ""
+
+#. module: spreadsheet
+#. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 msgid ""
 "A boolean indicating whether to use A1 style notation (TRUE) or R1C1 style "
@@ -504,6 +511,12 @@ msgstr "ช่วงหรือค่าคงที่อาร์เรย์
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+msgid "A reference to a cell."
+msgstr ""
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 msgid "A segment of a string."
 msgstr "ส่วนของสตริง"
 
@@ -591,6 +604,12 @@ msgstr "ค่าสัมบูรณ์"
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 msgid "Absolute value of a number."
 msgstr "ค่าสัมบูรณ์ของตัวเลข"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/actions/spreadsheet_download_action.js:0
+msgid "Access Error"
+msgstr ""
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -1302,8 +1321,8 @@ msgstr "อาร์เรย์หรือช่วงที่มีชุด
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
-msgid "Array result was not expanded because it would overwrite data in %s."
-msgstr "ผลลัพธ์ของอาร์เรย์ไม่ได้รับการขยายเนื่องจากจะเขียนทับข้อมูลใน %s"
+msgid "Array result was not expanded because it would overwrite data."
+msgstr ""
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -1969,6 +1988,14 @@ msgstr "ประเภทแผนภูมิ"
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 msgid "Checkbox"
 msgstr "กล่องกาเครื่องหมาย"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
+msgid ""
+"Checks whether there is a reference to a cell that contains a formula, and "
+"returns TRUE or FALSE."
+msgstr ""
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -6293,6 +6320,12 @@ msgstr "OFFSET ประเมินไปจนเกินช่วงขอ�
 
 #. module: spreadsheet
 #. odoo-javascript
+#: code:addons/spreadsheet/static/src/helpers/geo_json_service.js:0
+msgid "Oceania"
+msgstr ""
+
+#. module: spreadsheet
+#. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 msgid "October"
 msgstr "ตุลาคม"
@@ -6301,6 +6334,24 @@ msgstr "ตุลาคม"
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
 msgid "Odoo Bar Chart"
+msgstr ""
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Combo Chart"
+msgstr ""
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Funnel Chart"
+msgstr ""
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Geo Chart"
 msgstr ""
 
 #. module: spreadsheet
@@ -6318,7 +6369,19 @@ msgstr ""
 #. module: spreadsheet
 #. odoo-javascript
 #: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Pyramid Chart"
+msgstr ""
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
 msgid "Odoo Radar Chart"
+msgstr ""
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Scatter Chart"
 msgstr ""
 
 #. module: spreadsheet
@@ -6326,6 +6389,24 @@ msgstr ""
 #: code:addons/spreadsheet/static/src/hooks.js:0
 msgid "Odoo Spreadsheet"
 msgstr "สเปรดชีต Odoo"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Sunburst Chart"
+msgstr ""
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Treemap Chart"
+msgstr ""
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/chart/plugins/odoo_chart_core_plugin.js:0
+msgid "Odoo Waterfall Chart"
+msgstr ""
 
 #. module: spreadsheet
 #. odoo-javascript
@@ -13147,6 +13228,13 @@ msgstr "คุณไม่สามารถสร้างตารางที
 
 #. module: spreadsheet
 #. odoo-javascript
+#: code:addons/spreadsheet/static/src/actions/spreadsheet_download_action.js:0
+msgid ""
+"You don't have the rights to export data. Please contact an Administrator."
+msgstr ""
+
+#. module: spreadsheet
+#. odoo-javascript
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.xml:0
 msgid "Zoom"
 msgstr "ขยาย"
@@ -13524,6 +13612,12 @@ msgstr "วันนี้"
 #: code:addons/spreadsheet/static/src/o_spreadsheet/o_spreadsheet.js:0
 msgid "tomorrow"
 msgstr "พรุ่งนี้"
+
+#. module: spreadsheet
+#. odoo-javascript
+#: code:addons/spreadsheet/static/src/public_readonly_app/public_readonly.xml:0
+msgid "x"
+msgstr ""
 
 #. module: spreadsheet
 #. odoo-javascript

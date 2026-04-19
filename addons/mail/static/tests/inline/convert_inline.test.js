@@ -460,8 +460,8 @@ describe("Convert Bootstrap grids to tables", () => {
                     /<td[^>]*>\(0, 0\)<\/td>/,
                     `<td>` +
                         `<table cellspacing="0" cellpadding="0" border="0" width="100%" align="center" ` +
-                        `role="presentation" style="width: 100% !important; border-collapse: collapse; text-align: inherit; ` +
-                        `font-size: unset; line-height: inherit;"><tr>` +
+                        `role="presentation" style="width: 100% !important; border-collapse: separate; border-spacing: 0px; text-align: inherit; ` +
+                        `font-size: unset; line-height: inherit; height: 100%;"><tr>` +
                         `<td class="card-header"><span>HEADER</span></td>` +
                         `</tr></table></td>`
                 )
@@ -469,8 +469,8 @@ describe("Convert Bootstrap grids to tables", () => {
                     /<td[^>]*>\(1, 0\)<\/td>/,
                     `<td>` +
                         `<table cellspacing="0" cellpadding="0" border="0" width="100%" align="center" ` +
-                        `role="presentation" style="width: 100% !important; border-collapse: collapse; text-align: inherit; ` +
-                        `font-size: unset; line-height: inherit;"><tr>` +
+                        `role="presentation" style="width: 100% !important; border-collapse: separate; border-spacing: 0px; text-align: inherit; ` +
+                        `font-size: unset; line-height: inherit; height: 100%;"><tr>` +
                         `<td class="card-body"><h2 class="card-title">TITLE</h2><small>BODY <img></small></td>` +
                         `</tr></table></td>`
                 )
@@ -478,8 +478,8 @@ describe("Convert Bootstrap grids to tables", () => {
                     /<td[^>]*>\(2, 0\)<\/td>/,
                     `<td>` +
                         `<table cellspacing="0" cellpadding="0" border="0" width="100%" align="center" ` +
-                        `role="presentation" style="width: 100% !important; border-collapse: collapse; text-align: inherit; ` +
-                        `font-size: unset; line-height: inherit;"><tr>` +
+                        `role="presentation" style="width: 100% !important; border-collapse: separate; border-spacing: 0px; text-align: inherit; ` +
+                        `font-size: unset; line-height: inherit; height: 100%;"><tr>` +
                         `<td class="card-footer"><a href="#" class="btn">FOOTER</a></td>` +
                         `</tr></table></td>`
                 ),
@@ -1348,6 +1348,7 @@ describe("Convert classes to inline styles", () => {
             body {
                 background-color: red;
                 color: white;
+                direction: rtl;
                 font-size: 50px;
                 div {
                     border-color: ${borderColor} !important;
@@ -1356,10 +1357,10 @@ describe("Convert classes to inline styles", () => {
         `,
             0
         );
-        iframeEditable.innerHTML = `<div class="o_layout" style="padding: 50px;"></div>`;
+        iframeEditable.innerHTML = `<div class="o_layout" style="padding: 50px;">Test</div>`;
         classToStyle(iframeEditable, getCSSRules(iframeEditable.ownerDocument));
         expect(iframeEditable).toHaveInnerHTML(
-            `<div class="o_layout" style="border-radius:0px;border-style:none;margin:0px;box-sizing:border-box;border-left-color:${borderColor};border-bottom-color:${borderColor};border-right-color:${borderColor};border-top-color:${borderColor};border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;font-size:50px;color:white;background-color:red;padding: 50px;"></div>`,
+            `<div class="o_layout" style="border-radius:0px;border-style:none;margin:0px;box-sizing:border-box;border-left-color:${borderColor};border-bottom-color:${borderColor};border-right-color:${borderColor};border-top-color:${borderColor};border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;font-size:50px;direction:rtl;color:white;background-color:red;padding: 50px;">Test</div>`,
             { message: "should have given all styles of body to .o_layout" }
         );
         styleSheet.deleteRule(0);

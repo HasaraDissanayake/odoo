@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~18.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-25 18:36+0000\n"
-"PO-Revision-Date: 2026-02-18 17:59+0000\n"
+"POT-Creation-Date: 2026-04-17 18:37+0000\n"
+"PO-Revision-Date: 2026-04-08 10:04+0000\n"
 "Last-Translator: \"Manon Rondou (ronm)\" <ronm@odoo.com>\n"
 "Language-Team: French <https://translate.odoo.com/projects/odoo-19/"
 "account_peppol/fr/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.14.3\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. module: account_peppol
 #. odoo-python
@@ -873,6 +873,7 @@ msgstr "Afficher la connexion Itsme"
 #: model:ir.model.fields,field_description:account_peppol.field_account_edi_common__display_name
 #: model:ir.model.fields,field_description:account_peppol.field_account_edi_proxy_client_user__display_name
 #: model:ir.model.fields,field_description:account_peppol.field_account_edi_xml_ubl_20__display_name
+#: model:ir.model.fields,field_description:account_peppol.field_account_edi_xml_ubl_bis3__display_name
 #: model:ir.model.fields,field_description:account_peppol.field_account_journal__display_name
 #: model:ir.model.fields,field_description:account_peppol.field_account_move__display_name
 #: model:ir.model.fields,field_description:account_peppol.field_account_move_send__display_name
@@ -1025,6 +1026,7 @@ msgstr "Je déclare être autorisé(e) à enregistrer cette entreprise."
 #: model:ir.model.fields,field_description:account_peppol.field_account_edi_common__id
 #: model:ir.model.fields,field_description:account_peppol.field_account_edi_proxy_client_user__id
 #: model:ir.model.fields,field_description:account_peppol.field_account_edi_xml_ubl_20__id
+#: model:ir.model.fields,field_description:account_peppol.field_account_edi_xml_ubl_bis3__id
 #: model:ir.model.fields,field_description:account_peppol.field_account_journal__id
 #: model:ir.model.fields,field_description:account_peppol.field_account_move__id
 #: model:ir.model.fields,field_description:account_peppol.field_account_move_send__id
@@ -1455,12 +1457,6 @@ msgstr "Peppol e-address (EAS)"
 
 #. module: account_peppol
 #. odoo-python
-#: code:addons/account_peppol/models/account_edi_proxy_user.py:0
-msgid "Peppol error: %s"
-msgstr "Erreur Peppol : %s"
-
-#. module: account_peppol
-#. odoo-python
 #: code:addons/account_peppol/models/account_edi_common.py:0
 msgid "Peppol invoice received"
 msgstr "Facture Peppol reçue"
@@ -1503,12 +1499,10 @@ msgstr "Téléphone"
 #: code:addons/account_peppol/models/res_company.py:0
 msgid ""
 "Please enter the mobile number in the correct international format.\n"
-"For example: +32123456789, where +32 is the country code.\n"
-"Currently, only European countries are supported."
+"For example: +32123456789, where +32 is the country code."
 msgstr ""
 "Veuillez saisir le numéro de téléphone dans le bon format international.\n"
-"Par exemple : +32123456789, où +32 est le code pays.\n"
-"Pour l'instant, seuls les pays européens sont pris en charge."
+"Par exemple : +32123456789, où +32 est le code pays."
 
 #. module: account_peppol
 #. odoo-python
@@ -2169,6 +2163,11 @@ msgid "UBL 2.0"
 msgstr "UBL 2.0"
 
 #. module: account_peppol
+#: model:ir.model,name:account_peppol.model_account_edi_xml_ubl_bis3
+msgid "UBL BIS Billing 3.0.12"
+msgstr "UBL BIS Billing 3.0.12"
+
+#. module: account_peppol
 #. odoo-python
 #: code:addons/account_peppol/exceptions.py:0
 msgid "Unable to verify the digest value."
@@ -2215,7 +2214,7 @@ msgstr "Sélection de la connexion de la société mère"
 #. module: account_peppol
 #: model_terms:ir.ui.view,arch_db:account_peppol.res_partner_form_account_peppol
 msgid "Verify"
-msgstr "Verifier"
+msgstr "Vérifier"
 
 #. module: account_peppol
 #: model:ir.actions.server,name:account_peppol.partner_action_verify_peppol
@@ -2334,6 +2333,16 @@ msgstr "Vous pouvez désormais envoyer des factures électroniques via Peppol."
 #: code:addons/account_peppol/models/account_move_send.py:0
 msgid "You can send this invoice electronically via Peppol."
 msgstr "Vous pouvez envoyer cette facture électroniquement via Peppol."
+
+#. module: account_peppol
+#. odoo-python
+#: code:addons/account_peppol/models/account_journal.py:0
+msgid ""
+"You can't change the type of a journal used for Peppol invoice reception toa "
+"type different than 'Purchase'.\n"
+"Please change the journal used for Peppol reception before changing the type "
+"of this journal."
+msgstr ""
 
 #. module: account_peppol
 #. odoo-python
@@ -2479,6 +2488,26 @@ msgid "Your request is still being processed."
 msgstr "Votre demande est toujours en cours de traitement."
 
 #. module: account_peppol
+#. odoo-python
+#: code:addons/account_peppol/models/account_edi_xml_ubl_bis3.py:0
+msgid ""
+"[PEPPOL-EN16931-R010] An electronic address (EAS) must be provided on the "
+"customer '%s'."
+msgstr ""
+"[PEPPOL-EN16931-R010] Une adresse électronique (EAS) doit être renseignée "
+"pour le client \"%s\"."
+
+#. module: account_peppol
+#. odoo-python
+#: code:addons/account_peppol/models/account_edi_xml_ubl_bis3.py:0
+msgid ""
+"[PEPPOL-EN16931-R020] An electronic address (EAS) must be provided on the "
+"company '%s'."
+msgstr ""
+"[PEPPOL-EN16931-R020] Une adresse électronique (EAS) doit être renseignée "
+"pour la société \"%s\"."
+
+#. module: account_peppol
 #: model_terms:ir.ui.view,arch_db:account_peppol.peppol_registration_form
 msgid "and send invoices via Peppol on their behalf."
 msgstr "et enverra des factures via Peppol en leur nom."
@@ -2514,6 +2543,9 @@ msgstr "pour envoyer ses factures, mais celle-ci"
 #: model_terms:ir.ui.view,arch_db:account_peppol.mail_notification_layout_with_responsible_signature_and_peppol
 msgid "uses"
 msgstr "utilise"
+
+#~ msgid "Peppol error: %s"
+#~ msgstr "Erreur Peppol : %s"
 
 #~ msgid ""
 #~ "By clicking the button below I accept that Odoo may process my e-invoices."

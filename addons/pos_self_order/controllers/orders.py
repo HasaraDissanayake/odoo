@@ -16,7 +16,6 @@ class PosSelfOrderController(http.Controller):
         safe_data = pos_config.env['pos.order']._check_pos_order(pos_config, order, device_type, table)
         results = pos_config.env['pos.order'].sudo().with_company(pos_config.company_id.id).sync_from_ui([safe_data])
         order_ids = pos_config.env['pos.order'].browse([order['id'] for order in results['pos.order']])
-        preset_id = order_ids.preset_id
 
         # Recompute all prices from newly created lines to ensure price correctness and
         # avoid potential manipulation from the frontend
@@ -30,8 +29,6 @@ class PosSelfOrderController(http.Controller):
 
         if amount_total == 0:
             order_ids._process_saved_order(False)
-
-        if preset_id and preset_id.mail_template_id:
             order_ids._send_self_order_receipt()
 
         return self._generate_return_values(order_ids, pos_config)
@@ -45,7 +42,6 @@ class PosSelfOrderController(http.Controller):
 
         return {
             'pos.order': self.env['pos.order']._load_pos_self_data_read(order, config),
-            'res.partner': self.env['res.partner']._load_pos_self_data_read(order.partner_id, config),
             'pos.order.line': self.env['pos.order.line']._load_pos_self_data_read(order.lines, config),
             'pos.payment': self.env['pos.payment']._load_pos_self_data_read(order.payment_ids, config),
             'product.attribute.custom.value': self.env['product.attribute.custom.value']._load_pos_self_data_read(order.lines.custom_attribute_value_ids, config),
@@ -61,7 +57,7 @@ class PosSelfOrderController(http.Controller):
 
         if existing_partner and existing_partner.exists():
             return {
-                'res.partner': self.env['res.partner']._load_pos_self_data_read(existing_partner, pos_config),
+                'res.partner': existing_partner.read(['id'], load=False),
             }
 
         state_id = pos_config.env['res.country.state'].browse(int(state_id)) if state_id else False
@@ -79,7 +75,7 @@ class PosSelfOrderController(http.Controller):
         })
 
         return {
-            'res.partner': self.env['res.partner']._load_pos_self_data_read(partner_sudo, pos_config),
+            'res.partner': partner_sudo.read(['id'], load=False),
         }
 
     @http.route('/pos-self-order/remove-order', auth='public', type='jsonrpc', website=True)
