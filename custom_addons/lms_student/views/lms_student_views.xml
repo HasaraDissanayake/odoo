@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ══════════════════════════════════
+             Student FORM View
+        ══════════════════════════════════ -->
+        <record id="view_lms_student_form" model="ir.ui.view">
+            <field name="name">lms.student.form</field>
+            <field name="model">lms.student</field>
+            <field name="arch" type="xml">
+                <form string="Student Profile">
+                    <header>
+                        <button name="action_activate" type="object"
+                                string="Activate" class="oe_highlight"
+                                invisible="state != 'draft'"/>
+                        <button name="action_graduate" type="object"
+                                string="Graduate"
+                                invisible="state not in ['active']"/>
+                        <button name="action_suspend" type="object"
+                                string="Suspend"
+                                invisible="state not in ['active']"/>
+                        <button name="action_reset_draft" type="object"
+                                string="Reset to Draft"
+                                invisible="state == 'draft'"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,active,graduated"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" type="object"
+                                    name="action_view_enrollments"
+                                    icon="fa-book">
+                                <field name="enrollment_count"
+                                       widget="statinfo" string="Courses"/>
+                            </button>
+                        </div>
+                        <field name="image" widget="image" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name" placeholder="Full Name"/>
+                            </h1>
+                            <div>
+                                <strong>Student ID: </strong>
+                                <field name="student_id" readonly="1"/>
+                            </div>
+                        </div>
+                        <group>
+                            <group string="Personal Information">
+                                <field name="date_of_birth"/>
+                                <field name="age" readonly="1"/>
+                                <field name="gender"/>
+                                <field name="nationality"/>
+                            </group>
+                            <group string="Contact Details">
+                                <field name="email"/>
+                                <field name="phone"/>
+                                <field name="mobile"/>
+                                <field name="address"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Academic Information">
+                                <field name="enrollment_date"/>
+                                <field name="user_id"/>
+                            </group>
+                            <group string="Guardian Information">
+                                <field name="guardian_name"/>
+                                <field name="guardian_phone"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Enrollments" name="enrollments">
+                                <field name="enrollment_ids">
+                                    <list string="Enrollments" editable="bottom">
+                                        <field name="course_id"/>
+                                        <field name="enrollment_date"/>
+                                        <field name="state" widget="badge"
+                                               decoration-success="state == 'enrolled'"
+                                               decoration-info="state == 'completed'"
+                                               decoration-warning="state == 'pending'"
+                                               decoration-danger="state == 'dropped'"/>
+                                        <field name="grade"/>
+                                        <field name="attendance_percent"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Academic Records" name="academic_records">
+                                <field name="academic_record_ids">
+                                    <list string="Records">
+                                        <field name="academic_year"/>
+                                        <field name="semester"/>
+                                        <field name="gpa"/>
+                                        <field name="total_credits"/>
+                                        <field name="state" widget="badge"
+                                               decoration-success="state == 'locked'"
+                                               decoration-info="state == 'confirmed'"
+                                               decoration-warning="state == 'draft'"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Attendance Records" name="attendance">
+                                <field name="attendance_line_ids" readonly="1">
+                                    <list string="Attendance Records">
+                                        <field name="date"/>
+                                        <field name="course_id"/>
+                                        <field name="status" widget="badge"
+                                               decoration-success="status == 'present'"
+                                               decoration-danger="status == 'absent'"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Performance" name="performance">
+                                <field name="assessment_grade_ids" readonly="1">
+                                    <list string="Assessment Grades">
+                                        <field name="assessment_id"/>
+                                        <field name="course_id"/>
+                                        <field name="score"/>
+                                        <field name="max_score"/>
+                                        <field name="percentage" widget="progressbar"/>
+                                        <field name="remarks"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Notes" name="notes">
+
+                                <field name="notes" placeholder="Internal notes..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+            </field>
+        </record>
+
+        <!-- Student LIST View -->
+        <record id="view_lms_student_list" model="ir.ui.view">
+            <field name="name">lms.student.list</field>
+            <field name="model">lms.student</field>
+            <field name="arch" type="xml">
+                <list string="Students"
+                      decoration-success="state == 'graduated'"
+                      decoration-danger="state == 'suspended' or low_attendance == True">
+                    <field name="student_id" string="ID"/>
+                    <field name="name"/>
+                    <field name="email"/>
+                    <field name="phone"/>
+                    <field name="enrollment_date"/>
+                    <field name="enrollment_count" string="Courses"/>
+                    <field name="overall_attendance_percent" string="Attendance (%)"
+                           decoration-danger="low_attendance == True"
+                           widget="float"/>
+                    <field name="low_attendance" invisible="1"/>
+                    <field name="state" widget="badge"
+                           decoration-success="state == 'active'"
+                           decoration-info="state == 'graduated'"
+                           decoration-warning="state == 'draft'"
+                           decoration-danger="state == 'suspended'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Student SEARCH View -->
+        <record id="view_lms_student_search" model="ir.ui.view">
+            <field name="name">lms.student.search</field>
+            <field name="model">lms.student</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="student_id"/>
+                    <field name="email"/>
+                    <filter name="filter_active" string="Active" domain="[('state','=','active')]"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Student ACTION -->
+        <record id="action_lms_student" model="ir.actions.act_window">
+            <field name="name">Students</field>
+            <field name="res_model">lms.student</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_lms_student_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add your first student!
+                </p>
+                <p>Create student profiles to get started with your LMS.</p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         STUDENT ACCOUNT NOTIFICATIONS  (model: lms.student)
+    ══════════════════════════════════════════════════════════════ -->
+
+    <!-- 1. Welcome / Account Activated -->
+    <record id="lms_email_student_activated" model="mail.template">
+        <field name="name">LMS: Student Account Activated</field>
+        <field name="model_id" ref="lms_student.model_lms_student"/>
+        <field name="subject">Welcome to the LMS – Your Account is Active, ${object.name}!</field>
+        <field name="email_to">${object.email}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #2c7be5; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Welcome to the LMS!</h1>
+    </div>
+    <div style="padding: 32px; background-color: #ffffff;">
+        <p style="font-size: 16px; color: #333;">Dear <strong>${object.name}</strong>,</p>
+        <p style="color: #555;">Your student account has been <strong>activated</strong>. You can now access your courses and academic resources.</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+            <tr style="background-color: #f5f8ff;">
+                <td style="padding: 10px 14px; color: #888; width: 40%;">Student ID</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${object.student_id}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Full Name</td>
+                <td style="padding: 10px 14px; color: #333;">${object.name}</td>
+            </tr>
+            <tr style="background-color: #f5f8ff;">
+                <td style="padding: 10px 14px; color: #888;">Email</td>
+                <td style="padding: 10px 14px; color: #333;">${object.email}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Enrollment Date</td>
+                <td style="padding: 10px 14px; color: #333;">${object.enrollment_date}</td>
+            </tr>
+        </table>
+        <p style="color: #555;">Please log in to the portal to view your enrolled courses and upcoming schedule.</p>
+        <p style="color: #888; font-size: 13px;">If you have any questions, contact your academic advisor.</p>
+    </div>
+    <div style="background-color: #f0f4f8; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">This is an automated message from the Learning Management System.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+
+    <!-- 2. Account Suspended -->
+    <record id="lms_email_student_suspended" model="mail.template">
+        <field name="name">LMS: Student Account Suspended</field>
+        <field name="model_id" ref="lms_student.model_lms_student"/>
+        <field name="subject">LMS Account Suspended – Action Required (${object.student_id})</field>
+        <field name="email_to">${object.email}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #e63757; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Account Suspended</h1>
+    </div>
+    <div style="padding: 32px; background-color: #ffffff;">
+        <p style="font-size: 16px; color: #333;">Dear <strong>${object.name}</strong>,</p>
+        <p style="color: #555;">We are writing to inform you that your student account (<strong>${object.student_id}</strong>) has been <strong style="color: #e63757;">suspended</strong>.</p>
+        <p style="color: #555;">During suspension, your access to courses and academic resources may be restricted.</p>
+        <div style="background-color: #fff5f5; border-left: 4px solid #e63757; padding: 16px; margin: 24px 0;">
+            <p style="margin: 0; color: #c0392b;">Please contact the academic office as soon as possible to resolve this matter.</p>
+        </div>
+        <p style="color: #888; font-size: 13px;">If you believe this suspension was made in error, please reach out to the administration immediately.</p>
+    </div>
+    <div style="background-color: #f0f4f8; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">This is an automated message from the Learning Management System.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+
+    <!-- 3. Graduation Confirmation -->
+    <record id="lms_email_student_graduated" model="mail.template">
+        <field name="name">LMS: Student Graduation Confirmation</field>
+        <field name="model_id" ref="lms_student.model_lms_student"/>
+        <field name="subject">Congratulations on Your Graduation, ${object.name}!</field>
+        <field name="email_to">${object.email}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #00b274; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Congratulations, Graduate!</h1>
+    </div>
+    <div style="padding: 32px; background-color: #ffffff;">
+        <p style="font-size: 16px; color: #333;">Dear <strong>${object.name}</strong>,</p>
+        <p style="color: #555;">We are thrilled to officially confirm your <strong>graduation</strong>! This is a remarkable achievement and we are proud of your dedication and hard work.</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+            <tr style="background-color: #f5fff9;">
+                <td style="padding: 10px 14px; color: #888; width: 40%;">Student ID</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${object.student_id}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Status</td>
+                <td style="padding: 10px 14px; color: #00b274; font-weight: bold;">Graduated</td>
+            </tr>
+        </table>
+        <p style="color: #555;">Your official transcript and graduation documents will be made available through the academic portal. Please allow a few business days for processing.</p>
+        <p style="color: #555;">Wishing you all the best in your future endeavors!</p>
+    </div>
+    <div style="background-color: #f0f4f8; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">This is an automated message from the Learning Management System.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         ENROLLMENT NOTIFICATIONS  (model: lms.enrollment)
+    ══════════════════════════════════════════════════════════════ -->
+
+    <!-- 4. Enrollment Confirmed -->
+    <record id="lms_email_enrollment_confirmed" model="mail.template">
+        <field name="name">LMS: Enrollment Confirmed</field>
+        <field name="model_id" ref="lms_student.model_lms_enrollment"/>
+        <field name="subject">Enrollment Confirmed – ${object.course_id.name}</field>
+        <field name="email_to">${object.student_id.email}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #2c7be5; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Enrollment Confirmed</h1>
+    </div>
+    <div style="padding: 32px; background-color: #ffffff;">
+        <p style="font-size: 16px; color: #333;">Dear <strong>${object.student_id.name}</strong>,</p>
+        <p style="color: #555;">You have been successfully enrolled in the following course:</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+            <tr style="background-color: #f5f8ff;">
+                <td style="padding: 10px 14px; color: #888; width: 40%;">Course</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${object.course_id.name}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Course Code</td>
+                <td style="padding: 10px 14px; color: #333;">${object.course_id.code}</td>
+            </tr>
+            <tr style="background-color: #f5f8ff;">
+                <td style="padding: 10px 14px; color: #888;">Instructor</td>
+                <td style="padding: 10px 14px; color: #333;">${object.course_id.instructor_id.name or 'TBA'}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Start Date</td>
+                <td style="padding: 10px 14px; color: #333;">${object.course_id.start_date or 'TBA'}</td>
+            </tr>
+            <tr style="background-color: #f5f8ff;">
+                <td style="padding: 10px 14px; color: #888;">Enrollment Date</td>
+                <td style="padding: 10px 14px; color: #333;">${object.enrollment_date}</td>
+            </tr>
+        </table>
+        <p style="color: #555;">Please log in to the portal to view your course materials and schedule.</p>
+    </div>
+    <div style="background-color: #f0f4f8; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">This is an automated message from the Learning Management System.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+
+    <!-- 5. Course Completed -->
+    <record id="lms_email_enrollment_completed" model="mail.template">
+        <field name="name">LMS: Course Completed</field>
+        <field name="model_id" ref="lms_student.model_lms_enrollment"/>
+        <field name="subject">Course Completed – ${object.course_id.name}</field>
+        <field name="email_to">${object.student_id.email}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #00b274; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Course Completed!</h1>
+    </div>
+    <div style="padding: 32px; background-color: #ffffff;">
+        <p style="font-size: 16px; color: #333;">Dear <strong>${object.student_id.name}</strong>,</p>
+        <p style="color: #555;">Congratulations! You have successfully completed the following course:</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+            <tr style="background-color: #f5fff9;">
+                <td style="padding: 10px 14px; color: #888; width: 40%;">Course</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${object.course_id.name}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Course Code</td>
+                <td style="padding: 10px 14px; color: #333;">${object.course_id.code}</td>
+            </tr>
+            <tr style="background-color: #f5fff9;">
+                <td style="padding: 10px 14px; color: #888;">Final Grade</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${object.grade or 'Pending'}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Attendance</td>
+                <td style="padding: 10px 14px; color: #333;">${'%.1f' % object.attendance_percent}%</td>
+            </tr>
+        </table>
+        <p style="color: #555;">Your results will be reflected in your academic record. Keep up the excellent work!</p>
+    </div>
+    <div style="background-color: #f0f4f8; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">This is an automated message from the Learning Management System.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+
+    <!-- 6. Enrollment Dropped -->
+    <record id="lms_email_enrollment_dropped" model="mail.template">
+        <field name="name">LMS: Enrollment Dropped</field>
+        <field name="model_id" ref="lms_student.model_lms_enrollment"/>
+        <field name="subject">Enrollment Dropped – ${object.course_id.name}</field>
+        <field name="email_to">${object.student_id.email}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #f6c343; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Enrollment Dropped</h1>
+    </div>
+    <div style="padding: 32px; background-color: #ffffff;">
+        <p style="font-size: 16px; color: #333;">Dear <strong>${object.student_id.name}</strong>,</p>
+        <p style="color: #555;">This email confirms that your enrollment in the following course has been <strong>dropped</strong>:</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+            <tr style="background-color: #fffdf0;">
+                <td style="padding: 10px 14px; color: #888; width: 40%;">Course</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${object.course_id.name}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Course Code</td>
+                <td style="padding: 10px 14px; color: #333;">${object.course_id.code}</td>
+            </tr>
+        </table>
+        <p style="color: #555;">If this was not intentional or if you have questions about re-enrolling, please contact the academic office.</p>
+    </div>
+    <div style="background-color: #f0f4f8; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">This is an automated message from the Learning Management System.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         ASSESSMENT / GRADE NOTIFICATIONS  (model: lms.assessment.grade)
+    ══════════════════════════════════════════════════════════════ -->
+
+    <!-- 7. Grade Published -->
+    <record id="lms_email_grade_published" model="mail.template">
+        <field name="name">LMS: Assessment Grade Published</field>
+        <field name="model_id" ref="lms_student.model_lms_assessment_grade"/>
+        <field name="subject">Your Grade is Available – ${object.assessment_id.name}</field>
+        <field name="email_to">${object.student_id.email}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #2c7be5; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Grade Published</h1>
+    </div>
+    <div style="padding: 32px; background-color: #ffffff;">
+        <p style="font-size: 16px; color: #333;">Dear <strong>${object.student_id.name}</strong>,</p>
+        <p style="color: #555;">Your grade for the following assessment has been posted:</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+            <tr style="background-color: #f5f8ff;">
+                <td style="padding: 10px 14px; color: #888; width: 40%;">Assessment</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${object.assessment_id.name}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Course</td>
+                <td style="padding: 10px 14px; color: #333;">${object.course_id.name}</td>
+            </tr>
+            <tr style="background-color: #f5f8ff;">
+                <td style="padding: 10px 14px; color: #888;">Type</td>
+                <td style="padding: 10px 14px; color: #333;">${dict(object.assessment_id.fields_get(['type'])['type']['selection'])[object.assessment_id.type]}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Score</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${'%.1f' % object.score} / ${'%.1f' % object.max_score}</td>
+            </tr>
+            <tr style="background-color: #f5f8ff;">
+                <td style="padding: 10px 14px; color: #888;">Percentage</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${'%.1f' % object.percentage}%</td>
+            </tr>
+            % if object.remarks:
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Remarks</td>
+                <td style="padding: 10px 14px; color: #555;">${object.remarks}</td>
+            </tr>
+            % endif
+        </table>
+        <p style="color: #555;">Log in to your portal to view full assessment details.</p>
+    </div>
+    <div style="background-color: #f0f4f8; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">This is an automated message from the Learning Management System.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+
+    <!-- 8. Low Score Warning (below 75%) -->
+    <record id="lms_email_grade_low_score" model="mail.template">
+        <field name="name">LMS: Low Assessment Score Warning</field>
+        <field name="model_id" ref="lms_student.model_lms_assessment_grade"/>
+        <field name="subject">Low Score Alert – ${object.assessment_id.name} (${object.course_id.name})</field>
+        <field name="email_to">${object.student_id.email}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #e63757; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Low Score Warning</h1>
+    </div>
+    <div style="padding: 32px; background-color: #ffffff;">
+        <p style="font-size: 16px; color: #333;">Dear <strong>${object.student_id.name}</strong>,</p>
+        <p style="color: #555;">Your recent assessment score is <strong>below the required 75% threshold</strong>. Please review the details below:</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+            <tr style="background-color: #fff5f5;">
+                <td style="padding: 10px 14px; color: #888; width: 40%;">Assessment</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${object.assessment_id.name}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Course</td>
+                <td style="padding: 10px 14px; color: #333;">${object.course_id.name}</td>
+            </tr>
+            <tr style="background-color: #fff5f5;">
+                <td style="padding: 10px 14px; color: #888;">Your Score</td>
+                <td style="padding: 10px 14px; color: #e63757; font-weight: bold;">${'%.1f' % object.score} / ${'%.1f' % object.max_score} (${('%.1f' % object.percentage)}%)</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Required</td>
+                <td style="padding: 10px 14px; color: #333;">75%</td>
+            </tr>
+        </table>
+        <div style="background-color: #fff5f5; border-left: 4px solid #e63757; padding: 16px; margin: 24px 0;">
+            <p style="margin: 0; color: #c0392b;">We strongly encourage you to seek academic support, review your materials, and speak with your instructor to improve your performance.</p>
+        </div>
+        <p style="color: #888; font-size: 13px;">Contact your course instructor or academic advisor for guidance.</p>
+    </div>
+    <div style="background-color: #f0f4f8; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">This is an automated message from the Learning Management System.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         ATTENDANCE NOTIFICATIONS
+    ══════════════════════════════════════════════════════════════ -->
+
+    <!-- 9. Absence Recorded  (model: lms.attendance.line) -->
+    <record id="lms_email_absence_recorded" model="mail.template">
+        <field name="name">LMS: Session Absence Recorded</field>
+        <field name="model_id" ref="lms_student.model_lms_attendance_line"/>
+        <field name="subject">Absence Recorded – ${object.course_id.name} (${object.date})</field>
+        <field name="email_to">${object.student_id.email}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #f6c343; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Absence Recorded</h1>
+    </div>
+    <div style="padding: 32px; background-color: #ffffff;">
+        <p style="font-size: 16px; color: #333;">Dear <strong>${object.student_id.name}</strong>,</p>
+        <p style="color: #555;">An <strong>absence</strong> has been recorded for the following session:</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+            <tr style="background-color: #fffdf0;">
+                <td style="padding: 10px 14px; color: #888; width: 40%;">Course</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${object.course_id.name}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Session Date</td>
+                <td style="padding: 10px 14px; color: #333;">${object.date}</td>
+            </tr>
+            <tr style="background-color: #fffdf0;">
+                <td style="padding: 10px 14px; color: #888;">Session Reference</td>
+                <td style="padding: 10px 14px; color: #333;">${object.session_id.name}</td>
+            </tr>
+        </table>
+        <p style="color: #555;">If you believe this was recorded in error, please contact your lecturer or academic office promptly.</p>
+    </div>
+    <div style="background-color: #f0f4f8; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">This is an automated message from the Learning Management System.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+
+    <!-- 10. Attendance Warning – below 75%  (model: lms.enrollment) -->
+    <record id="lms_email_attendance_warning" model="mail.template">
+        <field name="name">LMS: Low Attendance Warning</field>
+        <field name="model_id" ref="lms_student.model_lms_enrollment"/>
+        <field name="subject">Attendance Warning – ${object.course_id.name}</field>
+        <field name="email_to">${object.student_id.email}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #f6c343; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Attendance Warning</h1>
+    </div>
+    <div style="padding: 32px; background-color: #ffffff;">
+        <p style="font-size: 16px; color: #333;">Dear <strong>${object.student_id.name}</strong>,</p>
+        <p style="color: #555;">Your attendance in <strong>${object.course_id.name}</strong> has fallen <strong>below 75%</strong>. Regular attendance is required to remain in good academic standing.</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+            <tr style="background-color: #fffdf0;">
+                <td style="padding: 10px 14px; color: #888; width: 40%;">Course</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${object.course_id.name}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Current Attendance</td>
+                <td style="padding: 10px 14px; color: #f6c343; font-weight: bold;">${'%.1f' % object.attendance_percent}%</td>
+            </tr>
+            <tr style="background-color: #fffdf0;">
+                <td style="padding: 10px 14px; color: #888;">Required Minimum</td>
+                <td style="padding: 10px 14px; color: #333;">75%</td>
+            </tr>
+        </table>
+        <div style="background-color: #fffbee; border-left: 4px solid #f6c343; padding: 16px; margin: 24px 0;">
+            <p style="margin: 0; color: #856404;">Please ensure you attend all upcoming sessions. Continued absences may affect your eligibility to sit exams.</p>
+        </div>
+    </div>
+    <div style="background-color: #f0f4f8; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">This is an automated message from the Learning Management System.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+
+    <!-- 11. Critical Attendance Alert – below 50%  (model: lms.enrollment) -->
+    <record id="lms_email_attendance_critical" model="mail.template">
+        <field name="name">LMS: Critical Attendance Alert</field>
+        <field name="model_id" ref="lms_student.model_lms_enrollment"/>
+        <field name="subject">URGENT: Critical Attendance Alert – ${object.course_id.name}</field>
+        <field name="email_to">${object.student_id.email}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #e63757; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Critical Attendance Alert</h1>
+    </div>
+    <div style="padding: 32px; background-color: #ffffff;">
+        <p style="font-size: 16px; color: #333;">Dear <strong>${object.student_id.name}</strong>,</p>
+        <p style="color: #555;">Your attendance in <strong>${object.course_id.name}</strong> has dropped <strong style="color: #e63757;">below 50%</strong>. This is a critical level that puts you at risk of failing the course.</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+            <tr style="background-color: #fff5f5;">
+                <td style="padding: 10px 14px; color: #888; width: 40%;">Course</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${object.course_id.name}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Current Attendance</td>
+                <td style="padding: 10px 14px; color: #e63757; font-weight: bold;">${'%.1f' % object.attendance_percent}%</td>
+            </tr>
+            <tr style="background-color: #fff5f5;">
+                <td style="padding: 10px 14px; color: #888;">Risk Level</td>
+                <td style="padding: 10px 14px; color: #e63757; font-weight: bold;">CRITICAL – Risk of Course Failure</td>
+            </tr>
+        </table>
+        <div style="background-color: #fff5f5; border-left: 4px solid #e63757; padding: 16px; margin: 24px 0;">
+            <p style="margin: 0; color: #c0392b;"><strong>Immediate action required.</strong> Please contact the academic office and your course instructor as soon as possible to discuss your situation and available options.</p>
+        </div>
+    </div>
+    <div style="background-color: #f0f4f8; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">This is an automated message from the Learning Management System.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         ACADEMIC RECORD NOTIFICATIONS  (model: lms.academic.record)
+    ══════════════════════════════════════════════════════════════ -->
+
+    <!-- 12. Semester Results Available -->
+    <record id="lms_email_results_available" model="mail.template">
+        <field name="name">LMS: Semester Results Available</field>
+        <field name="model_id" ref="lms_student.model_lms_academic_record"/>
+        <field name="subject">Your Semester Results Are Available – ${object.academic_year} Semester ${object.semester}</field>
+        <field name="email_to">${object.student_id.email}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #2c7be5; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Semester Results Available</h1>
+    </div>
+    <div style="padding: 32px; background-color: #ffffff;">
+        <p style="font-size: 16px; color: #333;">Dear <strong>${object.student_id.name}</strong>,</p>
+        <p style="color: #555;">Your semester results have been confirmed and are now available:</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+            <tr style="background-color: #f5f8ff;">
+                <td style="padding: 10px 14px; color: #888; width: 40%;">Academic Year</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${object.academic_year}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Semester</td>
+                <td style="padding: 10px 14px; color: #333;">${dict(object.fields_get(['semester'])['semester']['selection'])[object.semester]}</td>
+            </tr>
+            <tr style="background-color: #f5f8ff;">
+                <td style="padding: 10px 14px; color: #888;">GPA</td>
+                <td style="padding: 10px 14px; color: #2c7be5; font-weight: bold; font-size: 18px;">${'%.2f' % object.gpa}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Total Credits</td>
+                <td style="padding: 10px 14px; color: #333;">${object.total_credits}</td>
+            </tr>
+            <tr style="background-color: #f5f8ff;">
+                <td style="padding: 10px 14px; color: #888;">Issue Date</td>
+                <td style="padding: 10px 14px; color: #333;">${object.issued_date}</td>
+            </tr>
+        </table>
+        % if object.record_line_ids:
+        <h3 style="color: #333; margin-bottom: 8px;">Course Breakdown</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+            <thead>
+                <tr style="background-color: #2c7be5; color: #ffffff;">
+                    <th style="padding: 10px 14px; text-align: left;">Course</th>
+                    <th style="padding: 10px 14px; text-align: center;">Grade</th>
+                    <th style="padding: 10px 14px; text-align: center;">Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                % for line in object.record_line_ids:
+                <tr style="background-color: ${'#fff5f5' if line.result == 'fail' else '#ffffff'};">
+                    <td style="padding: 8px 14px; color: #333;">${line.course_id.name}</td>
+                    <td style="padding: 8px 14px; text-align: center; font-weight: bold; color: ${'#e63757' if line.result == 'fail' else '#00b274'};">${line.grade}</td>
+                    <td style="padding: 8px 14px; text-align: center; color: ${'#e63757' if line.result == 'fail' else '#00b274'};">${line.result.upper()}</td>
+                </tr>
+                % endfor
+            </tbody>
+        </table>
+        % endif
+        <p style="color: #555;">Log in to the portal to view your full academic record.</p>
+    </div>
+    <div style="background-color: #f0f4f8; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">This is an automated message from the Learning Management System.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+
+    <!-- 13. Transcript Locked / Official -->
+    <record id="lms_email_transcript_locked" model="mail.template">
+        <field name="name">LMS: Official Transcript Locked</field>
+        <field name="model_id" ref="lms_student.model_lms_academic_record"/>
+        <field name="subject">Official Transcript Locked – ${object.academic_year} Semester ${object.semester}</field>
+        <field name="email_to">${object.student_id.email}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #00b274; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Transcript Officially Locked</h1>
+    </div>
+    <div style="padding: 32px; background-color: #ffffff;">
+        <p style="font-size: 16px; color: #333;">Dear <strong>${object.student_id.name}</strong>,</p>
+        <p style="color: #555;">Your official academic transcript for <strong>${object.academic_year}, Semester ${object.semester}</strong> has been <strong>locked and finalized</strong>. No further changes can be made to this record.</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+            <tr style="background-color: #f5fff9;">
+                <td style="padding: 10px 14px; color: #888; width: 40%;">Academic Year</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${object.academic_year}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Semester</td>
+                <td style="padding: 10px 14px; color: #333;">${dict(object.fields_get(['semester'])['semester']['selection'])[object.semester]}</td>
+            </tr>
+            <tr style="background-color: #f5fff9;">
+                <td style="padding: 10px 14px; color: #888;">Final GPA</td>
+                <td style="padding: 10px 14px; color: #00b274; font-weight: bold; font-size: 18px;">${'%.2f' % object.gpa}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Total Credits</td>
+                <td style="padding: 10px 14px; color: #333;">${object.total_credits}</td>
+            </tr>
+        </table>
+        <p style="color: #555;">You may download your official transcript from the student portal. Please allow a few business days if a physical copy is required.</p>
+    </div>
+    <div style="background-color: #f0f4f8; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">This is an automated message from the Learning Management System.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         COURSE NOTIFICATIONS  (model: lms.enrollment)
+    ══════════════════════════════════════════════════════════════ -->
+
+    <!-- 14. Course Published / Now Available -->
+    <record id="lms_email_course_published" model="mail.template">
+        <field name="name">LMS: Course Now Available</field>
+        <field name="model_id" ref="lms_student.model_lms_enrollment"/>
+        <field name="subject">Course Now Available – ${object.course_id.name}</field>
+        <field name="email_to">${object.student_id.email}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #2c7be5; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Course Now Available</h1>
+    </div>
+    <div style="padding: 32px; background-color: #ffffff;">
+        <p style="font-size: 16px; color: #333;">Dear <strong>${object.student_id.name}</strong>,</p>
+        <p style="color: #555;">Great news! The following course you are enrolled in is now <strong>published and available</strong>:</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+            <tr style="background-color: #f5f8ff;">
+                <td style="padding: 10px 14px; color: #888; width: 40%;">Course</td>
+                <td style="padding: 10px 14px; color: #333; font-weight: bold;">${object.course_id.name}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Course Code</td>
+                <td style="padding: 10px 14px; color: #333;">${object.course_id.code}</td>
+            </tr>
+            <tr style="background-color: #f5f8ff;">
+                <td style="padding: 10px 14px; color: #888;">Instructor</td>
+                <td style="padding: 10px 14px; color: #333;">${object.course_id.instructor_id.name or 'TBA'}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Start Date</td>
+                <td style="padding: 10px 14px; color: #333;">${object.course_id.start_date or 'TBA'}</td>
+            </tr>
+            <tr style="background-color: #f5f8ff;">
+                <td style="padding: 10px 14px; color: #888;">End Date</td>
+                <td style="padding: 10px 14px; color: #333;">${object.course_id.end_date or 'TBA'}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 14px; color: #888;">Duration</td>
+                <td style="padding: 10px 14px; color: #333;">${object.course_id.duration_weeks} weeks</td>
+            </tr>
+        </table>
+        <p style="color: #555;">Log in to your student portal to access the course materials and get started!</p>
+    </div>
+    <div style="background-color: #f0f4f8; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">This is an automated message from the Learning Management System.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+
+</data>
+</odoo>

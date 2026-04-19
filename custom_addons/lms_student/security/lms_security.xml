@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- LMS Category -->
+        <record id="module_category_lms" model="ir.module.category">
+            <field name="name">LMS</field>
+            <field name="description">Helps you manage your Learning Management System permissions.</field>
+            <field name="sequence">10</field>
+        </record>
+ 
+        <!-- LMS Privilege -->
+        <record id="privilege_lms" model="res.groups.privilege">
+            <field name="name">LMS Management</field>
+            <field name="category_id" ref="module_category_lms"/>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- LMS Student Group -->
+        <record id="group_lms_student" model="res.groups">
+            <field name="name">Student (View Only)</field>
+            <field name="privilege_id" ref="privilege_lms"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- LMS Teacher Group -->
+        <record id="group_lms_teacher" model="res.groups">
+            <field name="name">Teacher</field>
+            <field name="privilege_id" ref="privilege_lms"/>
+            <field name="implied_ids" eval="[(4, ref('group_lms_student'))]"/>
+        </record>
+
+        <!-- LMS Manager Group -->
+        <record id="group_lms_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="privilege_id" ref="privilege_lms"/>
+            <field name="implied_ids" eval="[(4, ref('group_lms_teacher'))]"/>
+        </record>
+
+        <!-- Grant Manager rights to Administrator automatically -->
+        <record id="base.user_admin" model="res.users">
+            <field name="group_ids" eval="[(4, ref('lms_student.group_lms_manager'))]"/>
+        </record>
+
+
+        <!-- Sequence for Student ID -->
+        <record id="seq_lms_student" model="ir.sequence">
+            <field name="name">LMS Student Sequence</field>
+            <field name="code">lms.student</field>
+            <field name="prefix">STU</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+    </data>
+</odoo>

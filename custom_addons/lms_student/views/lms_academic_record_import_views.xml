@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ═══════════════════════════════════════════════════════
+             Import Wizard — FORM VIEW
+        ════════════════════════════════════════════════════════════ -->
+        <record id="view_lms_academic_record_import_form" model="ir.ui.view">
+            <field name="name">lms.academic.record.import.wizard.form</field>
+            <field name="model">lms.academic.record.import.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Import Academic Records">
+
+                    <!-- ── STEP 1: Upload ─────────────────────────────── -->
+                    <group invisible="state != 'upload'">
+                        <group string="Upload CSV File">
+                            <field name="csv_file" widget="binary"
+                                   filename="filename"
+                                   string="CSV File"/>
+                            <field name="filename" invisible="1"/>
+                        </group>
+                        <group string="CSV Format">
+                            <div class="o_field_widget">
+                                <p style="margin:0; color:#6c757d; font-size:13px;">
+                                    Required columns:
+                                    <strong>student_id, academic_year, semester, course_code, marks_obtained</strong>
+                                </p>
+                                <p style="margin:4px 0 0 0; color:#6c757d; font-size:13px;">
+                                    Optional column: <strong>total_marks</strong> (defaults to 100)
+                                </p>
+                                <p style="margin:4px 0 0 0; color:#6c757d; font-size:13px;">
+                                    Semester values: <strong>1</strong>, <strong>2</strong>, or <strong>3</strong>
+                                </p>
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- ── STEP 2: Preview ────────────────────────────── -->
+                    <group invisible="state != 'preview'">
+                        <group string="Import Summary">
+                            <field name="success_count" string="Valid Rows" readonly="1"/>
+                            <field name="error_count" string="Rows with Errors" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <field name="preview_line_ids" invisible="state != 'preview'"
+                           nolabel="1" readonly="1">
+                        <list string="Preview"
+                              decoration-danger="status == 'error'"
+                              decoration-success="status == 'valid'">
+                            <field name="row_number" string="Row"/>
+                            <field name="student_id_raw" string="Student ID"/>
+                            <field name="academic_year"/>
+                            <field name="semester"/>
+                            <field name="course_code"/>
+                            <field name="marks_obtained"/>
+                            <field name="total_marks"/>
+                            <field name="status" widget="badge"
+                                   decoration-success="status == 'valid'"
+                                   decoration-danger="status == 'error'"/>
+                            <field name="error_message" string="Error"/>
+                        </list>
+                    </field>
+
+                    <!-- ── STEP 3: Done ───────────────────────────────── -->
+                    <group invisible="state != 'done'">
+                        <div class="o_field_widget" style="padding: 16px 0;">
+                            <h3 style="color: #28a745;">
+                                Import Complete
+                            </h3>
+                            <p>
+                                <field name="import_count" readonly="1" nolabel="1"
+                                       style="font-weight:bold; font-size:16px;"/>
+                                academic record(s) were created or updated successfully.
+                            </p>
+                        </div>
+                    </group>
+
+                    <!-- Hidden state field -->
+                    <field name="state" invisible="1"/>
+
+                    <!-- ── Footer buttons ─────────────────────────────── -->
+                    <footer>
+                        <!-- Upload state -->
+                        <button name="action_download_template" type="object"
+                                string="Download Template"
+                                class="btn-secondary"
+                                invisible="state != 'upload'"/>
+                        <button name="action_parse_csv" type="object"
+                                string="Parse &amp; Preview"
+                                class="btn-primary"
+                                invisible="state != 'upload'"/>
+
+                        <!-- Preview state -->
+                        <button name="action_import" type="object"
+                                string="Import Valid Rows"
+                                class="btn-primary"
+                                invisible="state != 'preview'"
+                                confirm="This will create/update academic records for all valid rows. Continue?"/>
+                        <button name="action_back_to_upload" type="object"
+                                string="Back"
+                                class="btn-secondary"
+                                invisible="state != 'preview'"/>
+
+                        <!-- Done state -->
+                        <button name="action_view_records" type="object"
+                                string="View Academic Records"
+                                class="btn-primary"
+                                invisible="state != 'done'"/>
+                        <button name="action_reset" type="object"
+                                string="Import Another File"
+                                class="btn-secondary"
+                                invisible="state != 'done'"/>
+
+                        <!-- Cancel always visible except on done -->
+                        <button string="Close" class="btn-secondary"
+                                special="cancel"
+                                invisible="state == 'done'"/>
+                    </footer>
+
+                </form>
+            </field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             Action — opens the wizard in a dialog
+        ════════════════════════════════════════════════════════════ -->
+        <record id="action_lms_academic_record_import_wizard"
+                model="ir.actions.act_window">
+            <field name="name">Import Academic Records (CSV)</field>
+            <field name="res_model">lms.academic.record.import.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             Server action bound to lms.academic.record
+             → appears in the ⚙ Actions gear menu of the list view
+        ════════════════════════════════════════════════════════════ -->
+        <record id="action_server_lms_import_academic_records"
+                model="ir.actions.server">
+            <field name="name">Import from CSV</field>
+            <field name="model_id" ref="lms_student.model_lms_academic_record"/>
+            <field name="binding_model_id" ref="lms_student.model_lms_academic_record"/>
+            <field name="binding_type">action</field>
+            <field name="state">code</field>
+            <field name="code">
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'Import Academic Records (CSV)',
+    'res_model': 'lms.academic.record.import.wizard',
+    'view_mode': 'form',
+    'target': 'new',
+}
+            </field>
+        </record>
+
+    </data>
+</odoo>

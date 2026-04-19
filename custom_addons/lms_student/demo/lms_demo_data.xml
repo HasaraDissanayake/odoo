@@ -1,0 +1,931 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     COURSES  (6 courses across categories)
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<record id="course_cs101" model="lms.course">
+    <field name="name">Introduction to Programming</field>
+    <field name="code">CS101</field>
+    <field name="credits">3</field>
+    <field name="duration_weeks">14</field>
+    <field name="category">technology</field>
+    <field name="state">published</field>
+    <field name="max_students">40</field>
+    <field name="start_date">2024-09-01</field>
+    <field name="end_date">2024-12-15</field>
+    <field name="instructor_id" ref="base.user_admin"/>
+</record>
+
+<record id="course_cs201" model="lms.course">
+    <field name="name">Data Structures and Algorithms</field>
+    <field name="code">CS201</field>
+    <field name="credits">3</field>
+    <field name="duration_weeks">14</field>
+    <field name="category">technology</field>
+    <field name="state">published</field>
+    <field name="max_students">30</field>
+    <field name="start_date">2024-09-01</field>
+    <field name="end_date">2024-12-15</field>
+    <field name="instructor_id" ref="base.user_admin"/>
+</record>
+
+<record id="course_math201" model="lms.course">
+    <field name="name">Calculus II</field>
+    <field name="code">MATH201</field>
+    <field name="credits">4</field>
+    <field name="duration_weeks">14</field>
+    <field name="category">science</field>
+    <field name="state">published</field>
+    <field name="max_students">35</field>
+    <field name="start_date">2024-09-01</field>
+    <field name="end_date">2024-12-15</field>
+    <field name="instructor_id" ref="base.user_admin"/>
+</record>
+
+<record id="course_eng301" model="lms.course">
+    <field name="name">Technical Writing and Communication</field>
+    <field name="code">ENG301</field>
+    <field name="credits">3</field>
+    <field name="duration_weeks">12</field>
+    <field name="category">language</field>
+    <field name="state">published</field>
+    <field name="max_students">30</field>
+    <field name="start_date">2024-09-01</field>
+    <field name="end_date">2024-11-30</field>
+    <field name="instructor_id" ref="base.user_admin"/>
+</record>
+
+<record id="course_bus101" model="lms.course">
+    <field name="name">Business Fundamentals</field>
+    <field name="code">BUS101</field>
+    <field name="credits">3</field>
+    <field name="duration_weeks">12</field>
+    <field name="category">commerce</field>
+    <field name="state">published</field>
+    <field name="max_students">30</field>
+    <field name="start_date">2024-09-01</field>
+    <field name="end_date">2024-11-30</field>
+    <field name="instructor_id" ref="base.user_admin"/>
+</record>
+
+<record id="course_art101" model="lms.course">
+    <field name="name">Digital Design Fundamentals</field>
+    <field name="code">ART101</field>
+    <field name="credits">2</field>
+    <field name="duration_weeks">10</field>
+    <field name="category">arts</field>
+    <field name="state">draft</field>
+    <field name="max_students">25</field>
+    <field name="start_date">2025-01-15</field>
+    <field name="end_date">2025-03-30</field>
+    <field name="instructor_id" ref="base.user_admin"/>
+</record>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     STUDENTS  (8 students, various states)
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<record id="student_alice" model="lms.student">
+    <field name="name">Alice Johnson</field>
+    <field name="email">alice.johnson@demo.lms</field>
+    <field name="phone">+1-555-0101</field>
+    <field name="date_of_birth">2001-03-15</field>
+    <field name="gender">female</field>
+    <field name="nationality" ref="base.us"/>
+    <field name="address">12 Maple Street, Boston, MA 02101</field>
+    <field name="enrollment_date">2023-09-01</field>
+    <field name="state">active</field>
+    <field name="guardian_name">Robert Johnson</field>
+    <field name="guardian_phone">+1-555-0100</field>
+</record>
+
+<record id="student_bob" model="lms.student">
+    <field name="name">Bob Martinez</field>
+    <field name="email">bob.martinez@demo.lms</field>
+    <field name="phone">+52-55-1234-5678</field>
+    <field name="date_of_birth">2000-07-22</field>
+    <field name="gender">male</field>
+    <field name="nationality" ref="base.mx"/>
+    <field name="address">Av. Universidad 3000, Mexico City</field>
+    <field name="enrollment_date">2023-09-01</field>
+    <field name="state">active</field>
+</record>
+
+<record id="student_carol" model="lms.student">
+    <field name="name">Carol White</field>
+    <field name="email">carol.white@demo.lms</field>
+    <field name="phone">+44-20-7946-0101</field>
+    <field name="date_of_birth">2001-11-08</field>
+    <field name="gender">female</field>
+    <field name="nationality" ref="base.gb"/>
+    <field name="address">45 Baker Street, London, W1U 6SE</field>
+    <field name="enrollment_date">2023-09-01</field>
+    <field name="state">active</field>
+    <field name="guardian_name">Margaret White</field>
+    <field name="guardian_phone">+44-20-7946-0100</field>
+</record>
+
+<record id="student_david" model="lms.student">
+    <field name="name">David Chen</field>
+    <field name="email">david.chen@demo.lms</field>
+    <field name="phone">+86-10-8765-4321</field>
+    <field name="date_of_birth">2000-02-14</field>
+    <field name="gender">male</field>
+    <field name="nationality" ref="base.cn"/>
+    <field name="address">No. 88 Zhongguancun, Beijing 100080</field>
+    <field name="enrollment_date">2023-09-01</field>
+    <field name="state">active</field>
+</record>
+
+<record id="student_emma" model="lms.student">
+    <field name="name">Emma Wilson</field>
+    <field name="email">emma.wilson@demo.lms</field>
+    <field name="phone">+61-2-9876-5432</field>
+    <field name="date_of_birth">2002-04-30</field>
+    <field name="gender">female</field>
+    <field name="nationality" ref="base.au"/>
+    <field name="address">22 George Street, Sydney NSW 2000</field>
+    <field name="enrollment_date">2024-01-15</field>
+    <field name="state">active</field>
+    <field name="guardian_name">James Wilson</field>
+    <field name="guardian_phone">+61-2-9876-5400</field>
+</record>
+
+<record id="student_frank" model="lms.student">
+    <field name="name">Frank Lee</field>
+    <field name="email">frank.lee@demo.lms</field>
+    <field name="phone">+82-2-1234-5678</field>
+    <field name="date_of_birth">1999-09-17</field>
+    <field name="gender">male</field>
+    <field name="nationality" ref="base.kr"/>
+    <field name="address">Gangnam-daero 100, Seoul 06000</field>
+    <field name="enrollment_date">2022-03-01</field>
+    <field name="state">active</field>
+</record>
+
+<record id="student_grace" model="lms.student">
+    <field name="name">Grace Kim</field>
+    <field name="email">grace.kim@demo.lms</field>
+    <field name="phone">+81-3-1234-5678</field>
+    <field name="date_of_birth">2001-06-25</field>
+    <field name="gender">female</field>
+    <field name="nationality" ref="base.jp"/>
+    <field name="address">Shibuya 1-1, Tokyo 150-0002</field>
+    <field name="enrollment_date">2023-09-01</field>
+    <field name="state">active</field>
+</record>
+
+<record id="student_henry" model="lms.student">
+    <field name="name">Henry Taylor</field>
+    <field name="email">henry.taylor@demo.lms</field>
+    <field name="phone">+1-416-555-0199</field>
+    <field name="date_of_birth">2000-12-03</field>
+    <field name="gender">male</field>
+    <field name="nationality" ref="base.ca"/>
+    <field name="address">100 Queen Street West, Toronto ON M5H 2N2</field>
+    <field name="enrollment_date">2023-09-01</field>
+    <field name="state">active</field>
+</record>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ATTENDANCE SESSIONS (state=done — must be created BEFORE enrollments
+     so the attendance_percent compute finds sessions when enrollments
+     are created)
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<!-- CS101 Sessions -->
+<record id="session_cs101_1" model="lms.attendance.session">
+    <field name="course_id" ref="course_cs101"/>
+    <field name="date">2024-09-05</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+<record id="session_cs101_2" model="lms.attendance.session">
+    <field name="course_id" ref="course_cs101"/>
+    <field name="date">2024-09-12</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+<record id="session_cs101_3" model="lms.attendance.session">
+    <field name="course_id" ref="course_cs101"/>
+    <field name="date">2024-09-19</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+
+<!-- CS201 Sessions -->
+<record id="session_cs201_1" model="lms.attendance.session">
+    <field name="course_id" ref="course_cs201"/>
+    <field name="date">2024-09-06</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+<record id="session_cs201_2" model="lms.attendance.session">
+    <field name="course_id" ref="course_cs201"/>
+    <field name="date">2024-09-13</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+<record id="session_cs201_3" model="lms.attendance.session">
+    <field name="course_id" ref="course_cs201"/>
+    <field name="date">2024-09-20</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+
+<!-- MATH201 Sessions -->
+<record id="session_math201_1" model="lms.attendance.session">
+    <field name="course_id" ref="course_math201"/>
+    <field name="date">2024-09-09</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+<record id="session_math201_2" model="lms.attendance.session">
+    <field name="course_id" ref="course_math201"/>
+    <field name="date">2024-09-16</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+<record id="session_math201_3" model="lms.attendance.session">
+    <field name="course_id" ref="course_math201"/>
+    <field name="date">2024-09-23</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+
+<!-- ENG301 Sessions -->
+<record id="session_eng301_1" model="lms.attendance.session">
+    <field name="course_id" ref="course_eng301"/>
+    <field name="date">2024-09-10</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+<record id="session_eng301_2" model="lms.attendance.session">
+    <field name="course_id" ref="course_eng301"/>
+    <field name="date">2024-09-17</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+<record id="session_eng301_3" model="lms.attendance.session">
+    <field name="course_id" ref="course_eng301"/>
+    <field name="date">2024-09-24</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+
+<!-- BUS101 Sessions -->
+<record id="session_bus101_1" model="lms.attendance.session">
+    <field name="course_id" ref="course_bus101"/>
+    <field name="date">2024-09-11</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+<record id="session_bus101_2" model="lms.attendance.session">
+    <field name="course_id" ref="course_bus101"/>
+    <field name="date">2024-09-18</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+<record id="session_bus101_3" model="lms.attendance.session">
+    <field name="course_id" ref="course_bus101"/>
+    <field name="date">2024-09-25</field>
+    <field name="lecturer_id" ref="base.user_admin"/>
+    <field name="state">done</field>
+</record>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ATTENDANCE LINES
+     CS101: alice/bob/carol/david/emma (enrolled) + frank/grace (completed)
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<!-- CS101 Session 1: david absent -->
+<record id="att_cs101_s1_alice"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_1"/><field name="student_id" ref="student_alice"/><field name="status">present</field></record>
+<record id="att_cs101_s1_bob"    model="lms.attendance.line"><field name="session_id" ref="session_cs101_1"/><field name="student_id" ref="student_bob"/><field name="status">present</field></record>
+<record id="att_cs101_s1_carol"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_1"/><field name="student_id" ref="student_carol"/><field name="status">present</field></record>
+<record id="att_cs101_s1_david"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_1"/><field name="student_id" ref="student_david"/><field name="status">absent</field></record>
+<record id="att_cs101_s1_emma"   model="lms.attendance.line"><field name="session_id" ref="session_cs101_1"/><field name="student_id" ref="student_emma"/><field name="status">present</field></record>
+<record id="att_cs101_s1_frank"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_1"/><field name="student_id" ref="student_frank"/><field name="status">present</field></record>
+<record id="att_cs101_s1_grace"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_1"/><field name="student_id" ref="student_grace"/><field name="status">present</field></record>
+
+<!-- CS101 Session 2: bob/frank absent -->
+<record id="att_cs101_s2_alice"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_2"/><field name="student_id" ref="student_alice"/><field name="status">present</field></record>
+<record id="att_cs101_s2_bob"    model="lms.attendance.line"><field name="session_id" ref="session_cs101_2"/><field name="student_id" ref="student_bob"/><field name="status">absent</field></record>
+<record id="att_cs101_s2_carol"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_2"/><field name="student_id" ref="student_carol"/><field name="status">present</field></record>
+<record id="att_cs101_s2_david"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_2"/><field name="student_id" ref="student_david"/><field name="status">present</field></record>
+<record id="att_cs101_s2_emma"   model="lms.attendance.line"><field name="session_id" ref="session_cs101_2"/><field name="student_id" ref="student_emma"/><field name="status">present</field></record>
+<record id="att_cs101_s2_frank"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_2"/><field name="student_id" ref="student_frank"/><field name="status">absent</field></record>
+<record id="att_cs101_s2_grace"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_2"/><field name="student_id" ref="student_grace"/><field name="status">present</field></record>
+
+<!-- CS101 Session 3: carol/emma absent -->
+<record id="att_cs101_s3_alice"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_3"/><field name="student_id" ref="student_alice"/><field name="status">present</field></record>
+<record id="att_cs101_s3_bob"    model="lms.attendance.line"><field name="session_id" ref="session_cs101_3"/><field name="student_id" ref="student_bob"/><field name="status">present</field></record>
+<record id="att_cs101_s3_carol"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_3"/><field name="student_id" ref="student_carol"/><field name="status">absent</field></record>
+<record id="att_cs101_s3_david"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_3"/><field name="student_id" ref="student_david"/><field name="status">present</field></record>
+<record id="att_cs101_s3_emma"   model="lms.attendance.line"><field name="session_id" ref="session_cs101_3"/><field name="student_id" ref="student_emma"/><field name="status">absent</field></record>
+<record id="att_cs101_s3_frank"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_3"/><field name="student_id" ref="student_frank"/><field name="status">present</field></record>
+<record id="att_cs101_s3_grace"  model="lms.attendance.line"><field name="session_id" ref="session_cs101_3"/><field name="student_id" ref="student_grace"/><field name="status">present</field></record>
+
+<!-- CS201 Session 1: all present -->
+<record id="att_cs201_s1_alice"  model="lms.attendance.line"><field name="session_id" ref="session_cs201_1"/><field name="student_id" ref="student_alice"/><field name="status">present</field></record>
+<record id="att_cs201_s1_bob"    model="lms.attendance.line"><field name="session_id" ref="session_cs201_1"/><field name="student_id" ref="student_bob"/><field name="status">present</field></record>
+<record id="att_cs201_s1_david"  model="lms.attendance.line"><field name="session_id" ref="session_cs201_1"/><field name="student_id" ref="student_david"/><field name="status">present</field></record>
+<record id="att_cs201_s1_henry"  model="lms.attendance.line"><field name="session_id" ref="session_cs201_1"/><field name="student_id" ref="student_henry"/><field name="status">present</field></record>
+
+<!-- CS201 Session 2: bob absent -->
+<record id="att_cs201_s2_alice"  model="lms.attendance.line"><field name="session_id" ref="session_cs201_2"/><field name="student_id" ref="student_alice"/><field name="status">present</field></record>
+<record id="att_cs201_s2_bob"    model="lms.attendance.line"><field name="session_id" ref="session_cs201_2"/><field name="student_id" ref="student_bob"/><field name="status">absent</field></record>
+<record id="att_cs201_s2_david"  model="lms.attendance.line"><field name="session_id" ref="session_cs201_2"/><field name="student_id" ref="student_david"/><field name="status">present</field></record>
+<record id="att_cs201_s2_henry"  model="lms.attendance.line"><field name="session_id" ref="session_cs201_2"/><field name="student_id" ref="student_henry"/><field name="status">present</field></record>
+
+<!-- CS201 Session 3: alice absent -->
+<record id="att_cs201_s3_alice"  model="lms.attendance.line"><field name="session_id" ref="session_cs201_3"/><field name="student_id" ref="student_alice"/><field name="status">absent</field></record>
+<record id="att_cs201_s3_bob"    model="lms.attendance.line"><field name="session_id" ref="session_cs201_3"/><field name="student_id" ref="student_bob"/><field name="status">present</field></record>
+<record id="att_cs201_s3_david"  model="lms.attendance.line"><field name="session_id" ref="session_cs201_3"/><field name="student_id" ref="student_david"/><field name="status">present</field></record>
+<record id="att_cs201_s3_henry"  model="lms.attendance.line"><field name="session_id" ref="session_cs201_3"/><field name="student_id" ref="student_henry"/><field name="status">present</field></record>
+
+<!-- MATH201 Session 1: henry absent -->
+<record id="att_math201_s1_carol" model="lms.attendance.line"><field name="session_id" ref="session_math201_1"/><field name="student_id" ref="student_carol"/><field name="status">present</field></record>
+<record id="att_math201_s1_emma"  model="lms.attendance.line"><field name="session_id" ref="session_math201_1"/><field name="student_id" ref="student_emma"/><field name="status">present</field></record>
+<record id="att_math201_s1_frank" model="lms.attendance.line"><field name="session_id" ref="session_math201_1"/><field name="student_id" ref="student_frank"/><field name="status">present</field></record>
+<record id="att_math201_s1_grace" model="lms.attendance.line"><field name="session_id" ref="session_math201_1"/><field name="student_id" ref="student_grace"/><field name="status">present</field></record>
+<record id="att_math201_s1_henry" model="lms.attendance.line"><field name="session_id" ref="session_math201_1"/><field name="student_id" ref="student_henry"/><field name="status">absent</field></record>
+
+<!-- MATH201 Session 2: carol absent -->
+<record id="att_math201_s2_carol" model="lms.attendance.line"><field name="session_id" ref="session_math201_2"/><field name="student_id" ref="student_carol"/><field name="status">absent</field></record>
+<record id="att_math201_s2_emma"  model="lms.attendance.line"><field name="session_id" ref="session_math201_2"/><field name="student_id" ref="student_emma"/><field name="status">present</field></record>
+<record id="att_math201_s2_frank" model="lms.attendance.line"><field name="session_id" ref="session_math201_2"/><field name="student_id" ref="student_frank"/><field name="status">present</field></record>
+<record id="att_math201_s2_grace" model="lms.attendance.line"><field name="session_id" ref="session_math201_2"/><field name="student_id" ref="student_grace"/><field name="status">present</field></record>
+<record id="att_math201_s2_henry" model="lms.attendance.line"><field name="session_id" ref="session_math201_2"/><field name="student_id" ref="student_henry"/><field name="status">present</field></record>
+
+<!-- MATH201 Session 3: frank absent -->
+<record id="att_math201_s3_carol" model="lms.attendance.line"><field name="session_id" ref="session_math201_3"/><field name="student_id" ref="student_carol"/><field name="status">present</field></record>
+<record id="att_math201_s3_emma"  model="lms.attendance.line"><field name="session_id" ref="session_math201_3"/><field name="student_id" ref="student_emma"/><field name="status">present</field></record>
+<record id="att_math201_s3_frank" model="lms.attendance.line"><field name="session_id" ref="session_math201_3"/><field name="student_id" ref="student_frank"/><field name="status">absent</field></record>
+<record id="att_math201_s3_grace" model="lms.attendance.line"><field name="session_id" ref="session_math201_3"/><field name="student_id" ref="student_grace"/><field name="status">present</field></record>
+<record id="att_math201_s3_henry" model="lms.attendance.line"><field name="session_id" ref="session_math201_3"/><field name="student_id" ref="student_henry"/><field name="status">present</field></record>
+
+<!-- ENG301 Session 1: all present -->
+<record id="att_eng301_s1_alice"  model="lms.attendance.line"><field name="session_id" ref="session_eng301_1"/><field name="student_id" ref="student_alice"/><field name="status">present</field></record>
+<record id="att_eng301_s1_bob"    model="lms.attendance.line"><field name="session_id" ref="session_eng301_1"/><field name="student_id" ref="student_bob"/><field name="status">present</field></record>
+<record id="att_eng301_s1_carol"  model="lms.attendance.line"><field name="session_id" ref="session_eng301_1"/><field name="student_id" ref="student_carol"/><field name="status">present</field></record>
+<record id="att_eng301_s1_emma"   model="lms.attendance.line"><field name="session_id" ref="session_eng301_1"/><field name="student_id" ref="student_emma"/><field name="status">present</field></record>
+<record id="att_eng301_s1_grace"  model="lms.attendance.line"><field name="session_id" ref="session_eng301_1"/><field name="student_id" ref="student_grace"/><field name="status">present</field></record>
+
+<!-- ENG301 Session 2: carol absent -->
+<record id="att_eng301_s2_alice"  model="lms.attendance.line"><field name="session_id" ref="session_eng301_2"/><field name="student_id" ref="student_alice"/><field name="status">present</field></record>
+<record id="att_eng301_s2_bob"    model="lms.attendance.line"><field name="session_id" ref="session_eng301_2"/><field name="student_id" ref="student_bob"/><field name="status">present</field></record>
+<record id="att_eng301_s2_carol"  model="lms.attendance.line"><field name="session_id" ref="session_eng301_2"/><field name="student_id" ref="student_carol"/><field name="status">absent</field></record>
+<record id="att_eng301_s2_emma"   model="lms.attendance.line"><field name="session_id" ref="session_eng301_2"/><field name="student_id" ref="student_emma"/><field name="status">present</field></record>
+<record id="att_eng301_s2_grace"  model="lms.attendance.line"><field name="session_id" ref="session_eng301_2"/><field name="student_id" ref="student_grace"/><field name="status">present</field></record>
+
+<!-- ENG301 Session 3: bob absent -->
+<record id="att_eng301_s3_alice"  model="lms.attendance.line"><field name="session_id" ref="session_eng301_3"/><field name="student_id" ref="student_alice"/><field name="status">present</field></record>
+<record id="att_eng301_s3_bob"    model="lms.attendance.line"><field name="session_id" ref="session_eng301_3"/><field name="student_id" ref="student_bob"/><field name="status">absent</field></record>
+<record id="att_eng301_s3_carol"  model="lms.attendance.line"><field name="session_id" ref="session_eng301_3"/><field name="student_id" ref="student_carol"/><field name="status">present</field></record>
+<record id="att_eng301_s3_emma"   model="lms.attendance.line"><field name="session_id" ref="session_eng301_3"/><field name="student_id" ref="student_emma"/><field name="status">absent</field></record>
+<record id="att_eng301_s3_grace"  model="lms.attendance.line"><field name="session_id" ref="session_eng301_3"/><field name="student_id" ref="student_grace"/><field name="status">present</field></record>
+
+<!-- BUS101 Session 1: all present -->
+<record id="att_bus101_s1_bob"    model="lms.attendance.line"><field name="session_id" ref="session_bus101_1"/><field name="student_id" ref="student_bob"/><field name="status">present</field></record>
+<record id="att_bus101_s1_david"  model="lms.attendance.line"><field name="session_id" ref="session_bus101_1"/><field name="student_id" ref="student_david"/><field name="status">present</field></record>
+<record id="att_bus101_s1_frank"  model="lms.attendance.line"><field name="session_id" ref="session_bus101_1"/><field name="student_id" ref="student_frank"/><field name="status">present</field></record>
+<record id="att_bus101_s1_henry"  model="lms.attendance.line"><field name="session_id" ref="session_bus101_1"/><field name="student_id" ref="student_henry"/><field name="status">present</field></record>
+
+<!-- BUS101 Session 2: david absent -->
+<record id="att_bus101_s2_bob"    model="lms.attendance.line"><field name="session_id" ref="session_bus101_2"/><field name="student_id" ref="student_bob"/><field name="status">present</field></record>
+<record id="att_bus101_s2_david"  model="lms.attendance.line"><field name="session_id" ref="session_bus101_2"/><field name="student_id" ref="student_david"/><field name="status">absent</field></record>
+<record id="att_bus101_s2_frank"  model="lms.attendance.line"><field name="session_id" ref="session_bus101_2"/><field name="student_id" ref="student_frank"/><field name="status">present</field></record>
+<record id="att_bus101_s2_henry"  model="lms.attendance.line"><field name="session_id" ref="session_bus101_2"/><field name="student_id" ref="student_henry"/><field name="status">present</field></record>
+
+<!-- BUS101 Session 3: bob/henry absent -->
+<record id="att_bus101_s3_bob"    model="lms.attendance.line"><field name="session_id" ref="session_bus101_3"/><field name="student_id" ref="student_bob"/><field name="status">absent</field></record>
+<record id="att_bus101_s3_david"  model="lms.attendance.line"><field name="session_id" ref="session_bus101_3"/><field name="student_id" ref="student_david"/><field name="status">present</field></record>
+<record id="att_bus101_s3_frank"  model="lms.attendance.line"><field name="session_id" ref="session_bus101_3"/><field name="student_id" ref="student_frank"/><field name="status">present</field></record>
+<record id="att_bus101_s3_henry"  model="lms.attendance.line"><field name="session_id" ref="session_bus101_3"/><field name="student_id" ref="student_henry"/><field name="status">absent</field></record>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ENROLLMENTS  (created after sessions/lines so attendance_percent
+     computes correctly on first creation)
+     Attendance % = present_count / total_done_sessions * 100
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<!-- CS101 enrollments -->
+<record id="enroll_alice_cs101" model="lms.enrollment">
+    <field name="student_id" ref="student_alice"/><field name="course_id" ref="course_cs101"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_bob_cs101" model="lms.enrollment">
+    <field name="student_id" ref="student_bob"/><field name="course_id" ref="course_cs101"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_carol_cs101" model="lms.enrollment">
+    <field name="student_id" ref="student_carol"/><field name="course_id" ref="course_cs101"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_david_cs101" model="lms.enrollment">
+    <field name="student_id" ref="student_david"/><field name="course_id" ref="course_cs101"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_emma_cs101" model="lms.enrollment">
+    <field name="student_id" ref="student_emma"/><field name="course_id" ref="course_cs101"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_frank_cs101" model="lms.enrollment">
+    <field name="student_id" ref="student_frank"/><field name="course_id" ref="course_cs101"/>
+    <field name="enrollment_date">2023-09-01</field><field name="state">completed</field>
+    <field name="grade">A</field>
+</record>
+<record id="enroll_grace_cs101" model="lms.enrollment">
+    <field name="student_id" ref="student_grace"/><field name="course_id" ref="course_cs101"/>
+    <field name="enrollment_date">2023-09-01</field><field name="state">completed</field>
+    <field name="grade">B+</field>
+</record>
+
+<!-- CS201 enrollments -->
+<record id="enroll_alice_cs201" model="lms.enrollment">
+    <field name="student_id" ref="student_alice"/><field name="course_id" ref="course_cs201"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_bob_cs201" model="lms.enrollment">
+    <field name="student_id" ref="student_bob"/><field name="course_id" ref="course_cs201"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_david_cs201" model="lms.enrollment">
+    <field name="student_id" ref="student_david"/><field name="course_id" ref="course_cs201"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_henry_cs201" model="lms.enrollment">
+    <field name="student_id" ref="student_henry"/><field name="course_id" ref="course_cs201"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+
+<!-- MATH201 enrollments -->
+<record id="enroll_carol_math201" model="lms.enrollment">
+    <field name="student_id" ref="student_carol"/><field name="course_id" ref="course_math201"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_emma_math201" model="lms.enrollment">
+    <field name="student_id" ref="student_emma"/><field name="course_id" ref="course_math201"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_frank_math201" model="lms.enrollment">
+    <field name="student_id" ref="student_frank"/><field name="course_id" ref="course_math201"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_grace_math201" model="lms.enrollment">
+    <field name="student_id" ref="student_grace"/><field name="course_id" ref="course_math201"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_henry_math201" model="lms.enrollment">
+    <field name="student_id" ref="student_henry"/><field name="course_id" ref="course_math201"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+
+<!-- ENG301 enrollments -->
+<record id="enroll_alice_eng301" model="lms.enrollment">
+    <field name="student_id" ref="student_alice"/><field name="course_id" ref="course_eng301"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_bob_eng301" model="lms.enrollment">
+    <field name="student_id" ref="student_bob"/><field name="course_id" ref="course_eng301"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_carol_eng301" model="lms.enrollment">
+    <field name="student_id" ref="student_carol"/><field name="course_id" ref="course_eng301"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_emma_eng301" model="lms.enrollment">
+    <field name="student_id" ref="student_emma"/><field name="course_id" ref="course_eng301"/>
+    <field name="enrollment_date">2024-01-15</field><field name="state">completed</field>
+    <field name="grade">A+</field>
+</record>
+<record id="enroll_grace_eng301" model="lms.enrollment">
+    <field name="student_id" ref="student_grace"/><field name="course_id" ref="course_eng301"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+
+<!-- BUS101 enrollments -->
+<record id="enroll_bob_bus101" model="lms.enrollment">
+    <field name="student_id" ref="student_bob"/><field name="course_id" ref="course_bus101"/>
+    <field name="enrollment_date">2023-09-01</field><field name="state">completed</field>
+    <field name="grade">B</field>
+</record>
+<record id="enroll_david_bus101" model="lms.enrollment">
+    <field name="student_id" ref="student_david"/><field name="course_id" ref="course_bus101"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_frank_bus101" model="lms.enrollment">
+    <field name="student_id" ref="student_frank"/><field name="course_id" ref="course_bus101"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+<record id="enroll_henry_bus101" model="lms.enrollment">
+    <field name="student_id" ref="student_henry"/><field name="course_id" ref="course_bus101"/>
+    <field name="enrollment_date">2024-09-01</field><field name="state">enrolled</field>
+</record>
+
+<!-- ART101 enrollments (course is draft → pending state) -->
+<record id="enroll_alice_art101" model="lms.enrollment">
+    <field name="student_id" ref="student_alice"/><field name="course_id" ref="course_art101"/>
+    <field name="enrollment_date">2024-12-01</field><field name="state">pending</field>
+</record>
+<record id="enroll_carol_art101" model="lms.enrollment">
+    <field name="student_id" ref="student_carol"/><field name="course_id" ref="course_art101"/>
+    <field name="enrollment_date">2024-12-01</field><field name="state">pending</field>
+</record>
+<record id="enroll_emma_art101" model="lms.enrollment">
+    <field name="student_id" ref="student_emma"/><field name="course_id" ref="course_art101"/>
+    <field name="enrollment_date">2024-12-01</field><field name="state">pending</field>
+</record>
+<record id="enroll_grace_art101" model="lms.enrollment">
+    <field name="student_id" ref="student_grace"/><field name="course_id" ref="course_art101"/>
+    <field name="enrollment_date">2024-12-01</field><field name="state">pending</field>
+</record>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ASSESSMENTS  (3–4 per published course)
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<!-- CS101 assessments -->
+<record id="asmnt_cs101_hw1" model="lms.assessment">
+    <field name="name">Assignment 1: Hello World</field>
+    <field name="course_id" ref="course_cs101"/>
+    <field name="type">assignment</field>
+    <field name="date">2024-09-20</field>
+    <field name="max_score">100.0</field>
+    <field name="weight">20.0</field>
+</record>
+<record id="asmnt_cs101_quiz1" model="lms.assessment">
+    <field name="name">Quiz 1: Variables and Loops</field>
+    <field name="course_id" ref="course_cs101"/>
+    <field name="type">quiz</field>
+    <field name="date">2024-10-10</field>
+    <field name="max_score">50.0</field>
+    <field name="weight">10.0</field>
+</record>
+<record id="asmnt_cs101_mid" model="lms.assessment">
+    <field name="name">Mid-term Exam</field>
+    <field name="course_id" ref="course_cs101"/>
+    <field name="type">mid_exam</field>
+    <field name="date">2024-10-25</field>
+    <field name="max_score">100.0</field>
+    <field name="weight">30.0</field>
+</record>
+<record id="asmnt_cs101_final" model="lms.assessment">
+    <field name="name">Final Exam</field>
+    <field name="course_id" ref="course_cs101"/>
+    <field name="type">final_exam</field>
+    <field name="date">2024-12-10</field>
+    <field name="max_score">100.0</field>
+    <field name="weight">40.0</field>
+</record>
+
+<!-- CS201 assessments -->
+<record id="asmnt_cs201_quiz1" model="lms.assessment">
+    <field name="name">Quiz 1: Arrays and Linked Lists</field>
+    <field name="course_id" ref="course_cs201"/>
+    <field name="type">quiz</field>
+    <field name="date">2024-09-27</field>
+    <field name="max_score">50.0</field>
+    <field name="weight">15.0</field>
+</record>
+<record id="asmnt_cs201_hw1" model="lms.assessment">
+    <field name="name">Assignment 1: Binary Search Tree</field>
+    <field name="course_id" ref="course_cs201"/>
+    <field name="type">assignment</field>
+    <field name="date">2024-10-18</field>
+    <field name="max_score">100.0</field>
+    <field name="weight">25.0</field>
+</record>
+<record id="asmnt_cs201_final" model="lms.assessment">
+    <field name="name">Final Exam</field>
+    <field name="course_id" ref="course_cs201"/>
+    <field name="type">final_exam</field>
+    <field name="date">2024-12-12</field>
+    <field name="max_score">100.0</field>
+    <field name="weight">60.0</field>
+</record>
+
+<!-- MATH201 assessments -->
+<record id="asmnt_math201_quiz1" model="lms.assessment">
+    <field name="name">Quiz 1: Limits and Continuity</field>
+    <field name="course_id" ref="course_math201"/>
+    <field name="type">quiz</field>
+    <field name="date">2024-09-26</field>
+    <field name="max_score">50.0</field>
+    <field name="weight">20.0</field>
+</record>
+<record id="asmnt_math201_mid" model="lms.assessment">
+    <field name="name">Mid-term Exam</field>
+    <field name="course_id" ref="course_math201"/>
+    <field name="type">mid_exam</field>
+    <field name="date">2024-10-24</field>
+    <field name="max_score">100.0</field>
+    <field name="weight">30.0</field>
+</record>
+<record id="asmnt_math201_final" model="lms.assessment">
+    <field name="name">Final Exam</field>
+    <field name="course_id" ref="course_math201"/>
+    <field name="type">final_exam</field>
+    <field name="date">2024-12-11</field>
+    <field name="max_score">100.0</field>
+    <field name="weight">50.0</field>
+</record>
+
+<!-- ENG301 assessments -->
+<record id="asmnt_eng301_hw1" model="lms.assessment">
+    <field name="name">Assignment 1: Technical Report Draft</field>
+    <field name="course_id" ref="course_eng301"/>
+    <field name="type">assignment</field>
+    <field name="date">2024-09-28</field>
+    <field name="max_score">100.0</field>
+    <field name="weight">25.0</field>
+</record>
+<record id="asmnt_eng301_hw2" model="lms.assessment">
+    <field name="name">Assignment 2: Presentation Skills</field>
+    <field name="course_id" ref="course_eng301"/>
+    <field name="type">assignment</field>
+    <field name="date">2024-10-26</field>
+    <field name="max_score">100.0</field>
+    <field name="weight">25.0</field>
+</record>
+<record id="asmnt_eng301_final" model="lms.assessment">
+    <field name="name">Final Exam</field>
+    <field name="course_id" ref="course_eng301"/>
+    <field name="type">final_exam</field>
+    <field name="date">2024-11-28</field>
+    <field name="max_score">100.0</field>
+    <field name="weight">50.0</field>
+</record>
+
+<!-- BUS101 assessments -->
+<record id="asmnt_bus101_quiz1" model="lms.assessment">
+    <field name="name">Quiz 1: Market Economics</field>
+    <field name="course_id" ref="course_bus101"/>
+    <field name="type">quiz</field>
+    <field name="date">2024-09-27</field>
+    <field name="max_score">50.0</field>
+    <field name="weight">20.0</field>
+</record>
+<record id="asmnt_bus101_mid" model="lms.assessment">
+    <field name="name">Mid-term Exam</field>
+    <field name="course_id" ref="course_bus101"/>
+    <field name="type">mid_exam</field>
+    <field name="date">2024-10-23</field>
+    <field name="max_score">100.0</field>
+    <field name="weight">30.0</field>
+</record>
+<record id="asmnt_bus101_final" model="lms.assessment">
+    <field name="name">Final Exam</field>
+    <field name="course_id" ref="course_bus101"/>
+    <field name="type">final_exam</field>
+    <field name="date">2024-11-27</field>
+    <field name="max_score">100.0</field>
+    <field name="weight">50.0</field>
+</record>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ASSESSMENT GRADES
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<!-- CS101 Assignment 1 (max=100) -->
+<record id="grade_cs101_hw1_alice"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_hw1"/><field name="student_id" ref="student_alice"/><field name="score">82.0</field></record>
+<record id="grade_cs101_hw1_bob"    model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_hw1"/><field name="student_id" ref="student_bob"/><field name="score">75.0</field></record>
+<record id="grade_cs101_hw1_carol"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_hw1"/><field name="student_id" ref="student_carol"/><field name="score">90.0</field></record>
+<record id="grade_cs101_hw1_david"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_hw1"/><field name="student_id" ref="student_david"/><field name="score">65.0</field></record>
+<record id="grade_cs101_hw1_emma"   model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_hw1"/><field name="student_id" ref="student_emma"/><field name="score">88.0</field></record>
+<record id="grade_cs101_hw1_frank"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_hw1"/><field name="student_id" ref="student_frank"/><field name="score">85.0</field></record>
+<record id="grade_cs101_hw1_grace"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_hw1"/><field name="student_id" ref="student_grace"/><field name="score">91.0</field></record>
+
+<!-- CS101 Quiz 1 (max=50) -->
+<record id="grade_cs101_quiz1_alice"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_quiz1"/><field name="student_id" ref="student_alice"/><field name="score">43.0</field></record>
+<record id="grade_cs101_quiz1_bob"    model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_quiz1"/><field name="student_id" ref="student_bob"/><field name="score">36.0</field></record>
+<record id="grade_cs101_quiz1_carol"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_quiz1"/><field name="student_id" ref="student_carol"/><field name="score">47.0</field></record>
+<record id="grade_cs101_quiz1_david"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_quiz1"/><field name="student_id" ref="student_david"/><field name="score">30.0</field></record>
+<record id="grade_cs101_quiz1_emma"   model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_quiz1"/><field name="student_id" ref="student_emma"/><field name="score">44.0</field></record>
+<record id="grade_cs101_quiz1_frank"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_quiz1"/><field name="student_id" ref="student_frank"/><field name="score">41.0</field></record>
+<record id="grade_cs101_quiz1_grace"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_quiz1"/><field name="student_id" ref="student_grace"/><field name="score">46.0</field></record>
+
+<!-- CS101 Mid-term (max=100) -->
+<record id="grade_cs101_mid_alice"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_mid"/><field name="student_id" ref="student_alice"/><field name="score">80.0</field></record>
+<record id="grade_cs101_mid_bob"    model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_mid"/><field name="student_id" ref="student_bob"/><field name="score">70.0</field></record>
+<record id="grade_cs101_mid_carol"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_mid"/><field name="student_id" ref="student_carol"/><field name="score">88.0</field></record>
+<record id="grade_cs101_mid_david"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_mid"/><field name="student_id" ref="student_david"/><field name="score">62.0</field></record>
+<record id="grade_cs101_mid_emma"   model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_mid"/><field name="student_id" ref="student_emma"/><field name="score">85.0</field></record>
+<record id="grade_cs101_mid_frank"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_mid"/><field name="student_id" ref="student_frank"/><field name="score">82.0</field></record>
+<record id="grade_cs101_mid_grace"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_mid"/><field name="student_id" ref="student_grace"/><field name="score">87.0</field></record>
+
+<!-- CS101 Final Exam (max=100) -->
+<record id="grade_cs101_final_alice"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_final"/><field name="student_id" ref="student_alice"/><field name="score">87.0</field></record>
+<record id="grade_cs101_final_bob"    model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_final"/><field name="student_id" ref="student_bob"/><field name="score">78.0</field></record>
+<record id="grade_cs101_final_carol"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_final"/><field name="student_id" ref="student_carol"/><field name="score">94.0</field></record>
+<record id="grade_cs101_final_david"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_final"/><field name="student_id" ref="student_david"/><field name="score">68.0</field></record>
+<record id="grade_cs101_final_emma"   model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_final"/><field name="student_id" ref="student_emma"/><field name="score">89.0</field></record>
+<record id="grade_cs101_final_frank"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_final"/><field name="student_id" ref="student_frank"/><field name="score">90.0</field></record>
+<record id="grade_cs101_final_grace"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs101_final"/><field name="student_id" ref="student_grace"/><field name="score">84.0</field></record>
+
+<!-- CS201 Quiz 1 (max=50) -->
+<record id="grade_cs201_quiz1_alice"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs201_quiz1"/><field name="student_id" ref="student_alice"/><field name="score">42.0</field></record>
+<record id="grade_cs201_quiz1_bob"    model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs201_quiz1"/><field name="student_id" ref="student_bob"/><field name="score">45.0</field></record>
+<record id="grade_cs201_quiz1_david"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs201_quiz1"/><field name="student_id" ref="student_david"/><field name="score">38.0</field></record>
+<record id="grade_cs201_quiz1_henry"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs201_quiz1"/><field name="student_id" ref="student_henry"/><field name="score">47.0</field></record>
+
+<!-- CS201 Assignment 1 (max=100) -->
+<record id="grade_cs201_hw1_alice"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs201_hw1"/><field name="student_id" ref="student_alice"/><field name="score">78.0</field></record>
+<record id="grade_cs201_hw1_bob"    model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs201_hw1"/><field name="student_id" ref="student_bob"/><field name="score">82.0</field></record>
+<record id="grade_cs201_hw1_david"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs201_hw1"/><field name="student_id" ref="student_david"/><field name="score">70.0</field></record>
+<record id="grade_cs201_hw1_henry"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs201_hw1"/><field name="student_id" ref="student_henry"/><field name="score">85.0</field></record>
+
+<!-- CS201 Final Exam (max=100) -->
+<record id="grade_cs201_final_alice"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs201_final"/><field name="student_id" ref="student_alice"/><field name="score">80.0</field></record>
+<record id="grade_cs201_final_bob"    model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs201_final"/><field name="student_id" ref="student_bob"/><field name="score">84.0</field></record>
+<record id="grade_cs201_final_david"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs201_final"/><field name="student_id" ref="student_david"/><field name="score">73.0</field></record>
+<record id="grade_cs201_final_henry"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_cs201_final"/><field name="student_id" ref="student_henry"/><field name="score">90.0</field></record>
+
+<!-- MATH201 Quiz 1 (max=50) -->
+<record id="grade_math201_quiz1_carol"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_quiz1"/><field name="student_id" ref="student_carol"/><field name="score">38.0</field></record>
+<record id="grade_math201_quiz1_emma"   model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_quiz1"/><field name="student_id" ref="student_emma"/><field name="score">45.0</field></record>
+<record id="grade_math201_quiz1_frank"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_quiz1"/><field name="student_id" ref="student_frank"/><field name="score">30.0</field></record>
+<record id="grade_math201_quiz1_grace"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_quiz1"/><field name="student_id" ref="student_grace"/><field name="score">42.0</field></record>
+<record id="grade_math201_quiz1_henry"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_quiz1"/><field name="student_id" ref="student_henry"/><field name="score">25.0</field></record>
+
+<!-- MATH201 Mid-term (max=100) -->
+<record id="grade_math201_mid_carol"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_mid"/><field name="student_id" ref="student_carol"/><field name="score">72.0</field></record>
+<record id="grade_math201_mid_emma"   model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_mid"/><field name="student_id" ref="student_emma"/><field name="score">88.0</field></record>
+<record id="grade_math201_mid_frank"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_mid"/><field name="student_id" ref="student_frank"/><field name="score">65.0</field></record>
+<record id="grade_math201_mid_grace"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_mid"/><field name="student_id" ref="student_grace"/><field name="score">80.0</field></record>
+<record id="grade_math201_mid_henry"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_mid"/><field name="student_id" ref="student_henry"/><field name="score">52.0</field></record>
+
+<!-- MATH201 Final Exam (max=100) -->
+<record id="grade_math201_final_carol"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_final"/><field name="student_id" ref="student_carol"/><field name="score">76.0</field></record>
+<record id="grade_math201_final_emma"   model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_final"/><field name="student_id" ref="student_emma"/><field name="score">91.0</field></record>
+<record id="grade_math201_final_frank"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_final"/><field name="student_id" ref="student_frank"/><field name="score">70.0</field></record>
+<record id="grade_math201_final_grace"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_final"/><field name="student_id" ref="student_grace"/><field name="score">83.0</field></record>
+<record id="grade_math201_final_henry"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_math201_final"/><field name="student_id" ref="student_henry"/><field name="score">58.0</field></record>
+
+<!-- ENG301 Assignment 1 (max=100) -->
+<record id="grade_eng301_hw1_alice"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_hw1"/><field name="student_id" ref="student_alice"/><field name="score">90.0</field></record>
+<record id="grade_eng301_hw1_bob"    model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_hw1"/><field name="student_id" ref="student_bob"/><field name="score">72.0</field></record>
+<record id="grade_eng301_hw1_carol"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_hw1"/><field name="student_id" ref="student_carol"/><field name="score">86.0</field></record>
+<record id="grade_eng301_hw1_emma"   model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_hw1"/><field name="student_id" ref="student_emma"/><field name="score">88.0</field></record>
+<record id="grade_eng301_hw1_grace"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_hw1"/><field name="student_id" ref="student_grace"/><field name="score">79.0</field></record>
+
+<!-- ENG301 Assignment 2 (max=100) -->
+<record id="grade_eng301_hw2_alice"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_hw2"/><field name="student_id" ref="student_alice"/><field name="score">88.0</field></record>
+<record id="grade_eng301_hw2_bob"    model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_hw2"/><field name="student_id" ref="student_bob"/><field name="score">68.0</field></record>
+<record id="grade_eng301_hw2_carol"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_hw2"/><field name="student_id" ref="student_carol"/><field name="score">84.0</field></record>
+<record id="grade_eng301_hw2_emma"   model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_hw2"/><field name="student_id" ref="student_emma"/><field name="score">85.0</field></record>
+<record id="grade_eng301_hw2_grace"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_hw2"/><field name="student_id" ref="student_grace"/><field name="score">75.0</field></record>
+
+<!-- ENG301 Final Exam (max=100) -->
+<record id="grade_eng301_final_alice"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_final"/><field name="student_id" ref="student_alice"/><field name="score">92.0</field></record>
+<record id="grade_eng301_final_bob"    model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_final"/><field name="student_id" ref="student_bob"/><field name="score">74.0</field></record>
+<record id="grade_eng301_final_carol"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_final"/><field name="student_id" ref="student_carol"/><field name="score">90.0</field></record>
+<record id="grade_eng301_final_emma"   model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_final"/><field name="student_id" ref="student_emma"/><field name="score">95.0</field></record>
+<record id="grade_eng301_final_grace"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_eng301_final"/><field name="student_id" ref="student_grace"/><field name="score">82.0</field></record>
+
+<!-- BUS101 Quiz 1 (max=50) -->
+<record id="grade_bus101_quiz1_bob"    model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_bus101_quiz1"/><field name="student_id" ref="student_bob"/><field name="score">45.0</field></record>
+<record id="grade_bus101_quiz1_david"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_bus101_quiz1"/><field name="student_id" ref="student_david"/><field name="score">38.0</field></record>
+<record id="grade_bus101_quiz1_frank"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_bus101_quiz1"/><field name="student_id" ref="student_frank"/><field name="score">32.0</field></record>
+<record id="grade_bus101_quiz1_henry"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_bus101_quiz1"/><field name="student_id" ref="student_henry"/><field name="score">42.0</field></record>
+
+<!-- BUS101 Mid-term (max=100) -->
+<record id="grade_bus101_mid_bob"    model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_bus101_mid"/><field name="student_id" ref="student_bob"/><field name="score">82.0</field></record>
+<record id="grade_bus101_mid_david"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_bus101_mid"/><field name="student_id" ref="student_david"/><field name="score">75.0</field></record>
+<record id="grade_bus101_mid_frank"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_bus101_mid"/><field name="student_id" ref="student_frank"/><field name="score">62.0</field></record>
+<record id="grade_bus101_mid_henry"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_bus101_mid"/><field name="student_id" ref="student_henry"/><field name="score">80.0</field></record>
+
+<!-- BUS101 Final Exam (max=100) -->
+<record id="grade_bus101_final_bob"    model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_bus101_final"/><field name="student_id" ref="student_bob"/><field name="score">79.0</field></record>
+<record id="grade_bus101_final_david"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_bus101_final"/><field name="student_id" ref="student_david"/><field name="score">78.0</field></record>
+<record id="grade_bus101_final_frank"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_bus101_final"/><field name="student_id" ref="student_frank"/><field name="score">67.0</field></record>
+<record id="grade_bus101_final_henry"  model="lms.assessment.grade"><field name="assessment_id" ref="asmnt_bus101_final"/><field name="student_id" ref="student_henry"/><field name="score">83.0</field></record>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ACADEMIC RECORDS  (one per student, 2024-2025 Semester 1)
+     GPA and grade are auto-computed from record lines
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<record id="acad_alice_2024_s1" model="lms.academic.record">
+    <field name="student_id" ref="student_alice"/>
+    <field name="academic_year">2024-2025</field>
+    <field name="semester">1</field>
+    <field name="state">locked</field>
+    <field name="issued_date">2025-01-10</field>
+    <field name="remarks">Excellent performance across all courses. Dean's List candidate.</field>
+</record>
+<record id="acad_bob_2024_s1" model="lms.academic.record">
+    <field name="student_id" ref="student_bob"/>
+    <field name="academic_year">2024-2025</field>
+    <field name="semester">1</field>
+    <field name="state">confirmed</field>
+    <field name="issued_date">2025-01-10</field>
+    <field name="remarks">Satisfactory progress. Encouraged to seek tutoring for ENG301.</field>
+</record>
+<record id="acad_carol_2024_s1" model="lms.academic.record">
+    <field name="student_id" ref="student_carol"/>
+    <field name="academic_year">2024-2025</field>
+    <field name="semester">1</field>
+    <field name="state">locked</field>
+    <field name="issued_date">2025-01-10</field>
+    <field name="remarks">Outstanding results. Recommended for Honours programme.</field>
+</record>
+<record id="acad_david_2024_s1" model="lms.academic.record">
+    <field name="student_id" ref="student_david"/>
+    <field name="academic_year">2024-2025</field>
+    <field name="semester">1</field>
+    <field name="state">confirmed</field>
+    <field name="issued_date">2025-01-10</field>
+    <field name="remarks">Needs improvement in CS101. Academic advisor meeting scheduled.</field>
+</record>
+<record id="acad_emma_2024_s1" model="lms.academic.record">
+    <field name="student_id" ref="student_emma"/>
+    <field name="academic_year">2024-2025</field>
+    <field name="semester">1</field>
+    <field name="state">locked</field>
+    <field name="issued_date">2025-01-10</field>
+    <field name="remarks">Strong academic record. Perfect attendance in MATH201.</field>
+</record>
+<record id="acad_frank_2024_s1" model="lms.academic.record">
+    <field name="student_id" ref="student_frank"/>
+    <field name="academic_year">2024-2025</field>
+    <field name="semester">1</field>
+    <field name="state">confirmed</field>
+    <field name="issued_date">2025-01-10</field>
+    <field name="remarks">Mixed performance. Needs improvement in MATH201 and BUS101.</field>
+</record>
+<record id="acad_grace_2024_s1" model="lms.academic.record">
+    <field name="student_id" ref="student_grace"/>
+    <field name="academic_year">2024-2025</field>
+    <field name="semester">1</field>
+    <field name="state">locked</field>
+    <field name="issued_date">2025-01-10</field>
+    <field name="remarks">Consistently good performance. Active in class participation.</field>
+</record>
+<record id="acad_henry_2024_s1" model="lms.academic.record">
+    <field name="student_id" ref="student_henry"/>
+    <field name="academic_year">2024-2025</field>
+    <field name="semester">1</field>
+    <field name="state">confirmed</field>
+    <field name="issued_date">2025-01-10</field>
+    <field name="remarks">Good performance in CS201 and BUS101. MATH201 requires more attention.</field>
+</record>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ACADEMIC RECORD LINES  (course grades per semester record)
+     GPA auto-computes from these lines
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<!-- Alice: CS101=86, ENG301=90, CS201=79 -->
+<record id="arl_alice_cs101"   model="lms.academic.record.line"><field name="record_id" ref="acad_alice_2024_s1"/><field name="course_id" ref="course_cs101"/><field name="marks_obtained">86.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_alice_eng301"  model="lms.academic.record.line"><field name="record_id" ref="acad_alice_2024_s1"/><field name="course_id" ref="course_eng301"/><field name="marks_obtained">90.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_alice_cs201"   model="lms.academic.record.line"><field name="record_id" ref="acad_alice_2024_s1"/><field name="course_id" ref="course_cs201"/><field name="marks_obtained">79.0</field><field name="total_marks">100.0</field></record>
+
+<!-- Bob: CS101=74, ENG301=71, BUS101=80 -->
+<record id="arl_bob_cs101"     model="lms.academic.record.line"><field name="record_id" ref="acad_bob_2024_s1"/><field name="course_id" ref="course_cs101"/><field name="marks_obtained">74.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_bob_eng301"    model="lms.academic.record.line"><field name="record_id" ref="acad_bob_2024_s1"/><field name="course_id" ref="course_eng301"/><field name="marks_obtained">71.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_bob_bus101"    model="lms.academic.record.line"><field name="record_id" ref="acad_bob_2024_s1"/><field name="course_id" ref="course_bus101"/><field name="marks_obtained">80.0</field><field name="total_marks">100.0</field></record>
+
+<!-- Carol: CS101=91, ENG301=87, MATH201=74 -->
+<record id="arl_carol_cs101"   model="lms.academic.record.line"><field name="record_id" ref="acad_carol_2024_s1"/><field name="course_id" ref="course_cs101"/><field name="marks_obtained">91.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_carol_eng301"  model="lms.academic.record.line"><field name="record_id" ref="acad_carol_2024_s1"/><field name="course_id" ref="course_eng301"/><field name="marks_obtained">87.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_carol_math201" model="lms.academic.record.line"><field name="record_id" ref="acad_carol_2024_s1"/><field name="course_id" ref="course_math201"/><field name="marks_obtained">74.0</field><field name="total_marks">100.0</field></record>
+
+<!-- David: CS101=65, CS201=72, BUS101=77 -->
+<record id="arl_david_cs101"   model="lms.academic.record.line"><field name="record_id" ref="acad_david_2024_s1"/><field name="course_id" ref="course_cs101"/><field name="marks_obtained">65.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_david_cs201"   model="lms.academic.record.line"><field name="record_id" ref="acad_david_2024_s1"/><field name="course_id" ref="course_cs201"/><field name="marks_obtained">72.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_david_bus101"  model="lms.academic.record.line"><field name="record_id" ref="acad_david_2024_s1"/><field name="course_id" ref="course_bus101"/><field name="marks_obtained">77.0</field><field name="total_marks">100.0</field></record>
+
+<!-- Emma: CS101=87, MATH201=89, ENG301=89 -->
+<record id="arl_emma_cs101"    model="lms.academic.record.line"><field name="record_id" ref="acad_emma_2024_s1"/><field name="course_id" ref="course_cs101"/><field name="marks_obtained">87.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_emma_math201"  model="lms.academic.record.line"><field name="record_id" ref="acad_emma_2024_s1"/><field name="course_id" ref="course_math201"/><field name="marks_obtained">89.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_emma_eng301"   model="lms.academic.record.line"><field name="record_id" ref="acad_emma_2024_s1"/><field name="course_id" ref="course_eng301"/><field name="marks_obtained">93.0</field><field name="total_marks">100.0</field></record>
+
+<!-- Frank: CS101=88, MATH201=68, BUS101=65 -->
+<record id="arl_frank_cs101"   model="lms.academic.record.line"><field name="record_id" ref="acad_frank_2024_s1"/><field name="course_id" ref="course_cs101"/><field name="marks_obtained">88.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_frank_math201" model="lms.academic.record.line"><field name="record_id" ref="acad_frank_2024_s1"/><field name="course_id" ref="course_math201"/><field name="marks_obtained">68.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_frank_bus101"  model="lms.academic.record.line"><field name="record_id" ref="acad_frank_2024_s1"/><field name="course_id" ref="course_bus101"/><field name="marks_obtained">65.0</field><field name="total_marks">100.0</field></record>
+
+<!-- Grace: CS101=86, MATH201=82, ENG301=79 -->
+<record id="arl_grace_cs101"   model="lms.academic.record.line"><field name="record_id" ref="acad_grace_2024_s1"/><field name="course_id" ref="course_cs101"/><field name="marks_obtained">86.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_grace_math201" model="lms.academic.record.line"><field name="record_id" ref="acad_grace_2024_s1"/><field name="course_id" ref="course_math201"/><field name="marks_obtained">82.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_grace_eng301"  model="lms.academic.record.line"><field name="record_id" ref="acad_grace_2024_s1"/><field name="course_id" ref="course_eng301"/><field name="marks_obtained">79.0</field><field name="total_marks">100.0</field></record>
+
+<!-- Henry: CS201=88, MATH201=56, BUS101=82 -->
+<record id="arl_henry_cs201"   model="lms.academic.record.line"><field name="record_id" ref="acad_henry_2024_s1"/><field name="course_id" ref="course_cs201"/><field name="marks_obtained">88.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_henry_math201" model="lms.academic.record.line"><field name="record_id" ref="acad_henry_2024_s1"/><field name="course_id" ref="course_math201"/><field name="marks_obtained">56.0</field><field name="total_marks">100.0</field></record>
+<record id="arl_henry_bus101"  model="lms.academic.record.line"><field name="record_id" ref="acad_henry_2024_s1"/><field name="course_id" ref="course_bus101"/><field name="marks_obtained">82.0</field><field name="total_marks">100.0</field></record>
+
+</data>
+</odoo>

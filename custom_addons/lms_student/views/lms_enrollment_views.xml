@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Enrollment FORM View -->
+        <record id="view_lms_enrollment_form" model="ir.ui.view">
+            <field name="name">lms.enrollment.form</field>
+            <field name="model">lms.enrollment</field>
+            <field name="arch" type="xml">
+                <form string="Enrollment">
+                    <header>
+                        <button name="action_enroll" type="object"
+                                string="Enroll" class="oe_highlight"
+                                invisible="state != 'pending'"/>
+                        <button name="action_complete" type="object"
+                                string="Mark Completed"
+                                invisible="state != 'enrolled'"/>
+                        <button name="action_drop" type="object"
+                                string="Drop Course"
+                                invisible="state in ['dropped','completed']"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="pending,enrolled,completed"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group string="Enrollment Details">
+                                <field name="student_id"/>
+                                <field name="course_id"/>
+                                <field name="enrollment_date"/>
+                            </group>
+                            <group string="Performance">
+                                <field name="grade"/>
+                                <field name="attendance_percent"/>
+                            </group>
+                        </group>
+                        <group string="Notes">
+                            <field name="notes" nolabel="1"
+                                   placeholder="Additional notes..."/>
+                        </group>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Enrollment LIST View -->
+        <record id="view_lms_enrollment_list" model="ir.ui.view">
+            <field name="name">lms.enrollment.list</field>
+            <field name="model">lms.enrollment</field>
+            <field name="arch" type="xml">
+                <list string="Enrollments"
+                      decoration-success="state == 'completed'"
+                      decoration-info="state == 'enrolled'"
+                      decoration-danger="state == 'dropped'">
+                    <field name="student_id"/>
+                    <field name="course_id"/>
+                    <field name="enrollment_date"/>
+                    <field name="grade"/>
+                    <field name="attendance_percent"/>
+                    <field name="state" widget="badge"
+                           decoration-success="state == 'enrolled'"
+                           decoration-info="state == 'completed'"
+                           decoration-warning="state == 'pending'"
+                           decoration-danger="state == 'dropped'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Enrollment SEARCH View -->
+        <record id="view_lms_enrollment_search" model="ir.ui.view">
+            <field name="name">lms.enrollment.search</field>
+            <field name="model">lms.enrollment</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="student_id"/>
+                    <field name="course_id"/>
+                    <filter name="enrolled" string="Enrolled" domain="[('state','=','enrolled')]"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Enrollment ACTION -->
+        <record id="action_lms_enrollment" model="ir.actions.act_window">
+            <field name="name">Enrollments</field>
+            <field name="res_model">lms.enrollment</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_lms_enrollment_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Enroll a student into a course!
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

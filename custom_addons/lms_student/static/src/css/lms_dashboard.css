@@ -1,0 +1,240 @@
+/* ════════════════════════════════════════════════════════════════
+   LMS Dashboard – layout & component styles
+   ════════════════════════════════════════════════════════════════ */
+
+.lms-dashboard {
+    padding: 24px;
+    background: #f3f4f6;
+    min-height: 100%;
+    box-sizing: border-box;
+}
+
+/* ── Loading state ──────────────────────────────────────────── */
+.lms-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    height: 400px;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+/* ── No-profile state ───────────────────────────────────────── */
+.lms-no-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 80px 24px;
+    text-align: center;
+    color: #374151;
+}
+
+.lms-no-profile-icon {
+    font-size: 3.5rem;
+}
+
+.lms-no-profile h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.lms-no-profile p {
+    color: #6b7280;
+    font-size: 0.95rem;
+    max-width: 460px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ── Page header ────────────────────────────────────────────── */
+.lms-dash-header {
+    margin-bottom: 24px;
+}
+
+.lms-dash-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 4px 0;
+}
+
+.lms-dash-subtitle {
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+/* ── KPI row ────────────────────────────────────────────────── */
+.lms-kpi-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.lms-kpi-card {
+    flex: 1 1 160px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.lms-kpi-blue   { border-left-color: #3b82f6; }
+.lms-kpi-green  { border-left-color: #10b981; }
+.lms-kpi-red    { border-left-color: #ef4444; }
+.lms-kpi-purple { border-left-color: #8b5cf6; }
+.lms-kpi-orange { border-left-color: #f59e0b; }
+
+.lms-kpi-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.lms-kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1;
+}
+
+.lms-kpi-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* ── Chart grid ─────────────────────────────────────────────── */
+.lms-charts-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: stretch;
+}
+
+.lms-chart-card {
+    flex: 1 1 260px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+}
+
+/* span 2 columns on wide screens */
+.lms-chart-wide { flex: 2 1 360px; }
+
+/* always stretch full row */
+.lms-chart-full { flex: 1 1 100%; }
+
+.lms-chart-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.lms-chart-body {
+    position: relative;
+    height: 220px;
+    flex: 1;
+}
+
+.lms-chart-body-tall {
+    height: 280px;
+}
+
+/* ── At-risk / generic section card ─────────────────────────── */
+.lms-section-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    margin-bottom: 16px;
+}
+
+.lms-section-heading {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.lms-section-heading::before {
+    content: "⚠";
+    color: #f59e0b;
+}
+
+/* ── Table ──────────────────────────────────────────────────── */
+.lms-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.lms-table thead th {
+    text-align: left;
+    padding: 8px 12px;
+    background: #f9fafb;
+    color: #6b7280;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.lms-table tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f3f4f6;
+    color: #374151;
+    vertical-align: middle;
+}
+
+.lms-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.lms-table tbody tr:hover td {
+    background: #f9fafb;
+}
+
+.lms-td-student {
+    font-weight: 500;
+}
+
+/* ── Pills / badges ─────────────────────────────────────────── */
+.lms-pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.lms-pill-warn {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.lms-pill-danger {
+    background: #fee2e2;
+    color: #991b1b;
+}

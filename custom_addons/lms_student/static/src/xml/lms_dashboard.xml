@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+<t t-name="lms_student.LmsDashboard">
+<div class="lms-dashboard o_action">
+
+    <!-- ══════════  LOADING  ══════════ -->
+    <t t-if="!state.loaded">
+        <div class="lms-loading">
+            <div class="spinner-border text-primary" role="status"/>
+            <span>Loading dashboard…</span>
+        </div>
+    </t>
+
+    <!-- ══════════  STUDENT – NO PROFILE  ══════════ -->
+    <t t-elif="!state.isTeacher and state.noProfile">
+        <div class="lms-no-profile">
+            <div class="lms-no-profile-icon">🎓</div>
+            <h3>Welcome to the LMS</h3>
+            <p>
+                Your user account is not yet linked to a student profile.<br/>
+                Please ask an administrator to link your account in the Students section.
+            </p>
+        </div>
+    </t>
+
+    <!-- ══════════  TEACHER / MANAGER DASHBOARD  ══════════ -->
+    <t t-elif="state.isTeacher and state.loaded">
+
+        <div class="lms-dash-header">
+            <h2 class="lms-dash-title">LMS Overview</h2>
+            <span class="lms-dash-subtitle">Class analytics and performance at a glance</span>
+        </div>
+
+        <!-- KPI CARDS -->
+        <div class="lms-kpi-row">
+            <div class="lms-kpi-card lms-kpi-blue">
+                <div class="lms-kpi-icon">👥</div>
+                <div class="lms-kpi-value"><t t-esc="state.kpis.active_students"/></div>
+                <div class="lms-kpi-label">Active Students</div>
+            </div>
+            <div class="lms-kpi-card lms-kpi-green">
+                <div class="lms-kpi-icon">📚</div>
+                <div class="lms-kpi-value"><t t-esc="state.kpis.published_courses"/></div>
+                <div class="lms-kpi-label">Published Courses</div>
+            </div>
+            <div class="lms-kpi-card lms-kpi-red">
+                <div class="lms-kpi-icon">⚠️</div>
+                <div class="lms-kpi-value"><t t-esc="state.kpis.flagged_students"/></div>
+                <div class="lms-kpi-label">Flagged Students</div>
+            </div>
+            <div class="lms-kpi-card lms-kpi-purple">
+                <div class="lms-kpi-icon">🎓</div>
+                <div class="lms-kpi-value"><t t-esc="state.kpis.avg_gpa"/></div>
+                <div class="lms-kpi-label">Avg. GPA</div>
+            </div>
+            <div class="lms-kpi-card lms-kpi-orange">
+                <div class="lms-kpi-icon">⏳</div>
+                <div class="lms-kpi-value"><t t-esc="state.kpis.pending_enrollments"/></div>
+                <div class="lms-kpi-label">Pending Enrollments</div>
+            </div>
+        </div>
+
+        <!-- CHARTS ROW 1: wide bar + doughnut -->
+        <div class="lms-charts-row">
+            <div class="lms-chart-card lms-chart-wide">
+                <div class="lms-chart-title">Enrollments by Course</div>
+                <div class="lms-chart-body">
+                    <canvas id="lms-chart-enrollments"/>
+                </div>
+            </div>
+            <div class="lms-chart-card">
+                <div class="lms-chart-title">Student Status</div>
+                <div class="lms-chart-body">
+                    <canvas id="lms-chart-status"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHARTS ROW 2: two bars -->
+        <div class="lms-charts-row">
+            <div class="lms-chart-card">
+                <div class="lms-chart-title">Avg. Attendance by Course</div>
+                <div class="lms-chart-body">
+                    <canvas id="lms-chart-attendance"/>
+                </div>
+            </div>
+            <div class="lms-chart-card">
+                <div class="lms-chart-title">Grade Distribution</div>
+                <div class="lms-chart-body">
+                    <canvas id="lms-chart-grades"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHARTS ROW 3: full-width trend line -->
+        <div class="lms-charts-row">
+            <div class="lms-chart-card lms-chart-full">
+                <div class="lms-chart-title">Assessment Score Trend (avg per assessment)</div>
+                <div class="lms-chart-body lms-chart-body-tall">
+                    <canvas id="lms-chart-trend"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- AT-RISK TABLE -->
+        <t t-if="state.atRisk.length">
+            <div class="lms-section-card">
+                <div class="lms-section-heading">At-Risk Students</div>
+                <table class="lms-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Course</th>
+                            <th>Attendance</th>
+                            <th>Flagged</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="state.atRisk" t-as="row"
+                            t-key="row.student_id + '_' + row.course_name">
+                            <td class="lms-td-student"><t t-esc="row.student_name"/></td>
+                            <td><t t-esc="row.course_name"/></td>
+                            <td>
+                                <span t-attf-class="lms-pill {{ row.attendance &lt; 50 ? 'lms-pill-danger' : 'lms-pill-warn' }}">
+                                    <t t-esc="row.attendance"/>%
+                                </span>
+                            </td>
+                            <td>
+                                <t t-if="row.flagged">
+                                    <span class="lms-pill lms-pill-danger">
+                                        <t t-esc="row.flagged"/>
+                                    </span>
+                                </t>
+                                <t t-else="">—</t>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary"
+                                        t-on-click="() => this.openStudent(row.student_id)">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+
+    </t>
+
+    <!-- ══════════  STUDENT DASHBOARD  ══════════ -->
+    <t t-elif="!state.isTeacher and state.loaded and !state.noProfile">
+
+        <div class="lms-dash-header">
+            <h2 class="lms-dash-title">My Dashboard</h2>
+            <span class="lms-dash-subtitle">
+                Welcome back, <strong><t t-esc="state.studentName"/></strong>
+            </span>
+        </div>
+
+        <!-- KPI CARDS -->
+        <div class="lms-kpi-row">
+            <div class="lms-kpi-card lms-kpi-blue">
+                <div class="lms-kpi-icon">📚</div>
+                <div class="lms-kpi-value"><t t-esc="state.kpis.enrolled_courses"/></div>
+                <div class="lms-kpi-label">Enrolled Courses</div>
+            </div>
+            <div class="lms-kpi-card lms-kpi-green">
+                <div class="lms-kpi-icon">✅</div>
+                <div class="lms-kpi-value"><t t-esc="state.kpis.avg_attendance"/>%</div>
+                <div class="lms-kpi-label">Avg. Attendance</div>
+            </div>
+            <div class="lms-kpi-card lms-kpi-purple">
+                <div class="lms-kpi-icon">🎓</div>
+                <div class="lms-kpi-value"><t t-esc="state.kpis.latest_gpa"/></div>
+                <div class="lms-kpi-label">Latest GPA</div>
+            </div>
+            <div class="lms-kpi-card lms-kpi-red">
+                <div class="lms-kpi-icon">⚠️</div>
+                <div class="lms-kpi-value"><t t-esc="state.kpis.flagged_assessments"/></div>
+                <div class="lms-kpi-label">Flagged Assessments</div>
+            </div>
+        </div>
+
+        <!-- STUDENT CHARTS -->
+        <div class="lms-charts-row">
+            <div class="lms-chart-card">
+                <div class="lms-chart-title">My Grades by Course</div>
+                <div class="lms-chart-body">
+                    <canvas id="lms-chart-my-grades"/>
+                </div>
+            </div>
+            <div class="lms-chart-card">
+                <div class="lms-chart-title">My Attendance by Course</div>
+                <div class="lms-chart-body">
+                    <canvas id="lms-chart-my-attendance"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="lms-charts-row">
+            <div class="lms-chart-card lms-chart-full">
+                <div class="lms-chart-title">GPA Progression by Semester</div>
+                <div class="lms-chart-body lms-chart-body-tall">
+                    <canvas id="lms-chart-gpa"/>
+                </div>
+            </div>
+        </div>
+
+    </t>
+
+</div>
+</t>
+
+</templates>

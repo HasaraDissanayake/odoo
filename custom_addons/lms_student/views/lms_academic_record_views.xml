@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Academic Record FORM View -->
+        <record id="view_lms_academic_record_form" model="ir.ui.view">
+            <field name="name">lms.academic.record.form</field>
+            <field name="model">lms.academic.record</field>
+            <field name="arch" type="xml">
+                <form string="Academic Record">
+                    <header>
+                        <button name="action_confirm" type="object"
+                                string="Confirm" class="oe_highlight"
+                                invisible="state != 'draft'"/>
+                        <button name="action_lock" type="object"
+                                string="Lock Record"
+                                invisible="state != 'confirmed'"/>
+                        <button name="action_reset_draft" type="object"
+                                string="Reset to Draft"
+                                invisible="state == 'draft'"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,confirmed,locked"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="student_id"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Academic Period">
+                                <field name="academic_year"/>
+                                <field name="semester"/>
+                                <field name="issued_date"/>
+                            </group>
+                            <group string="Summary">
+                                <field name="gpa" readonly="1"/>
+                                <field name="total_credits" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Course Grades" name="grades">
+                                <field name="record_line_ids">
+                                    <list string="Grades" editable="bottom"
+                                          decoration-danger="result == 'fail'"
+                                          decoration-warning="is_flagged and result != 'fail'"
+                                          decoration-success="result == 'pass' and not is_flagged">
+                                        <field name="course_id"/>
+                                        <field name="credits" readonly="1"/>
+                                        <field name="total_marks"/>
+                                        <field name="marks_obtained"/>
+                                        <field name="percentage" readonly="1"/>
+                                        <field name="grade" readonly="1"/>
+                                        <field name="grade_points" readonly="1"/>
+                                        <field name="result" widget="badge"
+                                               decoration-success="result == 'pass'"
+                                               decoration-danger="result == 'fail'"
+                                               readonly="1"/>
+                                        <field name="is_flagged" string="Flagged" widget="boolean"
+                                               readonly="1" optional="show"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Remarks" name="remarks">
+                                <field name="remarks" placeholder="Remarks..."
+                                       nolabel="1"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Academic Record LIST View -->
+        <record id="view_lms_academic_record_list" model="ir.ui.view">
+            <field name="name">lms.academic.record.list</field>
+            <field name="model">lms.academic.record</field>
+            <field name="arch" type="xml">
+                <list string="Academic Records">
+                    <field name="student_id"/>
+                    <field name="academic_year"/>
+                    <field name="semester"/>
+                    <field name="total_credits"/>
+                    <field name="gpa" string="GPA"/>
+                    <field name="issued_date"/>
+                    <field name="state" widget="badge"
+                           decoration-success="state == 'locked'"
+                           decoration-info="state == 'confirmed'"
+                           decoration-warning="state == 'draft'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Academic Record SEARCH View -->
+        <record id="view_lms_academic_record_search" model="ir.ui.view">
+            <field name="name">lms.academic.record.search</field>
+            <field name="model">lms.academic.record</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="student_id"/>
+                    <field name="academic_year"/>
+                    <filter name="confirmed" string="Confirmed" domain="[('state','=','confirmed')]"/>
+                    <filter name="flagged_lines" string="Has Flagged Courses (Below 75%)"
+                            domain="[('record_line_ids.is_flagged','=',True)]"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Academic Record ACTION -->
+        <record id="action_lms_academic_record" model="ir.actions.act_window">
+            <field name="name">Academic Records</field>
+            <field name="res_model">lms.academic.record</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_lms_academic_record_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create the first academic record for a student!
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

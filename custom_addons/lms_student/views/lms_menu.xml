@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ════════════  TOP-LEVEL MENU  ════════════ -->
+        <menuitem id="menu_lms_root"
+                  name="LMS"
+                  sequence="50"/>
+
+        <!-- ════════════  DASHBOARD  ════════════ -->
+        <!-- Visible to all LMS users (student, teacher, manager) -->
+        <menuitem id="menu_lms_dashboard"
+                  name="Dashboard"
+                  parent="menu_lms_root"
+                  action="action_lms_dashboard"
+                  sequence="1"/>
+
+        <!-- ════════════  STUDENTS (teacher/manager only) ════════════ -->
+        <menuitem id="menu_lms_students"
+                  name="Students"
+                  parent="menu_lms_root"
+                  sequence="10"
+                  groups="lms_student.group_lms_teacher"/>
+
+        <menuitem id="menu_lms_student_list"
+                  name="All Students"
+                  parent="menu_lms_students"
+                  action="action_lms_student"
+                  sequence="10"
+                  groups="lms_student.group_lms_teacher"/>
+
+        <!-- ════════════  COURSES (all users) ════════════ -->
+        <menuitem id="menu_lms_courses"
+                  name="Courses"
+                  parent="menu_lms_root"
+                  sequence="20"/>
+
+        <menuitem id="menu_lms_course_list"
+                  name="All Courses"
+                  parent="menu_lms_courses"
+                  action="action_lms_course"
+                  sequence="10"/>
+
+        <!-- ════════════  ENROLLMENTS (teacher/manager only) ════════════ -->
+        <menuitem id="menu_lms_enrollments"
+                  name="Enrollments"
+                  parent="menu_lms_root"
+                  sequence="30"
+                  groups="lms_student.group_lms_teacher"/>
+
+        <menuitem id="menu_lms_enrollment_list"
+                  name="All Enrollments"
+                  parent="menu_lms_enrollments"
+                  action="action_lms_enrollment"
+                  sequence="10"
+                  groups="lms_student.group_lms_teacher"/>
+
+        <!-- ════════════  ACADEMIC RECORDS (teacher/manager only) ════════════ -->
+        <menuitem id="menu_lms_records"
+                  name="Academic Records"
+                  parent="menu_lms_root"
+                  sequence="40"
+                  groups="lms_student.group_lms_teacher"/>
+
+        <menuitem id="menu_lms_record_list"
+                  name="All Records"
+                  parent="menu_lms_records"
+                  action="action_lms_academic_record"
+                  sequence="10"
+                  groups="lms_student.group_lms_teacher"/>
+
+        <menuitem id="menu_lms_record_import"
+                  name="Import from CSV"
+                  parent="menu_lms_records"
+                  action="action_lms_academic_record_import_wizard"
+                  sequence="20"
+                  groups="lms_student.group_lms_teacher"/>
+
+        <!-- ════════════  ATTENDANCE (teacher/manager only) ════════════ -->
+        <menuitem id="menu_lms_attendance"
+                  name="Attendance"
+                  parent="menu_lms_root"
+                  sequence="50"
+                  groups="lms_student.group_lms_teacher"/>
+
+        <menuitem id="menu_lms_attendance_session"
+                  name="Recorded Sessions"
+                  parent="menu_lms_attendance"
+                  action="action_lms_attendance_session"
+                  sequence="10"
+                  groups="lms_student.group_lms_teacher"/>
+
+        <!-- ════════════  GRADES & PERFORMANCE  ════════════ -->
+        <menuitem id="menu_lms_grades_root"
+                  name="Grades"
+                  parent="menu_lms_root"
+                  sequence="60"/>
+
+        <!-- Assessments only for teachers/managers -->
+        <menuitem id="menu_lms_assessment"
+                  name="Assessments"
+                  parent="menu_lms_grades_root"
+                  action="action_lms_assessment"
+                  sequence="10"
+                  groups="lms_student.group_lms_teacher"/>
+
+        <!-- Performance analysis visible to all (students see their own data via domain) -->
+        <menuitem id="menu_lms_performance"
+                  name="Performance Analysis"
+                  parent="menu_lms_grades_root"
+                  action="action_lms_assessment_grade"
+                  sequence="20"/>
+    </data>
+</odoo>

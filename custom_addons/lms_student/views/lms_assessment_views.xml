@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+    <!-- Assessment Tree View -->
+    <record id="view_lms_assessment_tree" model="ir.ui.view">
+        <field name="name">lms.assessment.tree</field>
+        <field name="model">lms.assessment</field>
+        <field name="arch" type="xml">
+            <list string="Assessments">
+                <field name="name"/>
+                <field name="course_id"/>
+                <field name="type"/>
+                <field name="date"/>
+                <field name="max_score"/>
+                <field name="weight"/>
+                <field name="grade_count"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Assessment Form View -->
+    <record id="view_lms_assessment_form" model="ir.ui.view">
+        <field name="name">lms.assessment.form</field>
+        <field name="model">lms.assessment</field>
+        <field name="arch" type="xml">
+            <form string="Assessment">
+                <header>
+                    <button name="action_generate_grade_lines" string="Generate Grade Lines" type="object" class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. Mid-term Exam"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="course_id"/>
+                            <field name="type"/>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="max_score"/>
+                            <field name="weight"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Grades" name="grades">
+                            <field name="grade_ids">
+                                <list editable="bottom"
+                                      decoration-warning="is_flagged == True">
+                                    <field name="student_id"/>
+                                    <field name="score"/>
+                                    <field name="max_score" column_invisible="True"/>
+                                    <field name="percentage" widget="progressbar"/>
+                                    <field name="is_flagged" string="Flagged" widget="boolean"
+                                           readonly="1" optional="show"/>
+                                    <field name="remarks"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Assessment Search View -->
+    <record id="view_lms_assessment_search" model="ir.ui.view">
+        <field name="name">lms.assessment.search</field>
+        <field name="model">lms.assessment</field>
+        <field name="arch" type="xml">
+            <search string="Search Assessments">
+                <field name="name"/>
+                <field name="course_id"/>
+                <group>
+                    <filter string="Course" name="group_by_course" context="{'group_by': 'course_id'}"/>
+                    <filter string="Type" name="group_by_type" context="{'group_by': 'type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Assessment Action -->
+    <record id="action_lms_assessment" model="ir.actions.act_window">
+        <field name="name">Assessments</field>
+        <field name="res_model">lms.assessment</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first assessment!
+            </p>
+        </field>
+    </record>
+
+    <!-- Grade Tree View -->
+    <record id="view_lms_assessment_grade_tree" model="ir.ui.view">
+        <field name="name">lms.assessment.grade.tree</field>
+        <field name="model">lms.assessment.grade</field>
+        <field name="arch" type="xml">
+            <list string="Grades" create="false"
+                  decoration-warning="is_flagged == True">
+                <field name="student_id"/>
+                <field name="assessment_id"/>
+                <field name="course_id"/>
+                <field name="score"/>
+                <field name="max_score"/>
+                <field name="percentage" widget="progressbar"/>
+                <field name="is_flagged" string="Flagged" widget="boolean" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Grade Graph View -->
+    <record id="view_lms_assessment_grade_graph" model="ir.ui.view">
+        <field name="name">lms.assessment.grade.graph</field>
+        <field name="model">lms.assessment.grade</field>
+        <field name="arch" type="xml">
+            <graph string="Student Performance" type="line" sample="1">
+                <field name="assessment_id" type="row"/>
+                <field name="score" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Grade Pivot View -->
+    <record id="view_lms_assessment_grade_pivot" model="ir.ui.view">
+        <field name="name">lms.assessment.grade.pivot</field>
+        <field name="model">lms.assessment.grade</field>
+        <field name="arch" type="xml">
+            <pivot string="Student Performance" sample="1">
+                <field name="course_id" type="row"/>
+                <field name="student_id" type="row"/>
+                <field name="assessment_id" type="col"/>
+                <field name="score" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Grade Action Update -->
+    <record id="action_lms_assessment_grade" model="ir.actions.act_window">
+        <field name="name">Performance Analysis</field>
+        <field name="res_model">lms.assessment.grade</field>
+        <field name="view_mode">list,graph,pivot,form</field>
+        <field name="context">{'search_default_group_by_student': 1}</field>
+    </record>
+
+    <!-- Grade Search View -->
+    <record id="view_lms_assessment_grade_search" model="ir.ui.view">
+        <field name="name">lms.assessment.grade.search</field>
+        <field name="model">lms.assessment.grade</field>
+        <field name="arch" type="xml">
+            <search string="Search Grades">
+                <field name="student_id"/>
+                <field name="course_id"/>
+                <field name="assessment_id"/>
+                <filter name="flagged" string="Flagged (Below 75%)" domain="[('is_flagged','=',True)]"/>
+                <separator/>
+                <group>
+                    <filter string="Student" name="group_by_student" context="{'group_by': 'student_id'}"/>
+                    <filter string="Course" name="group_by_course" context="{'group_by': 'course_id'}"/>
+                    <filter string="Assessment" name="group_by_assessment" context="{'group_by': 'assessment_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</data>
+</odoo>
