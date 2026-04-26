@@ -2,7 +2,8 @@
 <templates xml:space="preserve">
 
 <t t-name="lms_student.LmsDashboard">
-<div class="lms-dashboard o_action">
+<div class="o_action">
+<div class="o_content lms-dashboard">
 
     <!-- ══════════  LOADING  ══════════ -->
     <t t-if="!state.loaded">
@@ -36,28 +37,38 @@
         <div class="lms-kpi-row">
             <div class="lms-kpi-card lms-kpi-blue">
                 <div class="lms-kpi-icon">👥</div>
-                <div class="lms-kpi-value"><t t-esc="state.kpis.active_students"/></div>
-                <div class="lms-kpi-label">Active Students</div>
+                <div class="lms-kpi-info">
+                    <div class="lms-kpi-value"><t t-esc="state.kpis.active_students"/></div>
+                    <div class="lms-kpi-label">Active Students</div>
+                </div>
             </div>
             <div class="lms-kpi-card lms-kpi-green">
                 <div class="lms-kpi-icon">📚</div>
-                <div class="lms-kpi-value"><t t-esc="state.kpis.published_courses"/></div>
-                <div class="lms-kpi-label">Published Courses</div>
+                <div class="lms-kpi-info">
+                    <div class="lms-kpi-value"><t t-esc="state.kpis.published_courses"/></div>
+                    <div class="lms-kpi-label">Published Courses</div>
+                </div>
             </div>
             <div class="lms-kpi-card lms-kpi-red">
                 <div class="lms-kpi-icon">⚠️</div>
-                <div class="lms-kpi-value"><t t-esc="state.kpis.flagged_students"/></div>
-                <div class="lms-kpi-label">Flagged Students</div>
+                <div class="lms-kpi-info">
+                    <div class="lms-kpi-value"><t t-esc="state.kpis.flagged_students"/></div>
+                    <div class="lms-kpi-label">Flagged Students</div>
+                </div>
             </div>
             <div class="lms-kpi-card lms-kpi-purple">
                 <div class="lms-kpi-icon">🎓</div>
-                <div class="lms-kpi-value"><t t-esc="state.kpis.avg_gpa"/></div>
-                <div class="lms-kpi-label">Avg. GPA</div>
+                <div class="lms-kpi-info">
+                    <div class="lms-kpi-value"><t t-esc="state.kpis.avg_gpa"/></div>
+                    <div class="lms-kpi-label">Avg. GPA</div>
+                </div>
             </div>
             <div class="lms-kpi-card lms-kpi-orange">
                 <div class="lms-kpi-icon">⏳</div>
-                <div class="lms-kpi-value"><t t-esc="state.kpis.pending_enrollments"/></div>
-                <div class="lms-kpi-label">Pending Enrollments</div>
+                <div class="lms-kpi-info">
+                    <div class="lms-kpi-value"><t t-esc="state.kpis.pending_enrollments"/></div>
+                    <div class="lms-kpi-label">Pending Enrollments</div>
+                </div>
             </div>
         </div>
 
@@ -163,23 +174,31 @@
         <div class="lms-kpi-row">
             <div class="lms-kpi-card lms-kpi-blue">
                 <div class="lms-kpi-icon">📚</div>
-                <div class="lms-kpi-value"><t t-esc="state.kpis.enrolled_courses"/></div>
-                <div class="lms-kpi-label">Enrolled Courses</div>
+                <div class="lms-kpi-info">
+                    <div class="lms-kpi-value"><t t-esc="state.kpis.enrolled_courses"/></div>
+                    <div class="lms-kpi-label">Enrolled Courses</div>
+                </div>
             </div>
             <div class="lms-kpi-card lms-kpi-green">
                 <div class="lms-kpi-icon">✅</div>
-                <div class="lms-kpi-value"><t t-esc="state.kpis.avg_attendance"/>%</div>
-                <div class="lms-kpi-label">Avg. Attendance</div>
+                <div class="lms-kpi-info">
+                    <div class="lms-kpi-value"><t t-esc="state.kpis.avg_attendance"/>%</div>
+                    <div class="lms-kpi-label">Avg. Attendance</div>
+                </div>
             </div>
             <div class="lms-kpi-card lms-kpi-purple">
                 <div class="lms-kpi-icon">🎓</div>
-                <div class="lms-kpi-value"><t t-esc="state.kpis.latest_gpa"/></div>
-                <div class="lms-kpi-label">Latest GPA</div>
+                <div class="lms-kpi-info">
+                    <div class="lms-kpi-value"><t t-esc="state.kpis.latest_gpa"/></div>
+                    <div class="lms-kpi-label">Latest GPA</div>
+                </div>
             </div>
             <div class="lms-kpi-card lms-kpi-red">
                 <div class="lms-kpi-icon">⚠️</div>
-                <div class="lms-kpi-value"><t t-esc="state.kpis.flagged_assessments"/></div>
-                <div class="lms-kpi-label">Flagged Assessments</div>
+                <div class="lms-kpi-info">
+                    <div class="lms-kpi-value"><t t-esc="state.kpis.flagged_assessments"/></div>
+                    <div class="lms-kpi-label">Flagged Assessments</div>
+                </div>
             </div>
         </div>
 
@@ -210,6 +229,7 @@
 
     </t>
 
+</div>
 </div>
 </t>
 

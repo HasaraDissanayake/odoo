@@ -109,5 +109,18 @@
                   parent="menu_lms_grades_root"
                   action="action_lms_assessment_grade"
                   sequence="20"/>
+
+        <!-- ════════════  HELP / CHATBOT  ════════════ -->
+        <record id="action_lms_chat_support" model="ir.actions.act_url">
+            <field name="name">LMS Support Chat</field>
+            <field name="url">/lms/chat</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_lms_chat_support"
+                  name="Help (Chat)"
+                  parent="menu_lms_root"
+                  action="action_lms_chat_support"
+                  sequence="100"/>
     </data>
 </odoo>

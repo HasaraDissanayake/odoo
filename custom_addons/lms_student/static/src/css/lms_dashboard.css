@@ -77,26 +77,69 @@
 }
 
 .lms-kpi-card {
-    flex: 1 1 160px;
+    flex: 1 1 180px;
     background: #fff;
-    border-radius: 12px;
-    padding: 18px 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    border-left: 4px solid transparent;
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    border: none;
     display: flex;
-    flex-direction: column;
-    gap: 6px;
+    flex-direction: row;
+    align-items: center;
+    gap: 18px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
 }
 
-.lms-kpi-blue   { border-left-color: #3b82f6; }
-.lms-kpi-green  { border-left-color: #10b981; }
-.lms-kpi-red    { border-left-color: #ef4444; }
-.lms-kpi-purple { border-left-color: #8b5cf6; }
-.lms-kpi-orange { border-left-color: #f59e0b; }
+.lms-kpi-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
+    transform: translateY(-3px);
+}
 
+/* Colored bottom accent */
+.lms-kpi-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 0 0 16px 16px;
+}
+
+.lms-kpi-blue::after   { background: #3b82f6; }
+.lms-kpi-green::after  { background: #10b981; }
+.lms-kpi-red::after    { background: #ef4444; }
+.lms-kpi-purple::after { background: #8b5cf6; }
+.lms-kpi-orange::after { background: #f59e0b; }
+
+/* Colored icon container */
 .lms-kpi-icon {
-    font-size: 1.4rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
     line-height: 1;
+}
+
+.lms-kpi-blue .lms-kpi-icon   { background: rgba(59,  130, 246, 0.12); }
+.lms-kpi-green .lms-kpi-icon  { background: rgba(16,  185, 129, 0.12); }
+.lms-kpi-red .lms-kpi-icon    { background: rgba(239, 68,  68,  0.12); }
+.lms-kpi-purple .lms-kpi-icon { background: rgba(139, 92,  246, 0.12); }
+.lms-kpi-orange .lms-kpi-icon { background: rgba(245, 158, 11,  0.12); }
+
+/* Text block next to icon */
+.lms-kpi-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
 }
 
 .lms-kpi-value {
@@ -109,9 +152,12 @@
 .lms-kpi-label {
     font-size: 0.72rem;
     font-weight: 600;
-    color: #9ca3af;
+    color: #6b7280;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ── Chart grid ─────────────────────────────────────────────── */
@@ -238,3 +284,4 @@
     background: #fee2e2;
     color: #991b1b;
 }
+

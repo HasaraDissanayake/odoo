@@ -1,1 +1,1 @@
-# controllers placeholder
+from . import main

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ═══════════════════════════════════════════════
+             CHATBOT SCRIPT
+        ════════════════════════════════════════════════ -->
+        <record id="lms_chatbot_script" model="chatbot.script">
+            <field name="title">LMS Support Bot</field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════
+             STEP 1 — Greeting (always shown)
+        ════════════════════════════════════════════════ -->
+        <record id="lms_chatbot_step_greet" model="chatbot.script.step">
+            <field name="chatbot_script_id" ref="lms_chatbot_script"/>
+            <field name="sequence">1</field>
+            <field name="step_type">text</field>
+            <field name="message">Welcome to the LMS Help Desk! I am your LMS Support Assistant. I can help you with courses, enrollment, attendance, and grades.</field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════
+             STEP 2 — Main menu (always shown)
+        ════════════════════════════════════════════════ -->
+        <record id="lms_chatbot_step_menu" model="chatbot.script.step">
+            <field name="chatbot_script_id" ref="lms_chatbot_script"/>
+            <field name="sequence">2</field>
+            <field name="step_type">question_selection</field>
+            <field name="message">What would you like help with today?</field>
+        </record>
+
+        <!-- Answers for Step 2 -->
+        <record id="lms_chatbot_answer_courses" model="chatbot.script.answer">
+            <field name="script_step_id" ref="lms_chatbot_step_menu"/>
+            <field name="name">Course Information</field>
+        </record>
+
+        <record id="lms_chatbot_answer_enrollment" model="chatbot.script.answer">
+            <field name="script_step_id" ref="lms_chatbot_step_menu"/>
+            <field name="name">Enrollment Help</field>
+        </record>
+
+        <record id="lms_chatbot_answer_attendance" model="chatbot.script.answer">
+            <field name="script_step_id" ref="lms_chatbot_step_menu"/>
+            <field name="name">Attendance and Grades</field>
+        </record>
+
+        <record id="lms_chatbot_answer_support" model="chatbot.script.answer">
+            <field name="script_step_id" ref="lms_chatbot_step_menu"/>
+            <field name="name">Talk to Support</field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════
+             STEP 3 — Course Information
+             Triggered when user picks "Course Information"
+        ════════════════════════════════════════════════ -->
+        <record id="lms_chatbot_step_courses" model="chatbot.script.step">
+            <field name="chatbot_script_id" ref="lms_chatbot_script"/>
+            <field name="sequence">3</field>
+            <field name="step_type">text</field>
+            <field name="message">To browse all available courses, go to Courses → All Courses in the LMS menu. You can view course details, schedules, and enrolled students there. Contact your teacher or manager to enroll in a specific course.</field>
+            <field name="triggering_answer_ids" eval="[(4, ref('lms_chatbot_answer_courses'))]"/>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════
+             STEP 4 — Enrollment Help
+             Triggered when user picks "Enrollment Help"
+        ════════════════════════════════════════════════ -->
+        <record id="lms_chatbot_step_enrollment" model="chatbot.script.step">
+            <field name="chatbot_script_id" ref="lms_chatbot_script"/>
+            <field name="sequence">4</field>
+            <field name="step_type">text</field>
+            <field name="message">Enrollment is managed by your teacher or LMS administrator. Go to Enrollments → All Enrollments to view your current enrollments. If you need to be added to a new course, please contact your instructor or LMS manager.</field>
+            <field name="triggering_answer_ids" eval="[(4, ref('lms_chatbot_answer_enrollment'))]"/>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════
+             STEP 5 — Attendance and Grades
+             Triggered when user picks "Attendance and Grades"
+        ════════════════════════════════════════════════ -->
+        <record id="lms_chatbot_step_attendance" model="chatbot.script.step">
+            <field name="chatbot_script_id" ref="lms_chatbot_script"/>
+            <field name="sequence">5</field>
+            <field name="step_type">text</field>
+            <field name="message">You can find your attendance records under Attendance → Recorded Sessions. Your attendance percentage is calculated automatically. For grades and performance, go to Grades → Performance Analysis. Contact your teacher if you notice any discrepancies.</field>
+            <field name="triggering_answer_ids" eval="[(4, ref('lms_chatbot_answer_attendance'))]"/>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════
+             STEP 6 — Forward to Operator
+             Triggered when user picks "Talk to Support"
+        ════════════════════════════════════════════════ -->
+        <record id="lms_chatbot_step_forward" model="chatbot.script.step">
+            <field name="chatbot_script_id" ref="lms_chatbot_script"/>
+            <field name="sequence">6</field>
+            <field name="step_type">forward_operator</field>
+            <field name="message">Connecting you to a support agent now. Please hold on...</field>
+            <field name="triggering_answer_ids" eval="[(4, ref('lms_chatbot_answer_support'))]"/>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════
+             LIVE CHAT CHANNEL
+        ════════════════════════════════════════════════ -->
+        <record id="lms_livechat_channel" model="im_livechat.channel">
+            <field name="name">LMS Support</field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════
+             CHANNEL RULE — attach chatbot to LMS channel
+        ════════════════════════════════════════════════ -->
+        <record id="lms_livechat_channel_rule" model="im_livechat.channel.rule">
+            <field name="channel_id" ref="lms_livechat_channel"/>
+            <field name="action">display_button</field>
+            <field name="chatbot_script_id" ref="lms_chatbot_script"/>
+            <field name="chatbot_enabled_condition">always</field>
+            <field name="sequence">10</field>
+        </record>
+
+    </data>
+</odoo>

@@ -18,11 +18,12 @@
     """,
     'author': 'Custom',
     'website': '',
-    'depends': ['base', 'mail'],
+    'depends': ['base', 'mail', 'im_livechat'],
     'data': [
         'security/lms_security.xml',
         'security/lms_sequence.xml',
         'security/ir.model.access.csv',
+        'data/lms_chatbot_data.xml',
         'data/lms_email_templates.xml',
         'data/lms_demo_data.xml',
         'views/lms_dashboard_views.xml',

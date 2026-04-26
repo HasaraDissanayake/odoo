@@ -5,6 +5,36 @@ class LmsDashboard(models.AbstractModel):
     _name = 'lms.dashboard'
     _description = 'LMS Dashboard Data Provider'
 
+    # ── Unified entry point ──────────────────────────────────────
+
+    @api.model
+    def get_dashboard_data(self):
+        """Resolve the caller's role server-side and return the appropriate data.
+
+        Doing the group check in Python (rather than in JavaScript) avoids
+        problems with Odoo 19's privilege_id-based group model where
+        implied-group membership may not propagate correctly when queried via
+        has_group() from the browser.
+        """
+        env = self.env
+        is_teacher = (
+            env.user.has_group('lms_student.group_lms_manager')
+            or env.user.has_group('lms_student.group_lms_teacher')
+            or env.user.has_group('base.group_system')
+        )
+        if is_teacher:
+            data = self.get_teacher_dashboard_data()
+            data['role'] = 'teacher'
+            return data
+
+        student = env['lms.student'].search([('user_id', '=', env.uid)], limit=1)
+        if not student:
+            return {'role': 'no_profile', 'kpis': {}, 'charts': {}, 'at_risk': []}
+
+        data = self.get_student_dashboard_data()
+        data['role'] = 'student'
+        return data
+
     # ── Teacher / Manager Dashboard ──────────────────────────────
 
     @api.model

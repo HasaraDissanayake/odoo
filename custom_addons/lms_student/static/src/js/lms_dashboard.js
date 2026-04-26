@@ -68,48 +68,29 @@ export class LmsDashboard extends Component {
     // ── Data + Chart.js loading ───────────────────────────────────
 
     async _loadData() {
-        // Check group via ORM — avoids depending on any specific service name.
-        // Falls back to base.group_system so admin/superuser always sees the
-        // manager dashboard even if the LMS teacher group check fails.
-        let isTeacher = false;
-        try {
-            isTeacher = await this.orm.call(
-                "res.users", "has_group", ["lms_student.group_lms_teacher"]
-            );
-        } catch (_) {}
-        if (!isTeacher) {
-            try {
-                isTeacher = await this.orm.call(
-                    "res.users", "has_group", ["base.group_system"]
-                );
-            } catch (_) {}
+        // Role detection is done server-side in get_dashboard_data() to avoid
+        // issues with Odoo 19's privilege_id group model where implied-group
+        // membership (Manager → Teacher → Student) may not propagate correctly
+        // when has_group() is called from the browser.
+        const data = await this.orm.call("lms.dashboard", "get_dashboard_data", []);
+
+        if (data.role === "teacher") {
+            this.state.isTeacher = true;
+            this.state.kpis   = data.kpis;
+            this.state.atRisk = data.at_risk;
+            this._chartData   = data.charts;
+        } else if (data.role === "no_profile") {
+            this.state.noProfile = true;
+        } else {
+            // role === "student"
+            this.state.studentName = data.student_name;
+            this.state.kpis        = data.kpis;
+            this._chartData        = data.charts;
         }
-        this.state.isTeacher = isTeacher;
 
         // Load Chart.js dynamically so a missing module never prevents
         // this component from registering in the actions registry.
         await this._initChartJs();
-
-        if (this.state.isTeacher) {
-            const data = await this.orm.call(
-                "lms.dashboard", "get_teacher_dashboard_data", []
-            );
-            this.state.kpis   = data.kpis;
-            this.state.atRisk = data.at_risk;
-            this._chartData   = data.charts;
-        } else {
-            const data = await this.orm.call(
-                "lms.dashboard", "get_student_dashboard_data", []
-            );
-            if (data.no_profile) {
-                this.state.noProfile = true;
-            } else {
-                this.state.studentName = data.student_name;
-                this.state.kpis        = data.kpis;
-                this._chartData        = data.charts;
-            }
-        }
-
         this.state.loaded = true;
     }
 
