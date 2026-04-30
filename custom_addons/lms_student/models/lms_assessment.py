@@ -83,6 +83,12 @@ class LmsAssessmentGrade(models.Model):
     course_id = fields.Many2one(
         'lms.course', string='Course', related='assessment_id.course_id', store=True
     )
+    assessment_type = fields.Selection(
+        related='assessment_id.type', string='Type', store=True
+    )
+    assessment_date = fields.Date(
+        related='assessment_id.date', string='Date', store=True
+    )
     score = fields.Float(string='Score Obtained', default=0.0, tracking=True)
     max_score = fields.Float(string='Max Score', related='assessment_id.max_score', store=True)
     percentage = fields.Float(string='Percentage', compute='_compute_percentage', store=True)
@@ -135,9 +141,14 @@ class LmsAssessmentGrade(models.Model):
             'lms_student.lms_email_grade_low_score', raise_if_not_found=False
         )
         for rec in self:
-            if not rec.student_id.email:
-                continue
-            if grade_tmpl:
-                grade_tmpl.send_mail(rec.id, force_send=True)
-            if low_tmpl and rec.is_flagged:
-                low_tmpl.send_mail(rec.id, force_send=True)
+            student = rec.student_id
+            if student.email:
+                email_values = {}
+                if student.guardian_email:
+                    email_values['email_cc'] = student.guardian_email
+                if grade_tmpl:
+                    grade_tmpl.send_mail(rec.id, force_send=True,
+                                         email_values=email_values or None)
+                if low_tmpl and rec.is_flagged:
+                    low_tmpl.send_mail(rec.id, force_send=True,
+                                       email_values=email_values or None)

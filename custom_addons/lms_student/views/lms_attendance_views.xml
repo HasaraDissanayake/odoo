@@ -1,72 +1,234 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 <data>
-    <!-- Attendance Line List View -->
+
+    <!-- ═══════════════════════════════════════════════════════════
+         ATTENDANCE LINE — standalone list (used in student profile)
+    ═══════════════════════════════════════════════════════════════ -->
     <record id="view_lms_attendance_line_tree" model="ir.ui.view">
         <field name="name">lms.attendance.line.tree</field>
         <field name="model">lms.attendance.line</field>
         <field name="arch" type="xml">
-            <list editable="bottom">
+            <list>
                 <field name="student_id"/>
-                <field name="course_id" optional="hide"/>
-                <field name="date" optional="hide"/>
-                <field name="status" widget="radio" options="{'horizontal': true}"/>
+                <field name="course_id" optional="show"/>
+                <field name="date" optional="show"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'present'"
+                       decoration-danger="status == 'absent'"/>
             </list>
         </field>
     </record>
 
-    <!-- Attendance Session List View -->
+    <!-- ═══════════════════════════════════════════════════════════
+         ATTENDANCE SESSION — LIST VIEW
+    ═══════════════════════════════════════════════════════════════ -->
     <record id="view_lms_attendance_session_tree" model="ir.ui.view">
         <field name="name">lms.attendance.session.tree</field>
         <field name="model">lms.attendance.session</field>
         <field name="arch" type="xml">
-            <list decoration-info="state == 'draft'" decoration-success="state == 'done'">
+            <list decoration-info="state == 'draft'"
+                  decoration-success="state == 'done'">
                 <field name="name"/>
                 <field name="course_id"/>
                 <field name="date"/>
                 <field name="lecturer_id"/>
-                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'done'"/>
+                <field name="total_students" string="Students"/>
+                <field name="present_count" string="Present"
+                       decoration-success="present_count > 0"/>
+                <field name="absent_count" string="Absent"
+                       decoration-danger="absent_count > 0"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'done'"/>
             </list>
         </field>
     </record>
 
-    <!-- Attendance Session Form View -->
+    <!-- ═══════════════════════════════════════════════════════════
+         ATTENDANCE SESSION — FORM VIEW  (redesigned for usability)
+    ═══════════════════════════════════════════════════════════════ -->
     <record id="view_lms_attendance_session_form" model="ir.ui.view">
         <field name="name">lms.attendance.session.form</field>
         <field name="model">lms.attendance.session</field>
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_confirm" string="Confirm Attendance" type="object" class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="action_draft" string="Reset to Draft" type="object" invisible="state != 'done'"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                    <button name="action_confirm"
+                            string="Confirm &amp; Save Attendance"
+                            type="object"
+                            class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_draft"
+                            string="Reopen (Reset to Draft)"
+                            type="object"
+                            invisible="state != 'done'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,done"/>
                 </header>
+
                 <sheet>
+                    <!-- ── Title row ── -->
                     <div class="oe_title">
                         <h1>
-                            <field name="name"/>
+                            <field name="name" readonly="1"/>
                         </h1>
                     </div>
+
+                    <!-- ══════════════════════════════════════════
+                         STEP GUIDE  (visible only when drafting)
+                    ══════════════════════════════════════════ -->
+                    <div invisible="state != 'draft'"
+                         style="background:#eaf4fb; border-left:5px solid #2196F3;
+                                border-radius:6px; padding:14px 18px; margin-bottom:16px;">
+                        <div style="font-weight:700; color:#1565C0; font-size:14px; margin-bottom:8px;">
+                            How to Record Attendance — 4 Easy Steps
+                        </div>
+                        <table style="border-collapse:collapse; width:100%;">
+                            <tr>
+                                <td style="width:26px; vertical-align:top; padding:4px 8px 4px 0;">
+                                    <span style="background:#2196F3; color:#fff; border-radius:50%;
+                                                 display:inline-block; width:22px; height:22px;
+                                                 text-align:center; line-height:22px; font-weight:700;">1</span>
+                                </td>
+                                <td style="padding:4px 0; color:#333;">
+                                    <b>Select the Course</b> below — enrolled students load automatically into the table.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:4px 8px 4px 0; vertical-align:top;">
+                                    <span style="background:#2196F3; color:#fff; border-radius:50%;
+                                                 display:inline-block; width:22px; height:22px;
+                                                 text-align:center; line-height:22px; font-weight:700;">2</span>
+                                </td>
+                                <td style="padding:4px 0; color:#333;">
+                                    <b>Set the Date</b> (defaults to today — change it if recording for a past class).
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:4px 8px 4px 0; vertical-align:top;">
+                                    <span style="background:#2196F3; color:#fff; border-radius:50%;
+                                                 display:inline-block; width:22px; height:22px;
+                                                 text-align:center; line-height:22px; font-weight:700;">3</span>
+                                </td>
+                                <td style="padding:4px 0; color:#333;">
+                                    <b>Mark Attendance</b> — tick the checkbox next to each student who was
+                                    <b style="color:#388E3C;">Present</b>.
+                                    Leave it unticked for <b style="color:#D32F2F;">Absent</b>.
+                                    Use <b>Mark All Present</b> to tick everyone at once, then uncheck
+                                    only the absent students.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:4px 8px 4px 0; vertical-align:top;">
+                                    <span style="background:#2196F3; color:#fff; border-radius:50%;
+                                                 display:inline-block; width:22px; height:22px;
+                                                 text-align:center; line-height:22px; font-weight:700;">4</span>
+                                </td>
+                                <td style="padding:4px 0; color:#333;">
+                                    Click <b>Confirm &amp; Save Attendance</b> at the top when done.
+                                    Absent students will receive an automatic email notification.
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- ══════════════════════════════════════════
+                         SESSION DETAILS
+                    ══════════════════════════════════════════ -->
                     <group>
-                        <group>
-                            <field name="course_id" readonly="state != 'draft'"/>
+                        <group string="Session Details">
+                            <field name="course_id"
+                                   readonly="state != 'draft'"
+                                   placeholder="Select a course…"/>
                             <field name="date" readonly="state != 'draft'"/>
                         </group>
-                        <group>
+                        <group string=" ">
                             <field name="lecturer_id" readonly="state != 'draft'"/>
                         </group>
                     </group>
+
+                    <!-- ══════════════════════════════════════════
+                         LIVE STATS BAR  (shown once students load)
+                    ══════════════════════════════════════════ -->
+                    <div invisible="not attendance_line_ids"
+                         style="display:flex; gap:12px; margin:12px 0 6px 0; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:100px; background:#f5f5f5;
+                                    border-radius:8px; padding:10px 16px; text-align:center;
+                                    border:1px solid #ddd;">
+                            <div style="font-size:22px; font-weight:700; color:#333;">
+                                <field name="total_students" readonly="1" nolabel="1"/>
+                            </div>
+                            <div style="font-size:12px; color:#777; margin-top:2px;">Total Students</div>
+                        </div>
+                        <div style="flex:1; min-width:100px; background:#e8f5e9;
+                                    border-radius:8px; padding:10px 16px; text-align:center;
+                                    border:1px solid #a5d6a7;">
+                            <div style="font-size:22px; font-weight:700; color:#2e7d32;">
+                                <field name="present_count" readonly="1" nolabel="1"/>
+                            </div>
+                            <div style="font-size:12px; color:#388e3c; margin-top:2px;">Present</div>
+                        </div>
+                        <div style="flex:1; min-width:100px; background:#ffebee;
+                                    border-radius:8px; padding:10px 16px; text-align:center;
+                                    border:1px solid #ef9a9a;">
+                            <div style="font-size:22px; font-weight:700; color:#c62828;">
+                                <field name="absent_count" readonly="1" nolabel="1"/>
+                            </div>
+                            <div style="font-size:12px; color:#d32f2f; margin-top:2px;">Absent</div>
+                        </div>
+                    </div>
+
+                    <!-- ══════════════════════════════════════════
+                         ATTENDANCE TABLE
+                    ══════════════════════════════════════════ -->
                     <notebook>
-                        <page string="Attendance Records" name="attendance_lines">
-                            <field name="attendance_line_ids" readonly="state != 'draft'">
-                                <list editable="bottom">
-                                    <field name="student_id"/>
-                                    <field name="status"/>
+                        <page string="Attendance Roll" name="attendance_lines">
+
+                            <!-- Quick-action buttons -->
+                            <div invisible="state != 'draft'" style="margin-bottom:8px; display:flex; gap:8px; flex-wrap:wrap;">
+                                <button name="action_mark_all_present" type="object"
+                                        string="Mark All Present"
+                                        class="btn btn-success"/>
+                                <button name="action_mark_all_absent" type="object"
+                                        string="Mark All Absent"
+                                        class="btn btn-danger"/>
+                                <button name="action_open_import_wizard" type="object"
+                                        string="Import from Excel / CSV"
+                                        class="btn btn-secondary"/>
+                            </div>
+
+                            <!-- Placeholder before course selected -->
+                            <div invisible="attendance_line_ids or state != 'draft'"
+                                 style="padding:30px; text-align:center; color:#999;
+                                        border:2px dashed #ddd; border-radius:8px; margin:8px 0;">
+                                <div style="font-size:32px; margin-bottom:8px;">&#128203;</div>
+                                <div style="font-size:15px; font-weight:600;">No students loaded yet</div>
+                                <div style="font-size:13px; margin-top:4px;">
+                                    Select a <b>Course</b> above and students will appear here automatically.
+                                </div>
+                            </div>
+
+                            <!-- Student roll — checkbox = Present, unticked = Absent -->
+                            <field name="attendance_line_ids"
+                                   readonly="state != 'draft'">
+                                <list editable="bottom"
+                                      decoration-success="is_present == True"
+                                      decoration-danger="is_present == False">
+                                    <field name="student_id" readonly="1" string="Student Name"/>
+                                    <field name="is_present" string="Present"
+                                           widget="boolean_toggle"/>
+                                    <field name="status" widget="badge"
+                                           decoration-success="status == 'present'"
+                                           decoration-danger="status == 'absent'"
+                                           string="Status"/>
                                 </list>
                             </field>
+
                         </page>
                     </notebook>
                 </sheet>
+
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
                     <field name="activity_ids"/>
@@ -76,7 +238,9 @@
         </field>
     </record>
 
-    <!-- Attendance Session Search View -->
+    <!-- ═══════════════════════════════════════════════════════════
+         SEARCH VIEW
+    ═══════════════════════════════════════════════════════════════ -->
     <record id="view_lms_attendance_session_search" model="ir.ui.view">
         <field name="name">lms.attendance.session.search</field>
         <field name="model">lms.attendance.session</field>
@@ -85,43 +249,67 @@
                 <field name="name"/>
                 <field name="course_id"/>
                 <field name="lecturer_id"/>
-                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
-                <filter name="done" string="Confirmed" domain="[('state', '=', 'done')]"/>
+                <filter name="draft"  string="Draft"     domain="[('state', '=', 'draft')]"/>
+                <filter name="done"   string="Confirmed" domain="[('state', '=', 'done')]"/>
+                <filter name="today"  string="Today"
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
                 <group>
-                    <filter string="Course" name="group_by_course" context="{'group_by': 'course_id'}"/>
-                    <filter string="Date" name="group_by_date" context="{'group_by': 'date'}"/>
-                    <filter string="Status" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Course" name="group_by_course"
+                            context="{'group_by': 'course_id'}"/>
+                    <filter string="Date"   name="group_by_date"
+                            context="{'group_by': 'date'}"/>
+                    <filter string="Status" name="group_by_state"
+                            context="{'group_by': 'state'}"/>
                 </group>
             </search>
         </field>
     </record>
 
-    <!-- Calendar View for Attendance -->
+    <!-- ═══════════════════════════════════════════════════════════
+         CALENDAR VIEW
+    ═══════════════════════════════════════════════════════════════ -->
     <record id="view_lms_attendance_session_calendar" model="ir.ui.view">
         <field name="name">lms.attendance.session.calendar</field>
         <field name="model">lms.attendance.session</field>
         <field name="arch" type="xml">
-            <calendar string="Attendance Sessions" date_start="date" color="course_id" mode="month">
+            <calendar string="Attendance Sessions"
+                      date_start="date" color="course_id" mode="month">
                 <field name="course_id"/>
                 <field name="lecturer_id"/>
             </calendar>
         </field>
     </record>
 
-    <!-- Attendance Session Action -->
+    <!-- ═══════════════════════════════════════════════════════════
+         ACTIONS
+    ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- All sessions list -->
     <record id="action_lms_attendance_session" model="ir.actions.act_window">
         <field name="name">Attendance Sessions</field>
         <field name="res_model">lms.attendance.session</field>
         <field name="view_mode">list,form,calendar</field>
         <field name="search_view_id" ref="view_lms_attendance_session_search"/>
         <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-            Record a new attendance session
-          </p>
-          <p>
-            Capture student presence for each course session.
-          </p>
+            <p class="o_view_nocontent_smiling_face">
+                No attendance sessions yet!
+            </p>
+            <p>Click <b>New</b> to start recording attendance for a class session.</p>
         </field>
     </record>
+
+    <!-- Direct "Record New Session" action — opens blank form immediately -->
+    <record id="action_lms_attendance_new_session" model="ir.actions.act_window">
+        <field name="name">Record New Attendance Session</field>
+        <field name="res_model">lms.attendance.session</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Select a course to begin marking attendance.
+            </p>
+        </field>
+    </record>
+
 </data>
 </odoo>

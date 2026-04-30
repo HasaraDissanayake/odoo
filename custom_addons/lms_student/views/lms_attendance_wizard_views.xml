@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- ═══════════════════════════════════════════════════
+         WIZARD FORM — opens as a dialog popup
+    ═══════════════════════════════════════════════════ -->
+    <record id="view_lms_attendance_wizard_form" model="ir.ui.view">
+        <field name="name">lms.attendance.wizard.form</field>
+        <field name="model">lms.attendance.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Record Attendance">
+                <sheet>
+
+                    <!-- ── Header: course + date ── -->
+                    <div style="background:#1565C0; border-radius:8px 8px 0 0;
+                                padding:14px 20px; margin:-16px -16px 16px -16px; color:#fff;">
+                        <div style="font-size:18px; font-weight:700; margin-bottom:4px;">
+                            Record Attendance
+                        </div>
+                        <div style="font-size:13px; opacity:0.85;">
+                            Select the course and date, then tick each student who attended.
+                        </div>
+                    </div>
+
+                    <!-- ── Course / Date / Lecturer ── -->
+                    <group>
+                        <group>
+                            <field name="course_id"
+                                   placeholder="Select course…"
+                                   options="{'no_create': True}"/>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="lecturer_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+
+                    <!-- ── Stats bar (once students loaded) ── -->
+                    <div invisible="not line_ids"
+                         style="display:flex; gap:10px; margin:4px 0 12px 0;">
+                        <div style="flex:1; background:#f5f5f5; border-radius:6px;
+                                    padding:8px 14px; text-align:center; border:1px solid #ddd;">
+                            <div style="font-size:20px; font-weight:700;">
+                                <field name="total_count" readonly="1" nolabel="1"/>
+                            </div>
+                            <div style="font-size:11px; color:#777;">Students</div>
+                        </div>
+                        <div style="flex:1; background:#e8f5e9; border-radius:6px;
+                                    padding:8px 14px; text-align:center; border:1px solid #a5d6a7;">
+                            <div style="font-size:20px; font-weight:700; color:#2e7d32;">
+                                <field name="present_count" readonly="1" nolabel="1"/>
+                            </div>
+                            <div style="font-size:11px; color:#388e3c;">Present</div>
+                        </div>
+                        <div style="flex:1; background:#ffebee; border-radius:6px;
+                                    padding:8px 14px; text-align:center; border:1px solid #ef9a9a;">
+                            <div style="font-size:20px; font-weight:700; color:#c62828;">
+                                <field name="absent_count" readonly="1" nolabel="1"/>
+                            </div>
+                            <div style="font-size:11px; color:#d32f2f;">Absent</div>
+                        </div>
+                    </div>
+
+                    <!-- ── Quick-mark buttons ── -->
+                    <div invisible="not line_ids"
+                         style="margin-bottom:10px; display:flex; gap:8px; align-items:center;">
+                        <button name="action_mark_all_present" type="object"
+                                string="Mark All Present"
+                                class="btn btn-success btn-sm"/>
+                        <button name="action_mark_all_absent" type="object"
+                                string="Mark All Absent"
+                                class="btn btn-danger btn-sm"/>
+                        <span style="color:#888; font-size:12px; margin-left:6px;">
+                            — or tick/untick each student below
+                        </span>
+                    </div>
+
+                    <!-- ── Placeholder before course is chosen ── -->
+                    <div invisible="line_ids"
+                         style="padding:32px 20px; text-align:center; color:#aaa;
+                                border:2px dashed #ddd; border-radius:8px; margin:4px 0 12px 0;">
+                        <div style="font-size:36px; margin-bottom:6px;">&#128203;</div>
+                        <div style="font-size:15px; font-weight:600; color:#888;">
+                            No students loaded
+                        </div>
+                        <div style="font-size:13px; margin-top:4px;">
+                            Choose a <b>Course</b> above — students will appear here automatically.
+                        </div>
+                    </div>
+
+                    <!-- ── Student roll ── -->
+                    <field name="line_ids" invisible="not line_ids" nolabel="1">
+                        <list editable="bottom"
+                              decoration-success="is_present == True"
+                              decoration-danger="is_present == False">
+                            <field name="student_code" string="ID"
+                                   readonly="1" force_save="1" width="100"/>
+                            <field name="student_id"   string="Student Name"
+                                   readonly="1" force_save="1"/>
+                            <field name="is_present"   string="Present"
+                                   widget="boolean_toggle"/>
+                        </list>
+                    </field>
+
+                </sheet>
+
+                <!-- ── Dialog footer ── -->
+                <footer>
+                    <button name="action_save_attendance"
+                            type="object"
+                            string="Save Attendance"
+                            class="btn-primary"
+                            invisible="not line_ids"/>
+                    <button special="cancel" string="Cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action that opens the wizard as a dialog -->
+    <record id="action_lms_attendance_wizard" model="ir.actions.act_window">
+        <field name="name">Record Attendance</field>
+        <field name="res_model">lms.attendance.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</data>
+</odoo>

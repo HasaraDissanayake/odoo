@@ -42,6 +42,7 @@ export class LmsDashboard extends Component {
             studentName: "",
             kpis:        {},
             atRisk:      [],
+            risk:        {},
         });
 
         /** Resolved Chart constructor (loaded dynamically). */
@@ -85,6 +86,7 @@ export class LmsDashboard extends Component {
             // role === "student"
             this.state.studentName = data.student_name;
             this.state.kpis        = data.kpis;
+            this.state.risk        = data.risk || {};
             this._chartData        = data.charts;
         }
 
@@ -247,6 +249,20 @@ export class LmsDashboard extends Component {
     }
 
     // ── Navigation ────────────────────────────────────────────────
+
+    openRiskList(level) {
+        const domain = level
+            ? [["risk_level", "=", level]]
+            : [["risk_level", "in", ["medium", "high"]]];
+        this.action.doAction({
+            type:      "ir.actions.act_window",
+            name:      "Risk Predictions",
+            res_model: "lms.predictive.analytics",
+            views:     [[false, "list"], [false, "form"]],
+            domain,
+            target:    "current",
+        });
+    }
 
     openStudent(studentId) {
         this.action.doAction({

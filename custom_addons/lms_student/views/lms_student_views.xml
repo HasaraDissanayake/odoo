@@ -8,6 +8,7 @@
         <record id="view_lms_student_form" model="ir.ui.view">
             <field name="name">lms.student.form</field>
             <field name="model">lms.student</field>
+            <field name="priority">10</field>
             <field name="arch" type="xml">
                 <form string="Student Profile">
                     <header>
@@ -68,6 +69,7 @@
                             <group string="Guardian Information">
                                 <field name="guardian_name"/>
                                 <field name="guardian_phone"/>
+                                <field name="guardian_email"/>
                             </group>
                         </group>
                         <notebook>
@@ -143,13 +145,15 @@
             <field name="name">lms.student.list</field>
             <field name="model">lms.student</field>
             <field name="arch" type="xml">
-                <list string="Students"
+                <list string="Students" create="0"
                       decoration-success="state == 'graduated'"
                       decoration-danger="state == 'suspended' or low_attendance == True">
                     <field name="student_id" string="ID"/>
                     <field name="name"/>
                     <field name="email"/>
                     <field name="phone"/>
+                    <field name="guardian_name" optional="hide"/>
+                    <field name="guardian_email" optional="show"/>
                     <field name="enrollment_date"/>
                     <field name="enrollment_count" string="Courses"/>
                     <field name="overall_attendance_percent" string="Attendance (%)"
@@ -161,6 +165,12 @@
                            decoration-info="state == 'graduated'"
                            decoration-warning="state == 'draft'"
                            decoration-danger="state == 'suspended'"/>
+                    <button name="action_edit_profile"
+                            type="object"
+                            string="Edit Profile"
+                            icon="fa-edit"
+                            class="btn-primary"
+                            groups="lms_student.group_lms_manager"/>
                 </list>
             </field>
         </record>
@@ -179,18 +189,278 @@
             </field>
         </record>
 
-        <!-- Student ACTION -->
+        <!-- Student ACTION (teacher/manager) -->
         <record id="action_lms_student" model="ir.actions.act_window">
             <field name="name">Students</field>
             <field name="res_model">lms.student</field>
             <field name="view_mode">list,form</field>
             <field name="search_view_id" ref="view_lms_student_search"/>
+            <field name="view_ids" eval="[
+                (5, 0, 0),
+                (0, 0, {'view_mode': 'list', 'view_id': ref('view_lms_student_list')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_lms_student_form')}),
+            ]"/>
             <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Add your first student!
-                </p>
-                <p>Create student profiles to get started with your LMS.</p>
+                <p class="o_view_nocontent_smiling_face">No students yet.</p>
+                <p>Use <b>Add New Student</b> from the Students menu to create the first student.</p>
             </field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════
+             ADMIN POPUP EDIT FORM (opens as dialog)
+        ══════════════════════════════════════════════ -->
+        <record id="view_lms_student_popup_form" model="ir.ui.view">
+            <field name="name">lms.student.popup.form</field>
+            <field name="model">lms.student</field>
+            <field name="arch" type="xml">
+                <form string="Edit Student Profile">
+                    <sheet>
+
+                        <!-- ── Coloured header banner ── -->
+                        <div style="background:#1565C0; border-radius:8px 8px 0 0;
+                                    padding:14px 20px; margin:-16px -16px 20px -16px; color:#fff;">
+                            <div style="font-size:18px; font-weight:700; margin-bottom:4px;">
+                                &#9998; Edit Student Profile
+                            </div>
+                            <div style="font-size:13px; opacity:0.85;">
+                                Update the student details below and click Save.
+                            </div>
+                        </div>
+
+                        <!-- ── Photo + Name + Student ID row ── -->
+                        <div style="display:flex; align-items:flex-start; gap:20px; margin-bottom:16px;">
+                            <field name="image" widget="image"
+                                   style="width:96px; height:96px; border-radius:8px;
+                                          border:1px solid #ddd; flex-shrink:0;"/>
+                            <div style="flex:1;">
+                                <label for="name" style="font-weight:600; color:#555;
+                                                          font-size:12px; display:block; margin-bottom:4px;">
+                                    Full Name *
+                                </label>
+                                <field name="name" placeholder="Full Name"
+                                       style="font-size:18px; font-weight:600;"/>
+                                <div style="margin-top:8px; display:flex; gap:16px; align-items:center;">
+                                    <div>
+                                        <span style="font-size:12px; color:#888;">Student ID: </span>
+                                        <field name="student_id" readonly="1"
+                                               style="font-weight:700; color:#1565C0; display:inline;"/>
+                                    </div>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'active'"
+                                           decoration-info="state == 'graduated'"
+                                           decoration-warning="state == 'draft'"
+                                           decoration-danger="state == 'suspended'"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── Personal Information ── -->
+                        <div style="background:#f0f4ff; border-radius:6px; padding:12px 16px;
+                                    margin-bottom:16px; border-left:4px solid #1565C0;">
+                            <div style="font-size:13px; font-weight:700; color:#1565C0;
+                                        margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">
+                                Personal Information
+                            </div>
+                            <group>
+                                <group>
+                                    <field name="date_of_birth"/>
+                                    <field name="age" readonly="1"/>
+                                    <field name="gender"/>
+                                </group>
+                                <group>
+                                    <field name="nationality"/>
+                                    <field name="enrollment_date"/>
+                                </group>
+                            </group>
+                        </div>
+
+                        <!-- ── Contact Details ── -->
+                        <div style="background:#f0fff4; border-radius:6px; padding:12px 16px;
+                                    margin-bottom:16px; border-left:4px solid #2e7d32;">
+                            <div style="font-size:13px; font-weight:700; color:#2e7d32;
+                                        margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">
+                                Contact Details
+                            </div>
+                            <group>
+                                <group>
+                                    <field name="email" placeholder="student@example.com"/>
+                                    <field name="phone" placeholder="+94 77 000 0000"/>
+                                </group>
+                                <group>
+                                    <field name="mobile" placeholder="+94 77 000 0000"/>
+                                    <field name="user_id" options="{'no_create': True}"
+                                           placeholder="Link portal account…"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="address" placeholder="Home address…" nolabel="0"/>
+                            </group>
+                        </div>
+
+                        <!-- ── Guardian Information ── -->
+                        <div style="background:#fff8f0; border-radius:6px; padding:12px 16px;
+                                    margin-bottom:16px; border-left:4px solid #e65100;">
+                            <div style="font-size:13px; font-weight:700; color:#e65100;
+                                        margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">
+                                Guardian Information
+                            </div>
+                            <group>
+                                <group>
+                                    <field name="guardian_name"  placeholder="Parent / Guardian name"/>
+                                    <field name="guardian_phone" placeholder="+94 77 000 0000"/>
+                                </group>
+                                <group>
+                                    <field name="guardian_email" placeholder="parent@example.com"/>
+                                </group>
+                            </group>
+                        </div>
+
+                        <!-- ── Status ── -->
+                        <div style="background:#fafafa; border-radius:6px; padding:12px 16px;
+                                    border-left:4px solid #757575;">
+                            <div style="font-size:13px; font-weight:700; color:#555;
+                                        margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">
+                                Status
+                            </div>
+                            <group>
+                                <group>
+                                    <field name="state"/>
+                                </group>
+                                <group>
+                                    <field name="overall_attendance_percent" readonly="1" string="Attendance (%)"/>
+                                </group>
+                            </group>
+                        </div>
+
+                    </sheet>
+
+                    <!-- ── Dialog footer ── -->
+                    <footer>
+                        <button string="Save" class="btn-primary" special="save"/>
+                        <button string="Discard" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- ══════════════════════════════════════
+             READ-ONLY SELF-PROFILE (student role)
+        ══════════════════════════════════════ -->
+        <record id="view_lms_student_selfprofile" model="ir.ui.view">
+            <field name="name">lms.student.selfprofile</field>
+            <field name="model">lms.student</field>
+            <field name="arch" type="xml">
+                <form create="false" edit="false" delete="false">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" type="object"
+                                    name="action_view_enrollments"
+                                    icon="fa-book">
+                                <field name="enrollment_count" widget="statinfo" string="Courses"/>
+                            </button>
+                        </div>
+                        <field name="image" widget="image" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                            <div>
+                                <strong>Student ID: </strong>
+                                <field name="student_id" readonly="1"/>
+                            </div>
+                            <div style="margin-top:4px;">
+                                <field name="state" widget="badge" readonly="1"
+                                       decoration-success="state == 'active'"
+                                       decoration-info="state == 'graduated'"
+                                       decoration-warning="state == 'draft'"
+                                       decoration-danger="state == 'suspended'"/>
+                            </div>
+                        </div>
+
+                        <group>
+                            <group string="Personal Information">
+                                <field name="date_of_birth" readonly="1"/>
+                                <field name="age"           readonly="1"/>
+                                <field name="gender"        readonly="1"/>
+                                <field name="nationality"   readonly="1"/>
+                            </group>
+                            <group string="Contact Details">
+                                <field name="email"   readonly="1"/>
+                                <field name="phone"   readonly="1"/>
+                                <field name="mobile"  readonly="1"/>
+                                <field name="address" readonly="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Academic Information">
+                                <field name="enrollment_date"             readonly="1"/>
+                                <field name="overall_attendance_percent"  readonly="1"/>
+                            </group>
+                            <group string="Guardian Information">
+                                <field name="guardian_name"  readonly="1"/>
+                                <field name="guardian_phone" readonly="1"/>
+                                <field name="guardian_email" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="My Courses">
+                                <field name="enrollment_ids" readonly="1">
+                                    <list string="Enrollments">
+                                        <field name="course_id"/>
+                                        <field name="enrollment_date"/>
+                                        <field name="attendance_percent" string="Attendance %"/>
+                                        <field name="grade"/>
+                                        <field name="state" widget="badge"
+                                               decoration-success="state == 'enrolled'"
+                                               decoration-info="state == 'completed'"
+                                               decoration-warning="state == 'pending'"
+                                               decoration-danger="state == 'dropped'"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="My Grades">
+                                <field name="assessment_grade_ids" readonly="1">
+                                    <list string="Grades">
+                                        <field name="assessment_id"/>
+                                        <field name="course_id"/>
+                                        <field name="score"/>
+                                        <field name="max_score"/>
+                                        <field name="percentage" widget="progressbar"/>
+                                        <field name="remarks"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="My Attendance">
+                                <field name="attendance_line_ids" readonly="1">
+                                    <list string="Attendance">
+                                        <field name="date"/>
+                                        <field name="course_id"/>
+                                        <field name="status" widget="badge"
+                                               decoration-success="status == 'present'"
+                                               decoration-danger="status == 'absent'"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Keep the old act_window shell so its xmlid stays valid in the database -->
+        <record id="action_lms_my_profile" model="ir.actions.act_window">
+            <field name="name">My Profile</field>
+            <field name="res_model">lms.student</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_lms_student_selfprofile"/>
+            <field name="context">{'create': False}</field>
+        </record>
+
+        <!-- SERVER ACTION: dynamically opens the logged-in student's own record -->
+        <record id="action_lms_my_profile_server" model="ir.actions.server">
+            <field name="name">My Profile</field>
+            <field name="model_id" ref="model_lms_student"/>
+            <field name="state">code</field>
+            <field name="code">action = env['lms.student'].action_open_my_profile()</field>
         </record>
 
     </data>

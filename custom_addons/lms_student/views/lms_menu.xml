@@ -14,12 +14,27 @@
                   action="action_lms_dashboard"
                   sequence="1"/>
 
+        <!-- ════════════  MY PROFILE (student only) ════════════ -->
+        <menuitem id="menu_lms_my_profile"
+                  name="My Profile"
+                  parent="menu_lms_root"
+                  action="action_lms_my_profile_server"
+                  sequence="2"
+                  groups="lms_student.group_lms_student"/>
+
         <!-- ════════════  STUDENTS (teacher/manager only) ════════════ -->
         <menuitem id="menu_lms_students"
                   name="Students"
                   parent="menu_lms_root"
                   sequence="10"
                   groups="lms_student.group_lms_teacher"/>
+
+        <menuitem id="menu_lms_student_add"
+                  name="Add New Student"
+                  parent="menu_lms_students"
+                  action="action_lms_student_wizard"
+                  sequence="5"
+                  groups="lms_student.group_lms_manager"/>
 
         <menuitem id="menu_lms_student_list"
                   name="All Students"
@@ -82,12 +97,108 @@
                   sequence="50"
                   groups="lms_student.group_lms_teacher"/>
 
-        <menuitem id="menu_lms_attendance_session"
-                  name="Recorded Sessions"
+        <menuitem id="menu_lms_attendance_new"
+                  name="Record New Session"
                   parent="menu_lms_attendance"
-                  action="action_lms_attendance_session"
+                  action="action_lms_attendance_wizard"
                   sequence="10"
                   groups="lms_student.group_lms_teacher"/>
+
+        <menuitem id="menu_lms_attendance_session"
+                  name="View All Sessions"
+                  parent="menu_lms_attendance"
+                  action="action_lms_attendance_session"
+                  sequence="20"
+                  groups="lms_student.group_lms_teacher"/>
+
+        <!-- ════════════  TIMETABLE  ════════════ -->
+        <menuitem id="menu_lms_timetable"
+                  name="Timetable"
+                  parent="menu_lms_root"
+                  sequence="55"/>
+
+        <!-- Admin: add new entries -->
+        <menuitem id="menu_lms_timetable_add_lecture"
+                  name="Add Lecture Entry"
+                  parent="menu_lms_timetable"
+                  action="action_lms_timetable_wizard_lecture"
+                  sequence="10"
+                  groups="lms_student.group_lms_manager"/>
+
+        <menuitem id="menu_lms_timetable_add_exam"
+                  name="Add Exam Entry"
+                  parent="menu_lms_timetable"
+                  action="action_lms_timetable_wizard_exam"
+                  sequence="20"
+                  groups="lms_student.group_lms_manager"/>
+
+        <!-- All roles: view timetables -->
+        <menuitem id="menu_lms_timetable_lecture"
+                  name="Lecture Schedule"
+                  parent="menu_lms_timetable"
+                  action="action_lms_timetable_lecture"
+                  sequence="30"/>
+
+        <menuitem id="menu_lms_timetable_exam"
+                  name="Exam Schedule"
+                  parent="menu_lms_timetable"
+                  action="action_lms_timetable_exam"
+                  sequence="40"/>
+
+        <!-- ════════════  FEE PAYMENTS  ════════════ -->
+        <menuitem id="menu_lms_fee"
+                  name="Fee Payments"
+                  parent="menu_lms_root"
+                  sequence="58"
+                  groups="lms_student.group_lms_manager,lms_student.group_lms_student"/>
+
+        <!-- Admin: all payments + pending review -->
+        <menuitem id="menu_lms_fee_all"
+                  name="All Payments"
+                  parent="menu_lms_fee"
+                  action="action_lms_fee_payment_admin"
+                  sequence="10"
+                  groups="lms_student.group_lms_manager"/>
+
+        <menuitem id="menu_lms_fee_review"
+                  name="Pending Review"
+                  parent="menu_lms_fee"
+                  action="action_lms_fee_payment_review"
+                  sequence="20"
+                  groups="lms_student.group_lms_manager"/>
+
+        <!-- Students: own fee records -->
+        <menuitem id="menu_lms_fee_student"
+                  name="Fee Payments"
+                  parent="menu_lms_fee"
+                  action="action_lms_fee_payment_student"
+                  sequence="30"
+                  groups="lms_student.group_lms_student"/>
+
+        <!-- ════════════  ANALYTICS / PREDICTIONS  ════════════ -->
+        <menuitem id="menu_lms_analytics"
+                  name="Analytics"
+                  parent="menu_lms_root"
+                  sequence="62"/>
+
+        <!-- Admin only: generate predictions for all students in one click -->
+        <menuitem id="menu_lms_recalculate_all"
+                  name="Recalculate All Predictions"
+                  parent="menu_lms_analytics"
+                  action="action_server_recalculate_all"
+                  sequence="5"
+                  groups="lms_student.group_lms_manager"/>
+
+        <!-- All roles: Risk Profile
+             Record rules handle scoping:
+               Manager  → sees all students
+               Teacher  → sees students enrolled in their courses
+               Student  → sees only their own record -->
+        <menuitem id="menu_lms_predictive_student"
+                  name="Risk Profile"
+                  parent="menu_lms_analytics"
+                  action="action_lms_predictive_admin"
+                  sequence="10"/>
 
         <!-- ════════════  GRADES & PERFORMANCE  ════════════ -->
         <menuitem id="menu_lms_grades_root"

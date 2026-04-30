@@ -9,8 +9,11 @@
             <field name="arch" type="xml">
                 <form string="Enrollment">
                     <header>
+                        <button name="action_enroll_and_notify" type="object"
+                                string="Enroll &amp; Notify" class="oe_highlight"
+                                invisible="state != 'pending'"/>
                         <button name="action_enroll" type="object"
-                                string="Enroll" class="oe_highlight"
+                                string="Enroll (No Email)"
                                 invisible="state != 'pending'"/>
                         <button name="action_complete" type="object"
                                 string="Mark Completed"

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Standalone form opened by the "Submit Assignment" button (students only) -->
+        <record id="view_lms_assignment_submission_form" model="ir.ui.view">
+            <field name="name">lms.assignment.submission.form</field>
+            <field name="model">lms.assignment.submission</field>
+            <field name="arch" type="xml">
+                <form string="Submit Assignment">
+                    <sheet>
+                        <group string="Submission Details">
+                            <field name="student_id" readonly="1"/>
+                            <field name="assessment_id"
+                                   domain="[('course_id', '=', context.get('default_course_id', False))]"/>
+                            <field name="submission_date"/>
+                            <field name="state" widget="statusbar"
+                                   statusbar_visible="draft,submitted,graded"/>
+                        </group>
+                        <separator string="Document Link"/>
+                        <field name="submission_url" widget="url"
+                               placeholder="https://drive.google.com/... or any shareable link"/>
+                        <div class="text-muted" style="font-size:12px; margin-top:4px;">
+                            Upload your document to Google Drive, OneDrive or Dropbox,
+                            set sharing to "Anyone with the link can view", then paste the link above.
+                        </div>
+                        <separator string="Notes / Comments"/>
+                        <field name="notes"
+                               placeholder="Describe your work or add any comments..."/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

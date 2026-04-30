@@ -37,9 +37,20 @@
                                 <field name="category"/>
                                 <field name="credits"/>
                                 <field name="duration_weeks"/>
-                                <field name="max_students"/>
+                                <field name="max_students"
+                                       groups="lms_student.group_lms_teacher"/>
                                 <field name="enrolled_count"
-                                       string="Currently Enrolled" readonly="1"/>
+                                       string="Currently Enrolled" readonly="1"
+                                       groups="lms_student.group_lms_teacher"/>
+                                <field name="my_enrollment_state"
+                                       string="My Status" readonly="1"
+                                       widget="badge"
+                                       decoration-success="my_enrollment_state == 'enrolled'"
+                                       decoration-info="my_enrollment_state == 'completed'"
+                                       decoration-warning="my_enrollment_state == 'pending'"
+                                       decoration-danger="my_enrollment_state == 'dropped'"
+                                       decoration-muted="my_enrollment_state == 'not_enrolled'"
+                                       groups="!lms_student.group_lms_teacher"/>
                             </group>
                             <group string="Schedule and Instructor">
                                 <field name="instructor_id"/>
@@ -52,7 +63,173 @@
                                 <field name="description"
                                        placeholder="Course description..."/>
                             </page>
-                            <page string="Enrolled Students">
+
+                            <!-- ── Study Materials: documents, slides, external links ──
+                                 Teachers (instructor of this course) can add / edit rows.
+                                 Students see a read-only list (create/write denied by ACL). -->
+                            <page string="Study Materials">
+                                <field name="material_ids"
+                                       domain="[('material_type', 'in', ['document', 'slide', 'link'])]"
+                                       context="{'default_material_type': 'document', 'default_course_id': id}">
+                                    <list string="Study Materials" editable="bottom"
+                                          decoration-info="material_type == 'slide'"
+                                          decoration-muted="material_type == 'link'">
+                                        <field name="week_number" string="Week"/>
+                                        <field name="name" string="Title"/>
+                                        <field name="material_type" string="Type" widget="badge"
+                                               decoration-primary="material_type == 'slide'"
+                                               decoration-success="material_type == 'document'"
+                                               decoration-info="material_type == 'link'"/>
+                                        <field name="description" optional="show"/>
+                                        <field name="url" string="URL / Link" widget="url"
+                                               optional="show"/>
+                                        <field name="upload_date" string="Date" optional="show"/>
+                                        <field name="uploaded_by" string="Uploaded By"
+                                               optional="show"
+                                               groups="lms_student.group_lms_teacher"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <!-- ── Lecture Recordings ──
+                                 Teachers can upload new recordings inline.
+                                 Students see a read-only list. -->
+                            <page string="Lecture Recordings">
+                                <field name="material_ids"
+                                       domain="[('material_type', '=', 'recording')]"
+                                       context="{'default_material_type': 'recording', 'default_course_id': id}">
+                                    <list string="Recordings" editable="bottom">
+                                        <field name="week_number" string="Week"/>
+                                        <field name="name" string="Title"/>
+                                        <field name="duration_minutes" string="Duration (min)"/>
+                                        <field name="url" string="Recording Link" widget="url"/>
+                                        <field name="description" optional="show"/>
+                                        <field name="upload_date" string="Posted On"
+                                               optional="show"/>
+                                        <field name="uploaded_by" string="Uploaded By"
+                                               optional="show"
+                                               groups="lms_student.group_lms_teacher"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <!-- ── Submissions ──
+                                 Students  : "Submit Assignment" button → popup form to enter
+                                             assessment, a shareable document link, and notes.
+                                 Teachers  : read-only list + click any row to open a popup
+                                             with a clickable link to the student's document. -->
+                            <page string="Submissions">
+                                <div class="mb-3" groups="!lms_student.group_lms_teacher">
+                                    <button name="action_open_submission_form"
+                                            type="object"
+                                            string="Submit Assignment"
+                                            class="btn btn-primary"/>
+                                </div>
+                                <field name="submission_ids"
+                                       create="0" delete="0"
+                                       context="{'default_course_id': id}">
+                                    <list string="Submissions"
+                                          decoration-success="state == 'graded'"
+                                          decoration-info="state == 'submitted'"
+                                          decoration-warning="state == 'draft'">
+                                        <field name="student_id" string="Student"
+                                               groups="lms_student.group_lms_teacher"
+                                               readonly="1"/>
+                                        <field name="assessment_id" string="Assessment"
+                                               readonly="1"/>
+                                        <field name="submission_date" string="Submitted On"
+                                               readonly="1"/>
+                                        <field name="state" widget="badge"
+                                               decoration-success="state == 'graded'"
+                                               decoration-info="state == 'submitted'"
+                                               decoration-warning="state == 'draft'"
+                                               readonly="1"/>
+                                        <field name="submission_url" string="Document Link"
+                                               widget="url" readonly="1" optional="show"/>
+                                        <field name="grade_id" string="Grade"
+                                               optional="show" readonly="1"
+                                               groups="lms_student.group_lms_teacher"/>
+                                        <field name="notes" string="Notes"
+                                               optional="show" readonly="1"/>
+                                    </list>
+                                    <form string="Submission" create="false" edit="false" delete="false">
+                                        <sheet>
+                                            <group string="Submission Details">
+                                                <field name="student_id" readonly="1"
+                                                       groups="lms_student.group_lms_teacher"/>
+                                                <field name="assessment_id" readonly="1"/>
+                                                <field name="submission_date" readonly="1"/>
+                                                <field name="state" widget="badge"
+                                                       decoration-success="state == 'graded'"
+                                                       decoration-info="state == 'submitted'"
+                                                       decoration-warning="state == 'draft'"
+                                                       readonly="1"/>
+                                            </group>
+                                            <group string="Grading"
+                                                   groups="lms_student.group_lms_teacher">
+                                                <field name="grade_id"/>
+                                            </group>
+                                            <separator string="Document Link"/>
+                                            <field name="submission_url" widget="url"
+                                                   readonly="1"
+                                                   placeholder="No link submitted"/>
+                                            <separator string="Notes / Comments"/>
+                                            <field name="notes" readonly="1"/>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </page>
+
+                            <!-- ── Notice Board ──
+                                 Managers  : create / edit / publish notices; publishing
+                                             automatically emails all enrolled students.
+                                 Teachers  : read published notices for their courses.
+                                 Students  : read published notices for enrolled courses. -->
+                            <page string="Notice Board">
+                                <field name="notice_ids" create="0" delete="0">
+                                    <list string="Notices"
+                                          decoration-muted="state == 'draft'"
+                                          decoration-success="state == 'published'">
+                                        <field name="title" string="Title"/>
+                                        <field name="author_id" string="Posted By"/>
+                                        <field name="published_date" string="Published On"/>
+                                        <field name="state" widget="badge"
+                                               decoration-success="state == 'published'"
+                                               decoration-warning="state == 'draft'"
+                                               groups="lms_student.group_lms_manager"/>
+                                    </list>
+                                    <form string="Notice" create="false" edit="false" delete="false">
+                                        <sheet>
+                                            <div class="oe_title">
+                                                <h2>
+                                                    <field name="title" readonly="1"/>
+                                                </h2>
+                                            </div>
+                                            <group>
+                                                <field name="author_id" readonly="1"/>
+                                                <field name="published_date" readonly="1"/>
+                                                <field name="state" widget="badge"
+                                                       decoration-success="state == 'published'"
+                                                       decoration-warning="state == 'draft'"
+                                                       readonly="1"/>
+                                            </group>
+                                            <separator string="Content"/>
+                                            <field name="content" readonly="1"/>
+                                        </sheet>
+                                    </form>
+                                </field>
+                                <!-- Manager-only: button to open the full notice creation form -->
+                                <div class="mt-3" groups="lms_student.group_lms_manager">
+                                    <button name="action_open_notice_form"
+                                            type="object"
+                                            string="Add Notice"
+                                            class="btn btn-primary"/>
+                                </div>
+                            </page>
+
+                            <!-- ── Enrolled Students (teacher / manager only) ── -->
+                            <page string="Enrolled Students"
+                                  groups="lms_student.group_lms_teacher">
                                 <field name="enrollment_ids">
                                     <list string="Students" editable="bottom">
                                         <field name="student_id"/>
@@ -67,6 +244,7 @@
                                     </list>
                                 </field>
                             </page>
+
                         </notebook>
                     </sheet>
                     <chatter/>
@@ -85,8 +263,20 @@
                     <field name="category"/>
                     <field name="instructor_id"/>
                     <field name="credits"/>
-                    <field name="enrolled_count" string="Enrolled"/>
-                    <field name="max_students" string="Capacity"/>
+                    <!-- Teacher / Manager only: aggregate counts -->
+                    <field name="enrolled_count" string="Enrolled"
+                           groups="lms_student.group_lms_teacher"/>
+                    <field name="max_students" string="Capacity"
+                           groups="lms_student.group_lms_teacher"/>
+                    <!-- Student only: personal enrollment status (hidden for teachers/managers) -->
+                    <field name="my_enrollment_state" string="My Status"
+                           widget="badge"
+                           decoration-success="my_enrollment_state == 'enrolled'"
+                           decoration-info="my_enrollment_state == 'completed'"
+                           decoration-warning="my_enrollment_state == 'pending'"
+                           decoration-danger="my_enrollment_state == 'dropped'"
+                           decoration-muted="my_enrollment_state == 'not_enrolled'"
+                           groups="!lms_student.group_lms_teacher"/>
                     <field name="start_date"/>
                     <field name="state" widget="badge"
                            decoration-success="state == 'published'"

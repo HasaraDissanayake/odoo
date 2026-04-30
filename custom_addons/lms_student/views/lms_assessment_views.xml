@@ -104,14 +104,18 @@
         <field name="model">lms.assessment.grade</field>
         <field name="arch" type="xml">
             <list string="Grades" create="false"
+                  default_group_by="course_id"
                   decoration-warning="is_flagged == True">
-                <field name="student_id"/>
-                <field name="assessment_id"/>
-                <field name="course_id"/>
+                <!-- course_id is the group header — hide it inside rows -->
+                <field name="course_id" column_invisible="True"/>
+                <field name="assessment_id" string="Assignment / Assessment"/>
+                <field name="assessment_type" string="Type" optional="show"/>
+                <field name="assessment_date" string="Date" optional="show"/>
+                <field name="student_id" optional="show"/>
                 <field name="score"/>
                 <field name="max_score"/>
                 <field name="percentage" widget="progressbar"/>
-                <field name="is_flagged" string="Flagged" widget="boolean" readonly="1"/>
+                <field name="is_flagged" string="Below 75%" widget="boolean" readonly="1" optional="show"/>
             </list>
         </field>
     </record>
@@ -147,7 +151,7 @@
         <field name="name">Performance Analysis</field>
         <field name="res_model">lms.assessment.grade</field>
         <field name="view_mode">list,graph,pivot,form</field>
-        <field name="context">{'search_default_group_by_student': 1}</field>
+        <field name="context">{'search_default_group_by_course': 1}</field>
     </record>
 
     <!-- Grade Search View -->

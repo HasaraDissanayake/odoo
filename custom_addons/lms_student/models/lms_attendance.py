@@ -17,6 +17,18 @@ class LmsAttendanceSession(models.Model):
         ('done', 'Confirmed')
     ], string='Status', default='draft', tracking=True)
 
+    total_students = fields.Integer(compute='_compute_attendance_stats', string='Total', store=True)
+    present_count = fields.Integer(compute='_compute_attendance_stats', string='Present', store=True)
+    absent_count = fields.Integer(compute='_compute_attendance_stats', string='Absent', store=True)
+
+    @api.depends('attendance_line_ids', 'attendance_line_ids.status')
+    def _compute_attendance_stats(self):
+        for rec in self:
+            lines = rec.attendance_line_ids
+            rec.total_students = len(lines)
+            rec.present_count = len(lines.filtered(lambda l: l.status == 'present'))
+            rec.absent_count = len(lines.filtered(lambda l: l.status == 'absent'))
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -41,9 +53,7 @@ class LmsAttendanceSession(models.Model):
             # Send absence notifications for students marked absent this session
             rec._send_absence_emails()
 
-            # Send attendance warnings based on updated percentages
-            for enrollment in enrollments:
-                enrollment._send_attendance_warning_email()
+
 
 
     def _send_absence_emails(self):
@@ -55,12 +65,15 @@ class LmsAttendanceSession(models.Model):
             return
         for line in self.attendance_line_ids.filtered(lambda l: l.status == 'absent'):
             if line.student_id.email:
-                template.send_mail(line.id, force_send=True)
+                email_values = {}
+                if line.student_id.guardian_email:
+                    email_values['email_cc'] = line.student_id.guardian_email
+                template.send_mail(line.id, force_send=True,
+                                   email_values=email_values or None)
 
     def action_draft(self):
         for rec in self:
             rec.state = 'draft'
-            # Trigger recompute for enrolled students in this course
             enrollments = self.env['lms.enrollment'].search([
                 ('course_id', '=', rec.course_id.id),
                 ('state', '=', 'enrolled')
@@ -68,6 +81,24 @@ class LmsAttendanceSession(models.Model):
             for enrollment in enrollments:
                 enrollment._compute_attendance_percent()
 
+    def action_mark_all_present(self):
+        self.ensure_one()
+        self.attendance_line_ids.write({'status': 'present'})
+
+    def action_mark_all_absent(self):
+        self.ensure_one()
+        self.attendance_line_ids.write({'status': 'absent'})
+
+    def action_open_import_wizard(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Import Attendance',
+            'res_model': 'lms.attendance.import',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_session_id': self.id},
+        }
 
     @api.onchange('course_id')
     def _onchange_course_id(self):
@@ -95,6 +126,22 @@ class LmsAttendanceLine(models.Model):
         ('present', 'Present'),
         ('absent', 'Absent')
     ], string='Status', default='present', required=True)
-    
+
+    is_present = fields.Boolean(
+        string='Present',
+        compute='_compute_is_present',
+        inverse='_set_is_present',
+        store=True,
+    )
+
+    @api.depends('status')
+    def _compute_is_present(self):
+        for rec in self:
+            rec.is_present = (rec.status == 'present')
+
+    def _set_is_present(self):
+        for rec in self:
+            rec.status = 'present' if rec.is_present else 'absent'
+
     course_id = fields.Many2one(related='session_id.course_id', store=True, string='Course')
     date = fields.Date(related='session_id.date', store=True, string='Date')

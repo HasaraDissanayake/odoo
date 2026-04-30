@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- ═══════════════════════════════════════
+         LIST VIEW
+    ═══════════════════════════════════════ -->
+    <record id="view_lms_predictive_list" model="ir.ui.view">
+        <field name="name">lms.predictive.analytics.list</field>
+        <field name="model">lms.predictive.analytics</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="risk_level == 'high'"
+                  decoration-warning="risk_level == 'medium'"
+                  decoration-success="risk_level == 'low'"
+                  default_order="risk_score desc">
+
+                <field name="student_id" string="Student"/>
+                <field name="course_ids" widget="many2many_tags"
+                       string="Courses" optional="show"/>
+                <field name="enrollment_count" string="Courses #"   optional="hide"/>
+                <field name="attendance_pct"   string="Attendance %" optional="show"/>
+                <field name="avg_grade_pct"    string="Avg Grade %"  optional="show"/>
+                <field name="low_score_count"  string="Low Scores"   optional="show"/>
+                <field name="absence_count"    string="Absences"     optional="show"/>
+                <field name="risk_score"       string="Score"/>
+                <field name="risk_level" widget="badge"
+                       decoration-success="risk_level == 'low'"
+                       decoration-warning="risk_level == 'medium'"
+                       decoration-danger="risk_level  == 'high'"/>
+                <field name="last_computed" string="Last Updated" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════
+         FORM VIEW
+    ═══════════════════════════════════════ -->
+    <record id="view_lms_predictive_form" model="ir.ui.view">
+        <field name="name">lms.predictive.analytics.form</field>
+        <field name="model">lms.predictive.analytics</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <!-- Only show on saved records (id is set); never on new empty forms -->
+                    <button name="action_generate_prediction"
+                            string="Generate Prediction"
+                            type="object"
+                            class="oe_highlight"
+                            invisible="not id"/>
+                </header>
+
+                <sheet>
+                    <!-- ── Risk banners ── -->
+                    <div invisible="risk_level != 'low'"
+                         style="background:#e8f5e9;border-left:5px solid #4caf50;
+                                border-radius:6px;padding:12px 18px;margin-bottom:14px;
+                                color:#1b5e20;font-size:14px;">
+                        <b>&#9989; Low Risk</b> — Continue monitoring. Student is performing well.
+                    </div>
+                    <div invisible="risk_level != 'medium'"
+                         style="background:#fff8e1;border-left:5px solid #f9a825;
+                                border-radius:6px;padding:12px 18px;margin-bottom:14px;
+                                color:#6d4c00;font-size:14px;">
+                        <b>&#9888; Medium Risk</b> — Recommend lecturer follow-up.
+                    </div>
+                    <div invisible="risk_level != 'high'"
+                         style="background:#ffebee;border-left:5px solid #c62828;
+                                border-radius:6px;padding:12px 18px;margin-bottom:14px;
+                                color:#b71c1c;font-size:14px;">
+                        <b>&#128680; High Risk</b> — Immediate academic intervention required.
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="student_id" readonly="1"
+                                   options="{'no_open': True}"/>
+                        </h1>
+                        <div style="display:flex;align-items:center;gap:16px;margin-top:4px;">
+                            <span style="font-size:13px;color:#777;">Risk Score:</span>
+                            <span style="font-size:22px;font-weight:700;">
+                                <field name="risk_score" readonly="1"/>
+                            </span>
+                            <field name="risk_level" widget="badge" readonly="1"
+                                   decoration-success="risk_level == 'low'"
+                                   decoration-warning="risk_level == 'medium'"
+                                   decoration-danger="risk_level  == 'high'"/>
+                        </div>
+                    </div>
+
+                    <!-- ── Metrics grid ── -->
+                    <group string="Prediction Inputs">
+                        <group>
+                            <field name="attendance_pct"   readonly="1"/>
+                            <field name="avg_grade_pct"    readonly="1"/>
+                            <field name="low_score_count"  readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="absence_count"    readonly="1"/>
+                            <field name="enrollment_count" readonly="1"/>
+                            <field name="last_computed"    readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Enrolled Courses">
+                        <field name="course_ids" widget="many2many_tags" readonly="1"
+                               nolabel="1"/>
+                    </group>
+
+                    <!-- ── Formula info box ── -->
+                    <div style="background:#f5f5f5;border-radius:6px;padding:12px 16px;
+                                margin:12px 0;font-size:12px;color:#666;line-height:1.7;">
+                        <b>Risk Score Formula</b><br/>
+                        Score = (100 &#8722; Attendance%) &#215; 0.5
+                              + (100 &#8722; Avg Grade%) &#215; 0.4
+                              + (Low Score Flags &#215; 5)<br/>
+                        <b>0 &#8211; 29</b> = Low Risk &#160;|&#160;
+                        <b>30 &#8211; 59</b> = Medium Risk &#160;|&#160;
+                        <b>60+</b> = High Risk
+                    </div>
+
+                    <group string="Suggestion" invisible="not suggestion">
+                        <field name="suggestion" nolabel="1" readonly="1"/>
+                    </group>
+
+                    <!-- ── Course-wise breakdown ── -->
+                    <notebook invisible="not course_detail_ids">
+                        <page string="Course-wise Risk Breakdown">
+                            <field name="course_detail_ids" readonly="1" nolabel="1">
+                                <list decoration-danger="course_risk_level == 'high'"
+                                      decoration-warning="course_risk_level == 'medium'"
+                                      decoration-success="course_risk_level == 'low'">
+                                    <field name="course_id"        string="Course"/>
+                                    <field name="attendance_pct"   string="Attendance %"/>
+                                    <field name="avg_grade_pct"    string="Avg Grade %"/>
+                                    <field name="low_score_count"  string="Low Scores"/>
+                                    <field name="absence_count"    string="Absences"/>
+                                    <field name="course_risk_score" string="Score"/>
+                                    <field name="course_risk_level" string="Risk Level"
+                                           widget="badge"
+                                           decoration-success="course_risk_level == 'low'"
+                                           decoration-warning="course_risk_level == 'medium'"
+                                           decoration-danger="course_risk_level  == 'high'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════
+         SEARCH VIEW
+    ═══════════════════════════════════════ -->
+    <record id="view_lms_predictive_search" model="ir.ui.view">
+        <field name="name">lms.predictive.analytics.search</field>
+        <field name="model">lms.predictive.analytics</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="student_id"/>
+                <field name="course_ids" string="Course"/>
+                <separator/>
+                <filter name="high"   string="High Risk"
+                        domain="[('risk_level','=','high')]"/>
+                <filter name="medium" string="Medium Risk"
+                        domain="[('risk_level','=','medium')]"/>
+                <filter name="low"    string="Low Risk"
+                        domain="[('risk_level','=','low')]"/>
+                <separator/>
+                <filter name="at_risk" string="At Risk (Medium + High)"
+                        domain="[('risk_level','in',['medium','high'])]"/>
+                <group>
+                    <filter string="Risk Level" name="group_risk"
+                            context="{'group_by':'risk_level'}"/>
+                    <filter string="Course"     name="group_course"
+                            context="{'group_by':'course_ids'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════
+         SERVER ACTION — Recalculate All
+         (appears in the ⚙ Actions menu in list view,
+          works even when the list is empty)
+    ═══════════════════════════════════════ -->
+    <record id="action_server_recalculate_all" model="ir.actions.server">
+        <field name="name">Recalculate All Predictions</field>
+        <field name="model_id" ref="model_lms_predictive_analytics"/>
+        <field name="binding_model_id" ref="model_lms_predictive_analytics"/>
+        <field name="binding_view_types">list</field>
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+        <field name="code">action = env['lms.predictive.analytics'].action_recalculate_all()</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════
+         ACTIONS
+    ═══════════════════════════════════════ -->
+
+    <!-- Admin / Teacher: all predictions (record rules scope per role) -->
+    <record id="action_lms_predictive_admin" model="ir.actions.act_window">
+        <field name="name">Risk Predictions</field>
+        <field name="res_model">lms.predictive.analytics</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'create': False}</field>
+        <field name="search_view_id" ref="view_lms_predictive_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No predictions yet.</p>
+            <p>Go to <b>Analytics &#8594; Recalculate All Predictions</b> to auto-generate
+               risk predictions for all active students in one click.</p>
+        </field>
+    </record>
+
+    <!-- Student: own risk profile (list-first, no create allowed) -->
+    <record id="action_lms_predictive_student" model="ir.actions.act_window">
+        <field name="name">Risk Profile</field>
+        <field name="res_model">lms.predictive.analytics</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'create': False}</field>
+        <field name="search_view_id" ref="view_lms_predictive_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No risk profile found yet.</p>
+            <p>Your risk prediction has not been generated yet.
+               Please contact your administrator.</p>
+        </field>
+    </record>
+
+</data>
+</odoo>

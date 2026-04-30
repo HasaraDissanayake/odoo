@@ -65,8 +65,12 @@ class LmsDashboard(models.AbstractModel):
             ['course_id'],
             ['__count'],
         )
-        enroll_labels = [course.name for course, count in groups]
-        enroll_values = [count for course, count in groups]
+        enroll_items = sorted(
+            [(course.name, count) for course, count in groups],
+            key=lambda x: x[0],
+        )
+        enroll_labels = [name for name, val in enroll_items]
+        enroll_values = [val for name, val in enroll_items]
 
         # ── Chart: Student status distribution ──────────────────
         STATE_LABELS = {
@@ -85,8 +89,12 @@ class LmsDashboard(models.AbstractModel):
             ['course_id'],
             ['attendance_percent:avg'],
         )
-        attend_labels = [course.name for course, avg in groups]
-        attend_values = [round(avg or 0.0, 1) for course, avg in groups]
+        attend_items = sorted(
+            [(course.name, round(avg or 0.0, 1)) for course, avg in groups],
+            key=lambda x: x[0],
+        )
+        attend_labels = [name for name, val in attend_items]
+        attend_values = [val for name, val in attend_items]
 
         # ── Chart: Grade distribution (bucketed) ─────────────────
         grade_records = env['lms.assessment.grade'].search_read([], ['percentage'])
@@ -142,6 +150,12 @@ class LmsDashboard(models.AbstractModel):
                 'flagged': flagged_count,
             })
 
+        # ── Risk prediction counts ───────────────────────────────
+        predictions = env['lms.predictive.analytics'].search([])
+        risk_high    = len(predictions.filtered(lambda p: p.risk_level == 'high'))
+        risk_medium  = len(predictions.filtered(lambda p: p.risk_level == 'medium'))
+        risk_total   = risk_high + risk_medium
+
         return {
             'kpis': {
                 'active_students': active_students,
@@ -149,6 +163,9 @@ class LmsDashboard(models.AbstractModel):
                 'flagged_students': flagged_students,
                 'avg_gpa': avg_gpa,
                 'pending_enrollments': pending_enrollments,
+                'risk_high': risk_high,
+                'risk_medium': risk_medium,
+                'risk_total': risk_total,
             },
             'charts': {
                 'enrollments_by_course': {
@@ -185,7 +202,17 @@ class LmsDashboard(models.AbstractModel):
 
         student = env['lms.student'].search([('user_id', '=', uid)], limit=1)
         if not student:
-            return {'no_profile': True, 'kpis': {}, 'charts': {}}
+            return {'no_profile': True, 'kpis': {}, 'charts': {}, 'risk': {}}
+
+        # ── Risk prediction for this student ─────────────────────
+        prediction = env['lms.predictive.analytics'].search(
+            [('student_id', '=', student.id)], limit=1
+        )
+        risk = {
+            'level':  prediction.risk_level  if prediction else False,
+            'score':  prediction.risk_score  if prediction else 0.0,
+            'suggestion': prediction.suggestion if prediction else '',
+        }
 
         # ── KPIs ────────────────────────────────────────────────
         active_enrollments = env['lms.enrollment'].search([
@@ -218,12 +245,20 @@ class LmsDashboard(models.AbstractModel):
             ['course_id'],
             ['percentage:avg'],
         )
-        grade_labels = [course.name for course, avg in groups]
-        grade_values = [round(avg or 0.0, 1) for course, avg in groups]
+        grade_items = sorted(
+            [(course.name, round(avg or 0.0, 1)) for course, avg in groups],
+            key=lambda x: x[0],
+        )
+        grade_labels = [name for name, val in grade_items]
+        grade_values = [val for name, val in grade_items]
 
         # ── Chart: My attendance by course ───────────────────────
-        attend_labels = [e.course_id.name for e in active_enrollments]
-        attend_values = [round(e.attendance_percent, 1) for e in active_enrollments]
+        attend_items = sorted(
+            [(e.course_id.name, round(e.attendance_percent, 1)) for e in active_enrollments],
+            key=lambda x: x[0],
+        )
+        attend_labels = [name for name, val in attend_items]
+        attend_values = [val for name, val in attend_items]
 
         # ── Chart: GPA by semester ───────────────────────────────
         records = env['lms.academic.record'].search([
@@ -240,6 +275,7 @@ class LmsDashboard(models.AbstractModel):
         return {
             'no_profile': False,
             'student_name': student.name,
+            'risk': risk,
             'kpis': {
                 'enrolled_courses': enrolled_count,
                 'avg_attendance': avg_attendance,

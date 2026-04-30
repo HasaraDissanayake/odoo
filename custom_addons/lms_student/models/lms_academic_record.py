@@ -67,7 +67,11 @@ class LmsAcademicRecord(models.Model):
         if template:
             for rec in self:
                 if rec.student_id.email:
-                    template.send_mail(rec.id, force_send=True)
+                    email_values = {}
+                    if rec.student_id.guardian_email:
+                        email_values['email_cc'] = rec.student_id.guardian_email
+                    template.send_mail(rec.id, force_send=True,
+                                       email_values=email_values or None)
 
     def action_import_csv(self):
         """Open the bulk CSV import wizard for academic records."""
@@ -79,11 +83,10 @@ class LmsAcademicRecord(models.Model):
             'target': 'new',
         }
 
-    _sql_constraints = [
-        ('unique_student_year_semester',
-         'UNIQUE(student_id, academic_year, semester)',
-         'An academic record for this student, year and semester already exists.'),
-    ]
+    _unique_student_year_semester = models.Constraint(
+        'unique(student_id, academic_year, semester)',
+        'An academic record for this student, year and semester already exists.',
+    )
 
 
 class LmsAcademicRecordLine(models.Model):

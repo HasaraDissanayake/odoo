@@ -101,38 +101,55 @@ class LmsEnrollment(models.Model):
 
     def action_enroll(self):
         self.state = 'enrolled'
-        self._send_email('lms_student.lms_email_enrollment_confirmed')
+
+    def action_enroll_and_notify(self):
+        for rec in self:
+            rec.state = 'enrolled'
+            rec._send_enrollment_email()
 
     def action_complete(self):
         self.state = 'completed'
-        self._send_email('lms_student.lms_email_enrollment_completed')
 
     def action_drop(self):
         self.state = 'dropped'
-        self._send_email('lms_student.lms_email_enrollment_dropped')
 
-    def _send_attendance_warning_email(self):
-        """Send a warning or critical alert if attendance is below threshold."""
+    def _send_enrollment_email(self):
         for rec in self:
+            body = """
+                <div style="font-family:Arial,sans-serif; max-width:600px; margin:auto;">
+                    <div style="background:#875A7B; padding:20px; border-radius:6px 6px 0 0;">
+                        <h2 style="color:#fff; margin:0;">Enrollment Confirmed</h2>
+                        <p style="color:#f0e6f6; margin:4px 0 0;">Learning Management System</p>
+                    </div>
+                    <div style="background:#fff; padding:24px; border:1px solid #ddd;
+                                border-top:none; border-radius:0 0 6px 6px;">
+                        <p>Dear <strong>%s</strong>,</p>
+                        <p>You have been successfully enrolled in the following course:</p>
+                        <div style="background:#f9f4fb; border-left:4px solid #875A7B;
+                                    padding:12px 16px; margin:16px 0; border-radius:0 4px 4px 0;">
+                            <strong style="font-size:16px;">%s</strong>
+                        </div>
+                        <p>Your enrollment date is <strong>%s</strong>.</p>
+                        <p>Please log in to the student portal to view your course materials.</p>
+                        <hr style="border:none; border-top:1px solid #eee; margin:16px 0;"/>
+                        <p style="color:#888; font-size:12px; margin:0;">
+                            This is an automated message from the Learning Management System.
+                        </p>
+                    </div>
+                </div>
+            """ % (
+                rec.student_id.name,
+                rec.course_id.name,
+                rec.enrollment_date,
+            )
             if not rec.student_id.email:
                 continue
-            pct = rec.attendance_percent
-            if pct < 50.0:
-                tmpl = self.env.ref(
-                    'lms_student.lms_email_attendance_critical', raise_if_not_found=False
-                )
-            elif pct < 75.0:
-                tmpl = self.env.ref(
-                    'lms_student.lms_email_attendance_warning', raise_if_not_found=False
-                )
-            else:
-                continue
-            if tmpl:
-                tmpl.send_mail(rec.id, force_send=True)
-
-    def _send_email(self, template_xmlid):
-        template = self.env.ref(template_xmlid, raise_if_not_found=False)
-        if template:
-            for rec in self:
-                if rec.student_id.email:
-                    template.send_mail(rec.id, force_send=True)
+            mail_vals = {
+                'subject':   'Enrollment Confirmed - %s' % rec.course_id.name,
+                'body_html': body,
+                'email_to':  rec.student_id.email,
+                'author_id': self.env.user.partner_id.id,
+            }
+            if rec.student_id.guardian_email:
+                mail_vals['email_cc'] = rec.student_id.guardian_email
+            self.env['mail.mail'].sudo().create(mail_vals).send()

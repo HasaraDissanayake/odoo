@@ -7,7 +7,7 @@
             <field name="description">Helps you manage your Learning Management System permissions.</field>
             <field name="sequence">10</field>
         </record>
- 
+
         <!-- LMS Privilege -->
         <record id="privilege_lms" model="res.groups.privilege">
             <field name="name">LMS Management</field>
@@ -26,7 +26,7 @@
         <record id="group_lms_teacher" model="res.groups">
             <field name="name">Teacher</field>
             <field name="privilege_id" ref="privilege_lms"/>
-            <field name="implied_ids" eval="[(4, ref('group_lms_student'))]"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
         <!-- LMS Manager Group -->
@@ -41,15 +41,442 @@
             <field name="group_ids" eval="[(4, ref('lms_student.group_lms_manager'))]"/>
         </record>
 
+        <!-- ══════════════════════════════════════════════════════════════════
+             RECORD RULES — Students (lms.student)
+             ▸ Manager : all students
+             ▸ Teacher : all students (read + write)
+        ══════════════════════════════════════════════════════════════════ -->
 
-        <!-- Sequence for Student ID -->
-        <record id="seq_lms_student" model="ir.sequence">
-            <field name="name">LMS Student Sequence</field>
-            <field name="code">lms.student</field>
-            <field name="prefix">STU</field>
-            <field name="padding">5</field>
-            <field name="number_next">1</field>
-            <field name="number_increment">1</field>
+        <record id="lms_rule_student_manager" model="ir.rule">
+            <field name="name">LMS Student: manager sees all students</field>
+            <field name="model_id" ref="model_lms_student"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
         </record>
+
+        <record id="lms_rule_student_teacher" model="ir.rule">
+            <field name="name">LMS Student: teacher sees all students</field>
+            <field name="model_id" ref="model_lms_student"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_teacher'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_student_own" model="ir.rule">
+            <field name="name">LMS Student: student sees own profile only</field>
+            <field name="model_id" ref="model_lms_student"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_student'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             RECORD RULES — Courses (lms.course)
+             ▸ Students   : science / technology category only (read)
+             ▸ Teachers   : courses where they are the instructor (read + write)
+             ▸ Managers   : all courses, all permissions
+             Note: teacher implies student via implied_ids, so teacher users also
+             satisfy the student rule (OR) and therefore see their courses +
+             science/tech courses. Critical data isolation is enforced at the
+             materials, submissions, grades, and assessments level below.
+        ══════════════════════════════════════════════════════════════════ -->
+
+        <record id="lms_rule_course_science_tech_student" model="ir.rule">
+            <field name="name">LMS Course: students see only their enrolled courses</field>
+            <field name="model_id" ref="model_lms_course"/>
+            <field name="domain_force">[('enrollment_ids.student_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_student'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_course_all_teacher" model="ir.rule">
+            <field name="name">LMS Course: teacher reads and writes own courses only</field>
+            <field name="model_id" ref="model_lms_course"/>
+            <field name="domain_force">[('instructor_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_teacher'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_course_all_manager" model="ir.rule">
+            <field name="name">LMS Course: manager sees all courses</field>
+            <field name="model_id" ref="model_lms_course"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             RECORD RULES — Course Materials (lms.course.material)
+             ▸ Students   : no rule → base read access via group_user CSV entry
+             ▸ Teachers   : read / write / create only for their own courses
+             ▸ Managers   : all materials, all permissions
+        ══════════════════════════════════════════════════════════════════ -->
+
+        <record id="lms_rule_material_student" model="ir.rule">
+            <field name="name">LMS Material: student sees materials for enrolled courses only</field>
+            <field name="model_id" ref="model_lms_course_material"/>
+            <field name="domain_force">[('course_id.enrollment_ids.student_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_student'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_material_teacher" model="ir.rule">
+            <field name="name">LMS Material: teacher manages own course materials only</field>
+            <field name="model_id" ref="model_lms_course_material"/>
+            <field name="domain_force">[('course_id.instructor_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_teacher'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_material_manager" model="ir.rule">
+            <field name="name">LMS Material: manager sees and manages all materials</field>
+            <field name="model_id" ref="model_lms_course_material"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             RECORD RULES — Assessments (lms.assessment)
+             ▸ Students   : no rule → base read access (browse course content)
+             ▸ Teachers   : own courses only (read + write + create)
+             ▸ Managers   : all assessments
+        ══════════════════════════════════════════════════════════════════ -->
+
+        <record id="lms_rule_assessment_teacher" model="ir.rule">
+            <field name="name">LMS Assessment: teacher manages own course assessments</field>
+            <field name="model_id" ref="model_lms_assessment"/>
+            <field name="domain_force">[('course_id.instructor_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_teacher'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_assessment_manager" model="ir.rule">
+            <field name="name">LMS Assessment: manager sees all assessments</field>
+            <field name="model_id" ref="model_lms_assessment"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             RECORD RULES — Assessment Grades (lms.assessment.grade)
+             ▸ Students   : own grade rows only (read)
+             ▸ Teachers   : grades for assessments in their courses (read + write + create)
+             ▸ Managers   : all grades
+        ══════════════════════════════════════════════════════════════════ -->
+
+        <record id="lms_rule_grade_own_student" model="ir.rule">
+            <field name="name">LMS Grade: student sees own grades only</field>
+            <field name="model_id" ref="model_lms_assessment_grade"/>
+            <field name="domain_force">[('student_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_student'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_grade_all_teacher" model="ir.rule">
+            <field name="name">LMS Grade: teacher sees grades for own courses only</field>
+            <field name="model_id" ref="model_lms_assessment_grade"/>
+            <field name="domain_force">[('assessment_id.course_id.instructor_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_teacher'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_grade_all_manager" model="ir.rule">
+            <field name="name">LMS Grade: manager sees all grades</field>
+            <field name="model_id" ref="model_lms_assessment_grade"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             RECORD RULES — Enrollments (lms.enrollment)
+             ▸ Students   : no rule → base read access (view own enrollment)
+             ▸ Teachers   : enrollments for their courses only (read + write)
+             ▸ Managers   : all enrollments
+        ══════════════════════════════════════════════════════════════════ -->
+
+        <record id="lms_rule_enrollment_teacher" model="ir.rule">
+            <field name="name">LMS Enrollment: teacher sees enrollments for own courses only</field>
+            <field name="model_id" ref="model_lms_enrollment"/>
+            <field name="domain_force">[('course_id.instructor_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_teacher'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_enrollment_manager" model="ir.rule">
+            <field name="name">LMS Enrollment: manager sees all enrollments</field>
+            <field name="model_id" ref="model_lms_enrollment"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             RECORD RULES — Assignment Submissions (lms.assignment.submission)
+             ▸ Students   : own submissions only (read + write + create)
+             ▸ Teachers   : submissions for their courses only (read + write)
+             ▸ Managers   : all submissions
+        ══════════════════════════════════════════════════════════════════ -->
+
+        <record id="lms_rule_submission_own_student" model="ir.rule">
+            <field name="name">LMS Submission: student sees own submissions only</field>
+            <field name="model_id" ref="model_lms_assignment_submission"/>
+            <field name="domain_force">[('student_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_student'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_submission_all_teacher" model="ir.rule">
+            <field name="name">LMS Submission: teacher sees submissions for own courses only</field>
+            <field name="model_id" ref="model_lms_assignment_submission"/>
+            <field name="domain_force">[('assessment_id.course_id.instructor_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_teacher'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_submission_manager" model="ir.rule">
+            <field name="name">LMS Submission: manager sees all submissions</field>
+            <field name="model_id" ref="model_lms_assignment_submission"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             RECORD RULES — Attendance Sessions (lms.attendance.session)
+             ▸ Teachers   : sessions for their courses only
+             ▸ Managers   : all sessions
+        ══════════════════════════════════════════════════════════════════ -->
+
+        <record id="lms_rule_attendance_session_teacher" model="ir.rule">
+            <field name="name">LMS Attendance Session: teacher sees own course sessions</field>
+            <field name="model_id" ref="model_lms_attendance_session"/>
+            <field name="domain_force">[('course_id.instructor_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_teacher'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_attendance_session_manager" model="ir.rule">
+            <field name="name">LMS Attendance Session: manager sees all sessions</field>
+            <field name="model_id" ref="model_lms_attendance_session"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             RECORD RULES — Course Notices (lms.course.notice)
+             ▸ Students : published notices for their enrolled courses only
+             ▸ Teachers : published notices for their courses only
+             ▸ Managers : all notices (draft + published), full control
+        ══════════════════════════════════════════════════════════════════ -->
+
+        <record id="lms_rule_notice_student" model="ir.rule">
+            <field name="name">LMS Notice: student sees published notices for enrolled courses</field>
+            <field name="model_id" ref="model_lms_course_notice"/>
+            <field name="domain_force">[('state','=','published'),('course_id.enrollment_ids.student_id.user_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_student'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_notice_teacher" model="ir.rule">
+            <field name="name">LMS Notice: teacher sees published notices for own courses</field>
+            <field name="model_id" ref="model_lms_course_notice"/>
+            <field name="domain_force">[('state','=','published'),('course_id.instructor_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_teacher'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_notice_manager" model="ir.rule">
+            <field name="name">LMS Notice: manager sees and manages all notices</field>
+            <field name="model_id" ref="model_lms_course_notice"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             RECORD RULES — Timetable (lms.timetable)
+             ▸ Students : published entries for their enrolled courses only
+             ▸ Teachers : all entries (read only)
+             ▸ Managers : full CRUD on all entries
+        ══════════════════════════════════════════════════════════════════ -->
+
+        <record id="lms_rule_timetable_student" model="ir.rule">
+            <field name="name">LMS Timetable: student sees published entries for enrolled courses</field>
+            <field name="model_id" ref="model_lms_timetable"/>
+            <field name="domain_force">[('state','=','published'),('course_id.enrollment_ids.student_id.user_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_student'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_timetable_teacher" model="ir.rule">
+            <field name="name">LMS Timetable: teacher reads all entries</field>
+            <field name="model_id" ref="model_lms_timetable"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_teacher'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_timetable_manager" model="ir.rule">
+            <field name="name">LMS Timetable: manager full access</field>
+            <field name="model_id" ref="model_lms_timetable"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             RECORD RULES — Fee Payments (lms.fee.payment)
+             ▸ Students : own records only (read + write slip/notes in draft)
+             ▸ Managers : all records, full control
+        ══════════════════════════════════════════════════════════════════ -->
+
+        <record id="lms_rule_fee_payment_student" model="ir.rule">
+            <field name="name">LMS Fee: student sees own fee records only</field>
+            <field name="model_id" ref="model_lms_fee_payment"/>
+            <field name="domain_force">[('student_id.user_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_student'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_fee_payment_manager" model="ir.rule">
+            <field name="name">LMS Fee: manager sees all fee records</field>
+            <field name="model_id" ref="model_lms_fee_payment"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             RECORD RULES — Predictive Analytics (lms.predictive.analytics)
+             ▸ Students : own prediction record only
+             ▸ Teachers : only students enrolled in their courses
+             ▸ Managers : all records, full control
+        ══════════════════════════════════════════════════════════════════ -->
+
+        <record id="lms_rule_predictive_student" model="ir.rule">
+            <field name="name">LMS Prediction: student sees own record only</field>
+            <field name="model_id" ref="model_lms_predictive_analytics"/>
+            <field name="domain_force">[('student_id.user_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_student'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_predictive_teacher" model="ir.rule">
+            <field name="name">LMS Prediction: teacher sees students in their courses</field>
+            <field name="model_id" ref="model_lms_predictive_analytics"/>
+            <field name="domain_force">[('student_id.enrollment_ids.course_id.instructor_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_teacher'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="lms_rule_predictive_manager" model="ir.rule">
+            <field name="name">LMS Prediction: manager sees all records</field>
+            <field name="model_id" ref="model_lms_predictive_analytics"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('lms_student.group_lms_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
     </data>
 </odoo>

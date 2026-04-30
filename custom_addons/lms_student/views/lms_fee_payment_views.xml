@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- ═══════════════════════════════════════
+         LIST VIEW  (adapts for student / admin)
+    ═══════════════════════════════════════ -->
+    <record id="view_lms_fee_payment_list" model="ir.ui.view">
+        <field name="name">lms.fee.payment.list</field>
+        <field name="model">lms.fee.payment</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="is_overdue and state not in ('paid',)"
+                  decoration-success="state == 'paid'"
+                  decoration-warning="state == 'submitted'"
+                  decoration-muted="state == 'rejected'">
+                <field name="name" string="Reference"/>
+                <field name="student_id"
+                       groups="lms_student.group_lms_manager"/>
+                <field name="fee_type" widget="badge"
+                       decoration-info="fee_type == 'tuition'"
+                       decoration-warning="fee_type == 'exam'"/>
+                <field name="course_id" optional="show"/>
+                <field name="amount" string="Amount Due"/>
+                <field name="due_date"/>
+                <field name="submitted_date" string="Submitted" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-warning="state == 'submitted'"
+                       decoration-success="state in ('approved','paid')"
+                       decoration-danger="state == 'rejected'"
+                       decoration-info="state == 'draft'"/>
+                <field name="is_overdue" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════
+         FORM VIEW
+    ═══════════════════════════════════════ -->
+    <record id="view_lms_fee_payment_form" model="ir.ui.view">
+        <field name="name">lms.fee.payment.form</field>
+        <field name="model">lms.fee.payment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <!-- Student button -->
+                    <button name="action_submit"
+                            string="Submit Slip"
+                            type="object"
+                            class="oe_highlight"
+                            groups="lms_student.group_lms_student"
+                            invisible="state != 'draft'"/>
+
+                    <!-- Admin buttons -->
+                    <button name="action_approve"
+                            string="Approve"
+                            type="object"
+                            class="oe_highlight"
+                            groups="lms_student.group_lms_manager"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_reject"
+                            string="Reject"
+                            type="object"
+                            class="btn-danger"
+                            groups="lms_student.group_lms_manager"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_mark_paid"
+                            string="Mark as Paid"
+                            type="object"
+                            class="oe_highlight"
+                            groups="lms_student.group_lms_manager"
+                            invisible="state != 'approved'"/>
+                    <button name="action_reset_draft"
+                            string="Reset to Draft"
+                            type="object"
+                            groups="lms_student.group_lms_manager"
+                            invisible="state not in ('submitted','rejected','approved')"/>
+
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,approved,paid"/>
+                </header>
+
+                <sheet>
+                    <!-- Overdue warning -->
+                    <div invisible="not is_overdue"
+                         style="background:#ffebee;border-left:5px solid #c62828;
+                                border-radius:6px;padding:10px 16px;margin-bottom:14px;
+                                color:#b71c1c;font-size:13px;">
+                        &#9888; This fee payment is <b>overdue</b>. Please submit your slip as soon as possible.
+                    </div>
+
+                    <!-- Status banners -->
+                    <div invisible="state != 'submitted'"
+                         style="background:#fff8e1;border-left:5px solid #f9a825;
+                                border-radius:6px;padding:10px 16px;margin-bottom:14px;
+                                color:#6d4c00;font-size:13px;">
+                        &#128336; Slip submitted — awaiting admin review.
+                    </div>
+                    <div invisible="state != 'approved'"
+                         style="background:#e8f5e9;border-left:5px solid #4caf50;
+                                border-radius:6px;padding:10px 16px;margin-bottom:14px;
+                                color:#2e7d32;font-size:13px;">
+                        &#10004; Payment approved. Click <b>Mark as Paid</b> to finalise.
+                    </div>
+                    <div invisible="state != 'rejected'"
+                         style="background:#ffebee;border-left:5px solid #c62828;
+                                border-radius:6px;padding:10px 16px;margin-bottom:14px;
+                                color:#b71c1c;font-size:13px;">
+                        &#10007; Payment rejected. Please check admin remarks and resubmit.
+                    </div>
+                    <div invisible="state != 'paid'"
+                         style="background:#e8f5e9;border-left:5px solid #1b5e20;
+                                border-radius:6px;padding:10px 16px;margin-bottom:14px;
+                                color:#1b5e20;font-size:13px;font-weight:700;">
+                        &#9989; PAID — Payment fully confirmed.
+                    </div>
+
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+
+                    <!-- Fee Details (admin sets, student reads) -->
+                    <group string="Fee Details">
+                        <group>
+                            <field name="student_id"
+                                   readonly="state != 'draft'"
+                                   options="{'no_create': True}"
+                                   groups="lms_student.group_lms_manager"/>
+                            <field name="student_id" readonly="1"
+                                   groups="lms_student.group_lms_student"/>
+                            <field name="fee_type"   readonly="state != 'draft'"/>
+                            <field name="course_id"
+                                   readonly="state != 'draft'"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="amount"        readonly="state != 'draft'"/>
+                            <field name="academic_year" readonly="state != 'draft'"/>
+                            <field name="semester"      readonly="state != 'draft'"/>
+                            <field name="due_date"      readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+
+                    <group string="Description / Instructions"
+                           invisible="not description and state != 'draft'">
+                        <field name="description" nolabel="1"
+                               readonly="state != 'draft'"
+                               placeholder="Payment instructions for the student…"/>
+                    </group>
+
+                    <!-- ── Student Submission Section ── -->
+                    <group string="Payment Slip Submission">
+                        <!-- Guide for student when draft -->
+                        <div invisible="state != 'draft'"
+                             groups="lms_student.group_lms_student"
+                             style="background:#e3f2fd;border-left:5px solid #1565C0;
+                                    border-radius:6px;padding:12px 16px;margin:8px 0 12px 0;
+                                    color:#0d47a1;font-size:13px;">
+                            <b>How to submit your payment slip:</b>
+                            <ol style="margin:6px 0 0 18px;padding:0;">
+                                <li>Make your payment via bank transfer or online banking.</li>
+                                <li>Take a screenshot or photo of your receipt.</li>
+                                <li>Upload it to Google Drive, OneDrive, or Dropbox and <b>set sharing to "Anyone with link"</b>.</li>
+                                <li>Paste the link below and click <b>Submit Slip</b>.</li>
+                            </ol>
+                        </div>
+
+                        <field name="slip_url"
+                               string="Payment Slip Link"
+                               readonly="state != 'draft'"
+                               widget="url"
+                               placeholder="https://drive.google.com/…  or  https://1drv.ms/…"/>
+                        <field name="payment_notes"
+                               string="Payment Notes"
+                               readonly="state != 'draft'"
+                               placeholder="e.g. Bank transfer ref: TXN123456, paid on 28 Apr 2026…"/>
+                        <field name="submitted_date" readonly="1"
+                               invisible="not submitted_date"/>
+                    </group>
+
+                    <!-- ── Admin Review Section ── -->
+                    <group string="Admin Review"
+                           groups="lms_student.group_lms_manager"
+                           invisible="state == 'draft'">
+                        <field name="admin_remarks"
+                               string="Remarks"
+                               readonly="state in ('paid',)"
+                               placeholder="Add remarks for the student…"/>
+                        <field name="verified_by"  readonly="1" invisible="not verified_by"/>
+                        <field name="verified_date" readonly="1" invisible="not verified_date"/>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════
+         SEARCH VIEW
+    ═══════════════════════════════════════ -->
+    <record id="view_lms_fee_payment_search" model="ir.ui.view">
+        <field name="name">lms.fee.payment.search</field>
+        <field name="model">lms.fee.payment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="fee_type"/>
+                <separator/>
+                <filter name="draft"     string="Pending Payment"
+                        domain="[('state','=','draft')]"/>
+                <filter name="submitted" string="Slip Submitted"
+                        domain="[('state','=','submitted')]"/>
+                <filter name="approved"  string="Approved"
+                        domain="[('state','=','approved')]"/>
+                <filter name="rejected"  string="Rejected"
+                        domain="[('state','=','rejected')]"/>
+                <filter name="paid"      string="Paid"
+                        domain="[('state','=','paid')]"/>
+                <separator/>
+                <filter name="overdue" string="Overdue"
+                        domain="[('is_overdue','=',True)]"/>
+                <group>
+                    <filter string="Student"  name="group_student"
+                            context="{'group_by':'student_id'}"/>
+                    <filter string="Fee Type" name="group_type"
+                            context="{'group_by':'fee_type'}"/>
+                    <filter string="Status"   name="group_state"
+                            context="{'group_by':'state'}"/>
+                    <filter string="Semester" name="group_semester"
+                            context="{'group_by':'semester'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════
+         ACTIONS
+    ═══════════════════════════════════════ -->
+
+    <!-- Admin: all fee records -->
+    <record id="action_lms_fee_payment_admin" model="ir.actions.act_window">
+        <field name="name">Fee Payments</field>
+        <field name="res_model">lms.fee.payment</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_lms_fee_payment_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No fee records yet.</p>
+            <p>Click <b>New</b> to create a fee record for a student.</p>
+        </field>
+    </record>
+
+    <!-- Admin: pending review -->
+    <record id="action_lms_fee_payment_review" model="ir.actions.act_window">
+        <field name="name">Pending Review</field>
+        <field name="res_model">lms.fee.payment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state','=','submitted')]</field>
+        <field name="search_view_id" ref="view_lms_fee_payment_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No slips pending review.</p>
+            <p>Submitted slips will appear here for your approval.</p>
+        </field>
+    </record>
+
+    <!-- Student: my fees -->
+    <record id="action_lms_fee_payment_student" model="ir.actions.act_window">
+        <field name="name">Fee Payments</field>
+        <field name="res_model">lms.fee.payment</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_lms_fee_payment_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No fee records found.</p>
+            <p>Your fee records will appear here once the administrator creates them.</p>
+        </field>
+    </record>
+
+</data>
+</odoo>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record id="view_lms_attendance_import_form" model="ir.ui.view">
+        <field name="name">lms.attendance.import.form</field>
+        <field name="model">lms.attendance.import</field>
+        <field name="arch" type="xml">
+            <form string="Import Attendance">
+                <sheet>
+                    <group string="Session">
+                        <field name="session_id" readonly="1"/>
+                    </group>
+                    <group string="Upload File">
+                        <field name="file_data" filename="file_name" widget="binary"
+                               help="Upload a CSV or Excel (.xlsx) file. Required columns: Student ID, Status (Present / Absent)."/>
+                        <field name="file_name" invisible="1"/>
+                    </group>
+                    <group string="File Format Guide" col="1">
+                        <div style="background:#f9f4fb; border-left:4px solid #875A7B;
+                                    padding:10px 14px; border-radius:0 4px 4px 0; font-size:13px;">
+                            <p style="margin:0 0 6px;"><b>Expected columns (first row = header):</b></p>
+                            <table style="border-collapse:collapse; width:100%; font-size:12px;">
+                                <tr style="background:#875A7B; color:#fff;">
+                                    <th style="padding:4px 8px; text-align:left;">Student ID</th>
+                                    <th style="padding:4px 8px; text-align:left;">Student Name</th>
+                                    <th style="padding:4px 8px; text-align:left;">Status</th>
+                                </tr>
+                                <tr style="background:#fff;">
+                                    <td style="padding:4px 8px; border:1px solid #ddd;">STU00001</td>
+                                    <td style="padding:4px 8px; border:1px solid #ddd;">Alice Johnson</td>
+                                    <td style="padding:4px 8px; border:1px solid #ddd;">Present</td>
+                                </tr>
+                                <tr style="background:#f5f5f5;">
+                                    <td style="padding:4px 8px; border:1px solid #ddd;">STU00002</td>
+                                    <td style="padding:4px 8px; border:1px solid #ddd;">Bob Martinez</td>
+                                    <td style="padding:4px 8px; border:1px solid #ddd;">Absent</td>
+                                </tr>
+                            </table>
+                            <p style="margin:8px 0 0; color:#666;">
+                                Accepted values for Status: Present / Absent (or P / A).
+                                Student Name is used as a fallback if Student ID is blank.
+                            </p>
+                        </div>
+                    </group>
+                    <div invisible="not result_message">
+                        <separator string="Import Result"/>
+                        <field name="result_message" nolabel="1"/>
+                    </div>
+                </sheet>
+                <footer>
+                    <button name="action_import" type="object"
+                            string="Import" class="oe_highlight"/>
+                    <button name="action_download_template" type="object"
+                            string="Download Template"/>
+                    <button special="cancel" string="Close"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</data>
+</odoo>

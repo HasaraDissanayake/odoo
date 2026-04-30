@@ -1,5 +1,8 @@
-from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+import logging
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError, UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class LmsStudent(models.Model):
@@ -7,6 +10,9 @@ class LmsStudent(models.Model):
     _description = 'LMS Student Profile'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'name asc'
+    _student_id_unique = models.Constraint(
+        'unique(student_id)', 'Student ID must be unique.'
+    )
 
     # ── Basic Identity ──────────────────────────────────────────
     name = fields.Char(
@@ -56,8 +62,9 @@ class LmsStudent(models.Model):
         ('suspended', 'Suspended'),
     ], string='Status', default='draft', tracking=True)
 
-    guardian_name = fields.Char(string='Guardian Name')
+    guardian_name  = fields.Char(string='Guardian Name')
     guardian_phone = fields.Char(string='Guardian Phone')
+    guardian_email = fields.Char(string='Guardian Email')
 
     # ── Linked User ─────────────────────────────────────────────
     user_id = fields.Many2one(
@@ -134,11 +141,13 @@ class LmsStudent(models.Model):
         return super().create(vals_list)
 
     # ── Validation ──────────────────────────────────────────────
-    @api.constrains('email')
+    @api.constrains('email', 'guardian_email')
     def _check_email(self):
         for rec in self:
             if rec.email and '@' not in rec.email:
-                raise ValidationError('Please provide a valid email address.')
+                raise ValidationError('Please provide a valid student email address.')
+            if rec.guardian_email and '@' not in rec.guardian_email:
+                raise ValidationError('Please provide a valid guardian email address.')
 
     # ── State Actions ────────────────────────────────────────────
     def action_activate(self):
@@ -161,7 +170,50 @@ class LmsStudent(models.Model):
         if template:
             for rec in self:
                 if rec.email:
-                    template.send_mail(rec.id, force_send=True)
+                    email_values = {}
+                    if rec.guardian_email:
+                        email_values['email_cc'] = rec.guardian_email
+                    template.send_mail(rec.id, force_send=True,
+                                       email_values=email_values or None)
+
+    # ── Admin: open editable popup profile from list ─────────────
+    def action_edit_profile(self):
+        self.ensure_one()
+        popup_view = self.env.ref('lms_student.view_lms_student_popup_form')
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Edit Student Profile',
+            'res_model': 'lms.student',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'views': [(popup_view.id, 'form')],
+            'target': 'new',
+        }
+
+    # ── My Profile (student self-view) ───────────────────────────
+    def action_open_my_profile(self):
+        """Open the read-only self-profile for the currently logged-in student."""
+        student = self.env['lms.student'].search(
+            [('user_id', '=', self.env.uid)], limit=1
+        )
+        if not student:
+            raise UserError(_(
+                'No student profile is linked to your account. '
+                'Please contact an administrator.'
+            ))
+        selfprofile_view = self.env.ref(
+            'lms_student.view_lms_student_selfprofile', raise_if_not_found=False
+        )
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'My Profile',
+            'res_model': 'lms.student',
+            'res_id': student.id,
+            'view_mode': 'form',
+            'views': [(selfprofile_view.id if selfprofile_view else False, 'form')],
+            'target': 'current',
+            'context': {'form_view_initial_mode': 'readonly', 'create': False},
+        }
 
     # ── Smart Button ─────────────────────────────────────────────
     def action_view_enrollments(self):

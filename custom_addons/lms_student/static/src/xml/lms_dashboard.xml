@@ -72,6 +72,41 @@
             </div>
         </div>
 
+        <!-- RISK PREDICTION SUMMARY -->
+        <t t-if="state.kpis.risk_total > 0 or state.kpis.risk_high !== undefined">
+        <div class="lms-section-card" style="margin-bottom:20px;">
+            <div class="lms-section-heading" style="display:flex;align-items:center;gap:8px;">
+                &#129504; Student Risk Overview
+            </div>
+            <div class="lms-kpi-row" style="margin-top:12px;">
+                <div class="lms-kpi-card lms-kpi-red" style="cursor:pointer;"
+                     t-on-click="() => this.openRiskList('high')">
+                    <div class="lms-kpi-icon">&#128680;</div>
+                    <div class="lms-kpi-info">
+                        <div class="lms-kpi-value"><t t-esc="state.kpis.risk_high"/></div>
+                        <div class="lms-kpi-label">High Risk</div>
+                    </div>
+                </div>
+                <div class="lms-kpi-card lms-kpi-orange" style="cursor:pointer;"
+                     t-on-click="() => this.openRiskList('medium')">
+                    <div class="lms-kpi-icon">&#9888;</div>
+                    <div class="lms-kpi-info">
+                        <div class="lms-kpi-value"><t t-esc="state.kpis.risk_medium"/></div>
+                        <div class="lms-kpi-label">Medium Risk</div>
+                    </div>
+                </div>
+                <div class="lms-kpi-card lms-kpi-purple" style="cursor:pointer;"
+                     t-on-click="() => this.openRiskList(null)">
+                    <div class="lms-kpi-icon">&#128202;</div>
+                    <div class="lms-kpi-info">
+                        <div class="lms-kpi-value"><t t-esc="state.kpis.risk_total"/></div>
+                        <div class="lms-kpi-label">Total At-Risk</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </t>
+
         <!-- CHARTS ROW 1: wide bar + doughnut -->
         <div class="lms-charts-row">
             <div class="lms-chart-card lms-chart-wide">
@@ -201,6 +236,34 @@
                 </div>
             </div>
         </div>
+
+        <!-- STUDENT RISK CARD -->
+        <t t-if="state.risk and state.risk.level">
+            <div t-attf-class="lms-section-card lms-risk-banner lms-risk-{{ state.risk.level }}"
+                 style="margin-bottom:20px;padding:16px 20px;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:28px;">
+                        <t t-if="state.risk.level === 'low'">&#9989;</t>
+                        <t t-elif="state.risk.level === 'medium'">&#9888;</t>
+                        <t t-else="">&#128680;</t>
+                    </span>
+                    <div>
+                        <div style="font-size:16px;font-weight:700;">
+                            My Risk Level:
+                            <t t-if="state.risk.level === 'low'">Low Risk</t>
+                            <t t-elif="state.risk.level === 'medium'">Medium Risk</t>
+                            <t t-else="">High Risk</t>
+                            <span style="font-size:13px;font-weight:400;margin-left:8px;">
+                                (Score: <t t-esc="state.risk.score"/>)
+                            </span>
+                        </div>
+                        <div style="font-size:13px;margin-top:4px;opacity:0.85;">
+                            <t t-esc="state.risk.suggestion"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
 
         <!-- STUDENT CHARTS -->
         <div class="lms-charts-row">

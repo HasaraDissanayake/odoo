@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- ═══════════════════════════════════════════════
+         TIMETABLE LIST VIEW
+    ═══════════════════════════════════════════════ -->
+    <record id="view_lms_timetable_list" model="ir.ui.view">
+        <field name="name">lms.timetable.list</field>
+        <field name="model">lms.timetable</field>
+        <field name="arch" type="xml">
+            <list decoration-primary="type == 'lecture'"
+                  decoration-danger="type == 'exam'"
+                  decoration-muted="state == 'draft'">
+                <field name="type" widget="badge"
+                       decoration-info="type == 'lecture'"
+                       decoration-danger="type == 'exam'"/>
+                <field name="course_id"/>
+                <field name="date"/>
+                <field name="day_of_week" string="Day"/>
+                <field name="time_display" string="Time"/>
+                <field name="room" string="Room / Venue"/>
+                <field name="lecturer_id" string="Lecturer"/>
+                <field name="semester"/>
+                <field name="academic_year"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'published'"
+                       decoration-warning="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════
+         TIMETABLE FORM VIEW  (for viewing/editing existing entries)
+         No chatter — keeps the form clean
+    ═══════════════════════════════════════════════ -->
+    <record id="view_lms_timetable_form" model="ir.ui.view">
+        <field name="name">lms.timetable.form</field>
+        <field name="model">lms.timetable</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_publish"
+                            string="Publish &amp; Notify Students"
+                            type="object" class="oe_highlight"
+                            groups="lms_student.group_lms_manager"
+                            invisible="state != 'draft'"/>
+                    <button name="action_draft"
+                            string="Reset to Draft"
+                            type="object"
+                            groups="lms_student.group_lms_manager"
+                            invisible="state != 'published'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,published"/>
+                </header>
+                <sheet>
+                    <div style="margin-bottom:14px;">
+                        <span invisible="type != 'lecture'"
+                              style="background:#1565C0;color:#fff;padding:5px 16px;
+                                     border-radius:20px;font-size:13px;font-weight:700;">
+                            LECTURE SCHEDULE
+                        </span>
+                        <span invisible="type != 'exam'"
+                              style="background:#c0392b;color:#fff;padding:5px 16px;
+                                     border-radius:20px;font-size:13px;font-weight:700;">
+                            EXAM SCHEDULE
+                        </span>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <div invisible="state != 'published'"
+                         style="background:#e8f5e9;border-left:5px solid #4caf50;
+                                border-radius:6px;padding:10px 16px;margin-bottom:14px;
+                                color:#2e7d32;font-size:13px;">
+                        &#10004; Published — enrolled students have been notified by email.
+                    </div>
+                    <group>
+                        <group string="Details">
+                            <field name="type"         readonly="state != 'draft'"/>
+                            <field name="course_id"    readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="lecturer_id"  readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="room"         readonly="state != 'draft'"
+                                   placeholder="e.g. Room 201, Exam Hall A"/>
+                        </group>
+                        <group string="Date &amp; Time">
+                            <field name="date"         readonly="state != 'draft'"/>
+                            <field name="day_of_week"  readonly="1"/>
+                            <field name="time_start"   readonly="state != 'draft'" widget="float_time"/>
+                            <field name="time_end"     readonly="state != 'draft'" widget="float_time"/>
+                            <field name="time_display" readonly="1" string="Time Range"/>
+                        </group>
+                    </group>
+                    <group string="Academic Period">
+                        <group>
+                            <field name="academic_year" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="semester" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <group string="Notes / Special Instructions">
+                        <field name="notes" nolabel="1" readonly="state != 'draft'"
+                               placeholder="e.g. Bring calculator, open-book exam…"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════
+         SEARCH VIEW
+    ═══════════════════════════════════════════════ -->
+    <record id="view_lms_timetable_search" model="ir.ui.view">
+        <field name="name">lms.timetable.search</field>
+        <field name="model">lms.timetable</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="course_id"/>
+                <field name="lecturer_id"/>
+                <field name="room"/>
+                <separator/>
+                <filter name="lectures"  string="Lectures"  domain="[('type','=','lecture')]"/>
+                <filter name="exams"     string="Exams"     domain="[('type','=','exam')]"/>
+                <separator/>
+                <filter name="published" string="Published" domain="[('state','=','published')]"/>
+                <filter name="upcoming"  string="Upcoming"
+                        domain="[('date','&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <group>
+                    <filter string="Course"        name="group_course"   context="{'group_by':'course_id'}"/>
+                    <filter string="Type"          name="group_type"     context="{'group_by':'type'}"/>
+                    <filter string="Date"          name="group_date"     context="{'group_by':'date'}"/>
+                    <filter string="Semester"      name="group_semester" context="{'group_by':'semester'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════
+         CALENDAR VIEW
+    ═══════════════════════════════════════════════ -->
+    <record id="view_lms_timetable_calendar" model="ir.ui.view">
+        <field name="name">lms.timetable.calendar</field>
+        <field name="model">lms.timetable</field>
+        <field name="arch" type="xml">
+            <calendar string="Timetable" date_start="date"
+                      color="type" mode="month" quick_create="false">
+                <field name="course_id"/>
+                <field name="time_display"/>
+                <field name="room"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════
+         WIZARD FORM  — popup dialog, same UX as attendance
+    ═══════════════════════════════════════════════ -->
+    <record id="view_lms_timetable_wizard_form" model="ir.ui.view">
+        <field name="name">lms.timetable.wizard.form</field>
+        <field name="model">lms.timetable.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Add Timetable Entry">
+                <sheet>
+                    <!-- Header banner -->
+                    <div style="background:#1565C0;border-radius:8px 8px 0 0;
+                                padding:14px 20px;margin:-16px -16px 16px -16px;color:#fff;">
+                        <div style="font-size:18px;font-weight:700;margin-bottom:4px;">
+                            Add Timetable Entry
+                        </div>
+                        <div style="font-size:13px;opacity:0.85;">
+                            Fill in the details below. Tick "Publish" to notify students by email instantly.
+                        </div>
+                    </div>
+
+                    <group>
+                        <group string="Schedule Details">
+                            <field name="type" widget="radio"
+                                   options="{'horizontal': true}"/>
+                            <field name="course_id"
+                                   options="{'no_create': True}"
+                                   placeholder="Select course…"/>
+                            <field name="lecturer_id"
+                                   options="{'no_create': True}"
+                                   placeholder="Lecturer / Invigilator…"/>
+                            <field name="room"
+                                   placeholder="e.g. Room 201, Exam Hall A…"/>
+                        </group>
+                        <group string="Date &amp; Time">
+                            <field name="date"/>
+                            <field name="time_start" widget="float_time"
+                                   placeholder="HH:MM"/>
+                            <field name="time_end"   widget="float_time"
+                                   placeholder="HH:MM"/>
+                        </group>
+                    </group>
+
+                    <group string="Academic Period">
+                        <group>
+                            <field name="academic_year"/>
+                        </group>
+                        <group>
+                            <field name="semester"/>
+                        </group>
+                    </group>
+
+                    <group string="Notes / Special Instructions">
+                        <field name="notes" nolabel="1"
+                               placeholder="Any special instructions for students (e.g. bring calculator, open-book exam)…"/>
+                    </group>
+
+                    <!-- Publish toggle -->
+                    <div style="background:#f0f7ff;border:1px solid #b3d4f0;
+                                border-radius:6px;padding:12px 16px;margin-top:8px;">
+                        <field name="publish_now"/>
+                        <span style="color:#555;font-size:13px;margin-left:6px;">
+                            Publish immediately and send email notification to all enrolled students
+                        </span>
+                    </div>
+                </sheet>
+
+                <footer>
+                    <button name="action_save" type="object"
+                            string="Save Entry" class="btn-primary"/>
+                    <button special="cancel" string="Cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════
+         ACTIONS
+    ═══════════════════════════════════════════════ -->
+
+    <!-- Wizard action (popup) -->
+    <record id="action_lms_timetable_wizard" model="ir.actions.act_window">
+        <field name="name">Add Timetable Entry</field>
+        <field name="res_model">lms.timetable.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Lecture timetable wizard with default type -->
+    <record id="action_lms_timetable_wizard_lecture" model="ir.actions.act_window">
+        <field name="name">Add Lecture Entry</field>
+        <field name="res_model">lms.timetable.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_type': 'lecture'}</field>
+    </record>
+
+    <!-- Exam timetable wizard with default type -->
+    <record id="action_lms_timetable_wizard_exam" model="ir.actions.act_window">
+        <field name="name">Add Exam Entry</field>
+        <field name="res_model">lms.timetable.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_type': 'exam'}</field>
+    </record>
+
+    <!-- List views -->
+    <record id="action_lms_timetable_lecture" model="ir.actions.act_window">
+        <field name="name">Lecture Timetable</field>
+        <field name="res_model">lms.timetable</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="domain">[('type','=','lecture')]</field>
+        <field name="search_view_id" ref="view_lms_timetable_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No lecture schedule yet.</p>
+            <p>Use <b>Timetable → Add Lecture Entry</b> to create one.</p>
+        </field>
+    </record>
+
+    <record id="action_lms_timetable_exam" model="ir.actions.act_window">
+        <field name="name">Exam Schedule</field>
+        <field name="res_model">lms.timetable</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="domain">[('type','=','exam')]</field>
+        <field name="search_view_id" ref="view_lms_timetable_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No exam schedule yet.</p>
+            <p>Use <b>Timetable → Add Exam Entry</b> to create one.</p>
+        </field>
+    </record>
+
+</data>
+</odoo>

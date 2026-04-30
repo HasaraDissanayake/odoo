@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
+        <!-- Sequence for Student ID -->
+        <record id="seq_lms_student" model="ir.sequence">
+            <field name="name">LMS Student</field>
+            <field name="code">lms.student</field>
+            <field name="prefix">STU</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
         <!-- Sequence for Attendance Session -->
         <record id="seq_lms_attendance_session" model="ir.sequence">
             <field name="name">LMS Attendance Session</field>
             <field name="code">lms.attendance.session</field>
             <field name="prefix">ATS/%(range_year)s/</field>
             <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <!-- Sequence for Fee Payment -->
+        <record id="seq_lms_fee_payment" model="ir.sequence">
+            <field name="name">LMS Fee Payment</field>
+            <field name="code">lms.fee.payment</field>
+            <field name="prefix">FEE/%(range_year)s/</field>
+            <field name="padding">4</field>
             <field name="company_id" eval="False"/>
         </record>
     </data>
